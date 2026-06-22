@@ -1,0 +1,16 @@
+{
+  "grammars": [
+    {
+      "name": "zsh",
+      "camelcase": "Zsh",
+      "scope": "source.zsh",
+      "file-types": ["zsh", "zshrc", "zshenv"],
+      "path": "."
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "Zsh grammar for tree-sitter (from-scratch, manual-derived)"
+  }
+}
