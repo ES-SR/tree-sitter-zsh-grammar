@@ -1,0 +1,4 @@
+            Same as typeset, except that the options -g, and -f are not
+            permitted.  In this case the -x option does not force the use of
+            -g, i.e. exported variables will be local to functions.
+

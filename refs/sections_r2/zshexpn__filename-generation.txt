@@ -1,0 +1,18 @@
+     If a word contains an unquoted instance of one of the characters ‘*', ‘(',
+     ‘|', ‘<', ‘[', or ‘?', it is regarded as a pattern for filename
+     generation, unless the GLOB option is unset.  If the EXTENDED_GLOB option
+     is set, the ‘^' and ‘#' characters also denote a pattern; otherwise they
+     are not treated specially by the shell.
+
+     The word is replaced with a list of sorted filenames that match the
+     pattern.  If no matching pattern is found, the shell gives an error
+     message, unless the NULL_GLOB option is set, in which case the word is
+     deleted; or unless the NOMATCH option is unset, in which case the word is
+     left unchanged.
+
+     In filename generation, the character ‘/' must be matched explicitly;
+     also, a ‘.' must be matched explicitly at the beginning of a pattern or
+     after a ‘/', unless the GLOB_DOTS option is set.  No filename generation
+     pattern matches the files ‘.' or ‘..'.  In other instances of pattern
+     matching, the ‘/' and ‘.' are not treated specially.
+

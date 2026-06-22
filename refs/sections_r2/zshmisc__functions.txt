@@ -1,0 +1,16 @@
+     Shell functions are defined with the function reserved word or the special
+     syntax ‘funcname ()'.  Shell functions are read in and stored internally.
+     Alias names are resolved when the function is read.  Functions are
+     executed like commands with the arguments passed as positional parameters.
+     (See the section ‘Command Execution'.)
+
+     Functions execute in the same process as the caller and share all files
+     and present working directory with the caller.  A trap on EXIT set inside
+     a function is executed after the function completes in the environment of
+     the caller.
+
+     The return builtin is used to return from function calls.
+
+     Function identifiers can be listed with the functions builtin.  Functions
+     can be undefined with the unfunction builtin.
+

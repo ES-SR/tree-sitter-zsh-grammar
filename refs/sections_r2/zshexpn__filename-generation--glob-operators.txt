@@ -1,0 +1,160 @@
+     *      Matches any string, including the null string.
+
+     ?      Matches any character.
+
+     [...]  Matches any of the enclosed characters.  Ranges of characters can
+            be specified by separating two characters by a ‘-'.  A ‘-' or ‘]'
+            may be matched by including it as the first character in the list.
+            There are also several named classes of characters, in the form
+            ‘[:name:]' with the following meanings.  The first set use the
+            macros provided by the operating system to test for the given
+            character combinations, including any modifications due to local
+            language settings, see ctype(3):
+
+            [:alnum:]
+                   The character is alphanumeric
+
+            [:alpha:]
+                   The character is alphabetic
+
+            [:ascii:]
+                   The character is 7-bit, i.e. is a single-byte character
+                   without the top bit set.
+
+            [:blank:]
+                   The character is a blank character
+
+            [:cntrl:]
+                   The character is a control character
+
+            [:digit:]
+                   The character is a decimal digit
+
+            [:graph:]
+                   The character is a printable character other than whitespace
+
+            [:lower:]
+                   The character is a lowercase letter
+
+            [:print:]
+                   The character is printable
+
+            [:punct:]
+                   The character is printable but neither alphanumeric nor
+                   whitespace
+
+            [:space:]
+                   The character is whitespace
+
+            [:upper:]
+                   The character is an uppercase letter
+
+            [:xdigit:]
+                   The character is a hexadecimal digit
+
+            Another set of named classes is handled internally by the shell and
+            is not sensitive to the locale:
+
+            [:IDENT:]
+                   The character is allowed to form part of a shell identifier,
+                   such as a parameter name; this test respects the
+                   POSIX_IDENTIFIERS option
+
+            [:IFS:]
+                   The character is used as an input field separator, i.e. is
+                   contained in the IFS parameter
+
+            [:IFSSPACE:]
+                   The character is an IFS white space character; see the
+                   documentation for IFS in the zshparam(1) manual page.
+
+            [:INCOMPLETE:]
+                   Matches a byte that starts an incomplete multibyte
+                   character.  Note that there may be a sequence of more than
+                   one bytes that taken together form the prefix of a multibyte
+                   character.  To test for a potentially incomplete byte
+                   sequence, use the pattern ‘[[:INCOMPLETE:]]*'.  This will
+                   never match a sequence starting with a valid multibyte
+                   character.
+
+            [:INVALID:]
+                   Matches a byte that does not start a valid multibyte
+                   character.  Note this may be a continuation byte of an
+                   incomplete multibyte character as any part of a multibyte
+                   string consisting of invalid and incomplete multibyte
+                   characters is treated as single bytes.
+
+            [:WORD:]
+                   The character is treated as part of a word; this test is
+                   sensitive to the value of the WORDCHARS parameter
+
+            Note that the square brackets are additional to those enclosing the
+            whole set of characters, so to test for a single alphanumeric
+            character you need ‘[[:alnum:]]'.  Named character sets can be used
+            alongside other types, e.g. ‘[[:alpha:]0-9]'.
+
+     [^...]
+     [!...]
+            Like [...], except that it matches any character which is not in
+            the given set.
+
+     <[x]-[y]>
+            Matches any number in the range x to y, inclusive.  Either of the
+            numbers may be omitted to make the range open-ended; hence ‘<->'
+            matches any number.  To match individual digits, the [...] form is
+            more efficient.
+
+            Be careful when using other wildcards adjacent to patterns of this
+            form; for example, <0-9>* will actually match any number whatsoever
+            at the start of the string, since the ‘<0-9>' will match the first
+            digit, and the ‘*' will match any others.  This is a trap for the
+            unwary, but is in fact an inevitable consequence of the rule that
+            the longest possible match always succeeds.  Expressions such as
+            ‘<0-9>[^[:digit:]]*' can be used instead.
+
+     (...)  Matches the enclosed pattern.  This is used for grouping.  If the
+            KSH_GLOB option is set, then a ‘@', ‘*', ‘+', ‘?' or ‘!'
+            immediately preceding the ‘(' is treated specially, as detailed
+            below. The option SH_GLOB prevents bare parentheses from being used
+            in this way, though the KSH_GLOB option is still available.
+
+            Note that grouping cannot extend over multiple directories: it is
+            an error to have a ‘/' within a group (this only applies for
+            patterns used in filename generation).  There is one exception:  a
+            group of the form (pat/)# appearing as a complete path segment can
+            match a sequence of directories.  For example, foo/(a*/)#bar
+            matches foo/bar, foo/any/bar, foo/any/anyother/bar, and so on.
+
+     x|y    Matches either x or y.  This operator has lower precedence than any
+            other.  The ‘|' character must be within parentheses, to avoid
+            interpretation as a pipeline.  The alternatives are tried in order
+            from left to right.
+
+     ^x     (Requires EXTENDED_GLOB to be set.)  Matches anything except the
+            pattern x.  This has a higher precedence than ‘/', so ‘^foo/bar'
+            will search directories in ‘.' except ‘./foo' for a file named
+            ‘bar'.
+
+     x~y    (Requires EXTENDED_GLOB to be set.)  Match anything that matches
+            the pattern x but does not match y.  This has lower precedence than
+            any operator except ‘|', so ‘*/*~foo/bar' will search for all files
+            in all directories in ‘.'  and then exclude ‘foo/bar' if there was
+            such a match.  Multiple patterns can be excluded by ‘foo~bar~baz'.
+            In the exclusion pattern (y), ‘/' and ‘.' are not treated specially
+            the way they usually are in globbing.
+
+     x#     (Requires EXTENDED_GLOB to be set.)  Matches zero or more
+            occurrences of the pattern x.  This operator has high precedence;
+            ‘12#' is equivalent to ‘1(2#)', rather than ‘(12)#'.  It is an
+            error for an unquoted ‘#' to follow something which cannot be
+            repeated; this includes an empty string, a pattern already followed
+            by ‘##', or parentheses when part of a KSH_GLOB pattern (for
+            example, ‘!(foo)#' is invalid and must be replaced by ‘*(!(foo))').
+
+     x##    (Requires EXTENDED_GLOB to be set.)  Matches one or more
+            occurrences of the pattern x.  This operator has high precedence;
+            ‘12##' is equivalent to ‘1(2##)', rather than ‘(12)##'.  No more
+            than two active ‘#' characters may appear together.  (Note the
+            potential clash with glob qualifiers in the form ‘1(2##)' which
+            should therefore be avoided.)
+

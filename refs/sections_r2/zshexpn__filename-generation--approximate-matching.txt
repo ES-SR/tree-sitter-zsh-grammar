@@ -1,0 +1,51 @@
+     When matching approximately, the shell keeps a count of the errors found,
+     which cannot exceed the number specified in the (#anum) flags.  Four types
+     of error are recognised:
+
+     1.     Different characters, as in fooxbar and fooybar.
+
+     2.     Transposition of characters, as in banana and abnana.
+
+     3.     A character missing in the target string, as with the pattern road
+            and target string rod.
+
+     4.     An extra character appearing in the target string, as with stove
+            and strove.
+
+     Thus, the pattern (#a3)abcd matches dcba, with the errors occurring by
+     using the first rule twice and the second once, grouping the string as
+     [d][cb][a] and [a][bc][d].
+
+     Non-literal parts of the pattern must match exactly, including characters
+     in character ranges: hence (#a1)???  matches strings of length four, by
+     applying rule 4 to an empty part of the pattern, but not strings of length
+     two, since all the ? must match.  Other characters which must match
+     exactly are initial dots in filenames (unless the GLOB_DOTS option is
+     set), and all slashes in filenames, so that a/bc is two errors from ab/c
+     (the slash cannot be transposed with another character).  Similarly,
+     errors are counted separately for non-contiguous strings in the pattern,
+     so that (ab|cd)ef is two errors from aebf.
+
+     When using exclusion via the ~ operator, approximate matching is treated
+     entirely separately for the excluded part and must be activated
+     separately.  Thus, (#a1)README~READ_ME matches READ.ME but not READ_ME, as
+     the trailing READ_ME is matched without approximation.  However,
+     (#a1)README~(#a1)READ_ME does not match any pattern of the form READ?ME as
+     all such forms are now excluded.
+
+     Apart from exclusions, there is only one overall error count; however, the
+     maximum errors allowed may be altered locally, and this can be delimited
+     by grouping.  For example, (#a1)cat((#a0)dog)fox allows one error in
+     total, which may not occur in the dog section, and the pattern
+     (#a1)cat(#a0)dog(#a1)fox is equivalent.  Note that the point at which an
+     error is first found is the crucial one for establishing whether to use
+     approximation; for example, (#a1)abc(#a0)xyz will not match abcdxyz,
+     because the error occurs at the ‘x', where approximation is turned off.
+
+     Entire path segments may be matched approximately, so that
+     ‘(#a1)/foo/d/is/available/at/the/bar' allows one error in any path
+     segment.  This is much less efficient than without the (#a1), however,
+     since every directory in the path must be scanned for a possible
+     approximate match.  It is best to place the (#a1) after any path segments
+     which are known to be correct.
+

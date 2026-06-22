@@ -1,0 +1,55 @@
+     Every eligible word in the shell input is checked to see if there is an
+     alias defined for it.  If so, it is replaced by the text of the alias if
+     it is in command position (if it could be the first word of a simple
+     command), or if the alias is global.  If the replacement text ends with a
+     space, the next word in the shell input is always eligible for purposes of
+     alias expansion.
+
+     It is an error for the function name, word, in the sh-compatible function
+     definition syntax ‘word () ...' to be a word that resulted from alias
+     expansion, unless the ALIAS_FUNC_DEF option is set.
+
+     An alias is defined using the alias builtin; global aliases may be defined
+     using the -g option to that builtin.
+
+     A word is defined as:
+
+     •      Any plain string or glob pattern
+
+     •      Any quoted string, using any quoting method (note that the quotes
+            must be part of the alias definition for this to be eligible)
+
+     •      Any parameter reference or command substitution
+
+     •      Any series of the foregoing, concatenated without whitespace or
+            other tokens between them
+
+     •      Any reserved word (case, do, else, etc.)
+
+     •      With global aliasing, any command separator, any redirection
+            operator, and ‘(' or ‘)' when not part of a glob pattern
+
+     Alias expansion is done on the shell input before any other expansion
+     except history expansion.  Therefore, if an alias is defined for the word
+     foo, alias expansion may be avoided by quoting part of the word, e.g.
+     \foo.  Any form of quoting works, although there is nothing to prevent an
+     alias being defined for the quoted form such as \foo as well.
+
+     In particular, note that quoting must be used when using unalias to remove
+     global aliases:
+
+            % alias -g foo=bar
+            % unalias foo
+            unalias: no such hash table element: bar
+            % unalias \foo
+            %
+
+     When POSIX_ALIASES is set, only plain unquoted strings are eligible for
+     aliasing.  The alias builtin does not reject ineligible aliases, but they
+     are not expanded.
+
+     For use with completion, which would remove an initial backslash followed
+     by a character that isn't special, it may be more convenient to quote the
+     word by starting with a single quote, i.e. 'foo; completion will
+     automatically add the trailing single quote.
+

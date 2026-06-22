@@ -1,0 +1,20 @@
+     A ‘~' followed by anything not already covered consisting of any number of
+     alphanumeric characters or underscore (‘_'), hyphen (‘-'), or dot (‘.') is
+     looked up as a named directory, and replaced by the value of that named
+     directory if found.  Named directories are typically home directories for
+     users on the system.  They may also be defined if the text after the ‘~'
+     is the name of a string shell parameter whose value begins with a ‘/'.
+     Note that trailing slashes will be removed from the path to the directory
+     (though the original parameter is not modified).
+
+     It is also possible to define directory names using the -d option to the
+     hash builtin.
+
+     When the shell prints a path (e.g. when expanding %~ in prompts or when
+     printing the directory stack), the path is checked to see if it has a
+     named directory as its prefix.  If so, then the prefix portion is replaced
+     with a ‘~' followed by the name of the directory.  The shorter of the two
+     ways of referring to the directory is used, i.e. either the directory name
+     or the full path; the name is used if they are the same length.  The
+     parameters $PWD and $OLDPWD are never abbreviated in this fashion.
+

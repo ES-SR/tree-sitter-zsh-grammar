@@ -1,0 +1,21 @@
+     A word designator indicates which word or words of a given command line
+     are to be included in a history reference.  A ‘:' usually separates the
+     event specification from the word designator.  It may be omitted only if
+     the word designator begins with a ‘^', ‘$', ‘*', ‘-' or ‘%'.  Word
+     designators include:
+
+     0      The first input word (command).
+     n      The nth argument.
+     ^      The first argument.  That is, 1.
+     $      The last argument.
+     %      The word matched by (the most recent) ?str search.
+     x-y    A range of words; x defaults to 0.
+     *      All the arguments, or a null value if there are none.
+     x*     Abbreviates ‘x-$'.
+     x-     Like ‘x*' but omitting word $.
+
+     Note that a ‘%' word designator works only when used in one of ‘!%', ‘!:%'
+     or ‘!?str?:%', and only when used after a !? expansion (possibly in an
+     earlier command).  Anything else results in an error, although the error
+     may not be the most obvious one.
+

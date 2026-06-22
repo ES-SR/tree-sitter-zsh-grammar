@@ -1,0 +1,13 @@
+     Filename expansion is performed on the right hand side of a parameter
+     assignment, including those appearing after commands of the typeset
+     family.  In this case, the right hand side will be treated as a
+     colon-separated list in the manner of the PATH parameter, so that a ‘~' or
+     an ‘=' following a ‘:' is eligible for expansion.  All such behaviour can
+     be disabled by quoting the ‘~', the ‘=', or the whole expression (but not
+     simply the colon); the EQUALS option is also respected.
+
+     If the option MAGIC_EQUAL_SUBST is set, any unquoted shell argument in the
+     form ‘identifier=expression' becomes eligible for file expansion as
+     described in the previous paragraph.  Quoting the first ‘=' also inhibits
+     this.
+

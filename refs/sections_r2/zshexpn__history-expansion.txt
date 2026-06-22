@@ -1,0 +1,12 @@
+     History expansion allows you to use words from previous command lines in
+     the command line you are typing.  This simplifies spelling corrections and
+     the repetition of complicated commands or arguments.
+
+     Immediately before execution, each command is saved in the history list,
+     the size of which is controlled by the HISTSIZE parameter.  The one most
+     recent command is always retained in any case.  Each saved command in the
+     history list is called a history event and is assigned a number, beginning
+     with 1 (one) when the shell starts up.  The history number that you may
+     see in your prompt (see EXPANSION OF PROMPT SEQUENCES in zshmisc(1)) is
+     the number that is to be assigned to the next command.
+

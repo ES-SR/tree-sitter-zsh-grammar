@@ -1,0 +1,19 @@
+     Each word is checked to see if it begins with an unquoted ‘~'.  If it
+     does, then the word up to a ‘/', or the end of the word if there is no
+     ‘/', is checked to see if it can be substituted in one of the ways
+     described here.  If so, then the ‘~' and the checked portion are replaced
+     with the appropriate substitute value.
+
+     A ‘~' by itself is replaced by the value of $HOME.  A ‘~' followed by a
+     ‘+' or a ‘-' is replaced by current or previous working directory,
+     respectively.
+
+     A ‘~' followed by a number is replaced by the directory at that position
+     in the directory stack.  ‘~0' is equivalent to ‘~+', and ‘~1' is the top
+     of the stack.  ‘~+' followed by a number is replaced by the directory at
+     that position in the directory stack.  ‘~+0' is equivalent to ‘~+', and
+     ‘~+1' is the top of the stack.  ‘~-' followed by a number is replaced by
+     the directory that many positions from the bottom of the stack.  ‘~-0' is
+     the bottom of the stack.  The PUSHD_MINUS option exchanges the effects of
+     ‘~+' and ‘~-' where they are followed by a number.
+

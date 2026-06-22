@@ -1,0 +1,30 @@
+     A pathname component of the form ‘(foo/)#' matches a path consisting of
+     zero or more directories matching the pattern foo.
+
+     As a shorthand, ‘**/' is equivalent to ‘(*/)#'; note that this therefore
+     matches files in the current directory as well as subdirectories.  Thus:
+
+            ls -ld -- (*/)#bar
+
+     or
+
+            ls -ld -- **/bar
+
+     does a recursive directory search for files named ‘bar' (potentially
+     including the file ‘bar' in the current directory).  This form does not
+     follow symbolic links; the alternative form ‘***/' does, but is otherwise
+     identical.  Neither of these can be combined with other forms of globbing
+     within the same path segment; in that case, the ‘*' operators revert to
+     their usual effect.
+
+     Even shorter forms are available when the option GLOB_STAR_SHORT is set.
+     In that case if no / immediately follows a ** or *** they are treated as
+     if both a / plus a further * are present.  Hence:
+
+            setopt GLOBSTARSHORT
+            ls -ld -- **.c
+
+     is equivalent to
+
+            ls -ld -- **/*.c
+

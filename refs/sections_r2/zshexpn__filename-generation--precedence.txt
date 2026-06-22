@@ -1,0 +1,11 @@
+     The precedence of the operators given above is (highest) ‘^', ‘/', ‘~',
+     ‘|' (lowest); the remaining operators are simply treated from left to
+     right as part of a string, with ‘#' and ‘##' applying to the shortest
+     possible preceding unit (i.e. a character, ‘?', ‘[...]', ‘<...>', or a
+     parenthesised expression).  As mentioned above, a ‘/' used as a directory
+     separator may not appear inside parentheses, while a ‘|' must do so; in
+     patterns used in other contexts than filename generation (for example, in
+     case statements and tests within ‘[[...]]'), a ‘/' is not special; and ‘/'
+     is also not special after a ‘~' appearing outside parentheses in a
+     filename pattern.
+

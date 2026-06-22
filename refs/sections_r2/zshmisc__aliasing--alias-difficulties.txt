@@ -1,0 +1,34 @@
+     Although aliases can be used in ways that bend normal shell syntax, not
+     every string of non-white-space characters can be used as an alias.
+
+     Any set of characters not listed as a word above is not a word, hence no
+     attempt is made to expand it as an alias, no matter how it is defined
+     (i.e. via the builtin or the special parameter aliases described in the
+     section THE ZSH/PARAMETER MODULE in zshmodules(1)).  However, as noted in
+     the case of POSIX_ALIASES above, the shell does not attempt to deduce
+     whether the string corresponds to a word at the time the alias is created.
+
+     For example, an expression containing an = at the start of a command line
+     is an assignment and cannot be expanded as an alias; a lone = is not an
+     assignment but can only be set as an alias using the parameter, as
+     otherwise the = is taken part of the syntax of the builtin command.
+
+     It is not presently possible to alias the ‘((' token that introduces
+     arithmetic expressions, because until a full statement has been parsed, it
+     cannot be distinguished from two consecutive ‘(' tokens introducing nested
+     subshells.  Also, if a separator such as && is aliased, \&& turns into the
+     two tokens \& and &, each of which may have been aliased separately.
+     Similarly for \<<, \>|, etc.
+
+     There is a commonly encountered problem with aliases illustrated by the
+     following code:
+
+            alias echobar='echo bar'; echobar
+
+     This prints a message that the command echobar could not be found.  This
+     happens because aliases are expanded when the code is read in; the entire
+     line is read in one go, so that when echobar is executed it is too late to
+     expand the newly defined alias.  This is often a problem in shell scripts,
+     functions, and code executed with ‘source' or ‘.'.  Consequently, use of
+     functions rather than aliases is recommended in non-interactive code.
+

@@ -1,0 +1,31 @@
+     An event designator is a reference to a command-line entry in the history
+     list.  In the list below, remember that the initial ‘!' in each item may
+     be changed to another character by setting the histchars parameter.
+
+     !      Start a history expansion, except when followed by a blank,
+            newline, ‘=' or ‘('.  If followed immediately by a word designator
+            (see the section ‘Word Designators'), this forms a history
+            reference with no event designator (see the section ‘Overview').
+
+     !!     Refer to the previous command.  By itself, this expansion repeats
+            the previous command.
+
+     !n     Refer to command-line n.
+
+     !-n    Refer to the current command-line minus n.
+
+     !str   Refer to the most recent command starting with str.
+
+     !?str[?]
+            Refer to the most recent command containing str.  The trailing ‘?'
+            is necessary if this reference is to be followed by a modifier or
+            followed by any text that is not to be considered part of str.
+
+     !#     Refer to the current command line typed in so far.  The line is
+            treated as if it were complete up to and including the word before
+            the one with the ‘!#' reference.
+
+     !{...}
+            Insulate a history reference from adjacent characters (if
+            necessary).
+

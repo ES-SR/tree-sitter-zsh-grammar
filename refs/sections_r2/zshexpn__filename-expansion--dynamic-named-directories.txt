@@ -1,0 +1,84 @@
+     If the function zsh_directory_name exists, or the shell variable
+     zsh_directory_name_functions exists and contains an array of function
+     names, then the functions are used to implement dynamic directory naming.
+     The functions are tried in order until one returns status zero, so it is
+     important that functions test whether they can handle the case in question
+     and return an appropriate status.
+
+     A ‘~' followed by a string namstr in unquoted square brackets is treated
+     specially as a dynamic directory name.  Note that the first unquoted
+     closing square bracket always terminates namstr.  The shell function is
+     passed two arguments: the string n (for name) and namstr.  It should
+     either set the array reply to a single element which is the directory
+     corresponding to the name and return status zero (executing an assignment
+     as the last statement is usually sufficient), or it should return status
+     non-zero.  In the former case the element of reply is used as the
+     directory; in the latter case the substitution is deemed to have failed.
+     If all functions fail and the option NOMATCH is set, an error results.
+
+     The functions defined as above are also used to see if a directory can be
+     turned into a name, for example when printing the directory stack or when
+     expanding %~ in prompts.  In this case each function is passed two
+     arguments: the string d (for directory) and the candidate for dynamic
+     naming.  The function should either return non-zero status, if the
+     directory cannot be named by the function, or it should set the array
+     reply to consist of two elements: the first is the dynamic name for the
+     directory (as would appear within ‘~[...]'), and the second is the prefix
+     length of the directory to be replaced.  For example, if the trial
+     directory is /home/myname/src/zsh and the dynamic name for
+     /home/myname/src (which has 16 characters) is s, then the function sets
+
+            reply=(s 16)
+
+     The directory name so returned is compared with possible static names for
+     parts of the directory path, as described below; it is used if the prefix
+     length matched (16 in the example) is longer than that matched by any
+     static name.
+
+     It is not a requirement that a function implements both n and d calls; for
+     example, it might be appropriate for certain dynamic forms of expansion
+     not to be contracted to names.  In that case any call with the first
+     argument d should cause a non-zero status to be returned.
+
+     The completion system calls ‘zsh_directory_name c' followed by equivalent
+     calls to elements of the array zsh_directory_name_functions, if it exists,
+     in order to complete dynamic names for directories.  The code for this
+     should be as for any other completion function as described in
+     zshcompsys(1).
+
+     As a working example, here is a function that expands any dynamic names
+     beginning with the string p: to directories below /home/pws/perforce.  In
+     this simple case a static name for the directory would be just as
+     effective.
+
+            zsh_directory_name() {
+              emulate -L zsh
+              setopt extendedglob
+              local -a match mbegin mend
+              if [[ $1 = d ]]; then
+                # turn the directory into a name
+                if [[ $2 = (#b)(/home/pws/perforce/)([^/]##)* ]]; then
+                  typeset -ga reply
+                  reply=(p:$match[2] $(( ${#match[1]} + ${#match[2]} )) )
+                else
+                  return 1
+                fi
+              elif [[ $1 = n ]]; then
+                # turn the name into a directory
+                [[ $2 != (#b)p:(?*) ]] && return 1
+                typeset -ga reply
+                reply=(/home/pws/perforce/$match[1])
+              elif [[ $1 = c ]]; then
+                # complete names
+                local expl
+                local -a dirs
+                dirs=(/home/pws/perforce/*(/:t))
+                dirs=(p:${^dirs})
+                _wanted dynamic-dirs expl 'dynamic directory' compadd -S\] -a dirs
+                return
+              else
+                return 1
+              fi
+              return 0
+            }
+

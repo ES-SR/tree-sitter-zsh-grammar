@@ -1,0 +1,49 @@
+     A history expansion begins with the first character of the histchars
+     parameter, which is ‘!' by default, and may occur anywhere on the command
+     line, including inside double quotes (but not inside single quotes '...'
+     or C-style quotes $'...' nor when escaped with a backslash).
+
+     The first character is followed by an optional event designator (see the
+     section ‘Event Designators') and then an optional word designator (the
+     section ‘Word Designators'); if neither of these designators is present,
+     no history expansion occurs.
+
+     Input lines containing history expansions are echoed after being expanded,
+     but before any other expansions take place and before the command is
+     executed.  It is this expanded form that is recorded as the history event
+     for later references.
+
+     History expansions do not nest.
+
+     By default, a history reference with no event designator refers to the
+     same event as any preceding history reference on that command line; if it
+     is the only history reference in a command, it refers to the previous
+     command.  However, if the option CSH_JUNKIE_HISTORY is set, then every
+     history reference with no event specification always refers to the
+     previous command.
+
+     For example, ‘!' is the event designator for the previous command, so
+     ‘!!:1' always refers to the first word of the previous command, and ‘!!$'
+     always refers to the last word of the previous command.  With
+     CSH_JUNKIE_HISTORY set, then ‘!:1' and ‘!$' function in the same manner as
+     ‘!!:1' and ‘!!$', respectively.  Conversely, if CSH_JUNKIE_HISTORY is
+     unset, then ‘!:1' and ‘!$' refer to the first and last words,
+     respectively, of the same event referenced by the nearest other history
+     reference preceding them on the current command line, or to the previous
+     command if there is no preceding reference.
+
+     The character sequence ‘^foo^bar' (where ‘^' is actually the second
+     character of the histchars parameter) repeats the last command, replacing
+     the string foo with bar.  More precisely, the sequence ‘^foo^bar^' is
+     synonymous with ‘!!:s^foo^bar^', hence other modifiers (see the section
+     ‘Modifiers') may follow the final ‘^'.  In particular, ‘^foo^bar^:G'
+     performs a global substitution.
+
+     If the shell encounters the character sequence ‘!"' in the input, the
+     history mechanism is temporarily disabled until the current list (see
+     zshmisc(1)) is fully parsed.  The ‘!"' is removed from the input, and any
+     subsequent ‘!' characters have no special significance.
+
+     A less convenient but more comprehensible form of command history support
+     is provided by the fc builtin.
+

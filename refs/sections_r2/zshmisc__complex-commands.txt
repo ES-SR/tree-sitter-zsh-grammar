@@ -1,0 +1,196 @@
+     A complex command in zsh is one of the following:
+
+     if list then list [ elif list then list ] ... [ else list ] fi
+            The if list is executed, and if it returns a zero exit status, the
+            then list is executed.  Otherwise, the elif list is executed and if
+            its status is zero, the then list is executed.  If each elif list
+            returns nonzero status, the else list is executed.
+
+     for name ... [ in word ... ] term do list done
+            Expand the list of words, and set the parameter name to each of
+            them in turn, executing list each time.  If the ‘in word' is
+            omitted, use the positional parameters instead of the words.
+
+            The term consists of one or more newline or ; which terminate the
+            words, and are optional when the ‘in word' is omitted.
+
+            More than one parameter name can appear before the list of words.
+            If N names are given, then on each execution of the loop the next N
+            words are assigned to the corresponding parameters.  If there are
+            more names than remaining words, the remaining parameters are each
+            set to the empty string.  Execution of the loop ends when there is
+            no remaining word to assign to the first name.  It is only possible
+            for in to appear as the first name in the list, else it will be
+            treated as marking the end of the list.
+
+     for (( [expr1] ; [expr2] ; [expr3] )) do list done
+            The arithmetic expression expr1 is evaluated first (see the section
+            ‘Arithmetic Evaluation').  The arithmetic expression expr2 is
+            repeatedly evaluated until it evaluates to zero and when non-zero,
+            list is executed and the arithmetic expression expr3 evaluated.  If
+            any expression is omitted, then it behaves as if it evaluated to 1.
+
+     while list do list done
+            Execute the do list as long as the while list returns a zero exit
+            status.
+
+     until list do list done
+            Execute the do list as long as until list returns a nonzero exit
+            status.
+
+     repeat word do list done
+            word is expanded and treated as an arithmetic expression, which
+            must evaluate to a number n.  list is then executed n times.
+
+            The repeat syntax is disabled by default when the shell starts in a
+            mode emulating another shell.  It can be enabled with the command
+            ‘enable -r repeat'
+
+     case word in [ [(] pattern [ | pattern ] ... ) list (;;|;&|;|) ] ... esac
+            Execute the list associated with the first pattern that matches
+            word, if any.  The form of the patterns is the same as that used
+            for filename generation.  See the section ‘Filename Generation'.
+
+            Note further that, unless the SH_GLOB option is set, the whole
+            pattern with alternatives is treated by the shell as equivalent to
+            a group of patterns within parentheses, although white space may
+            appear about the parentheses and the vertical bar and will be
+            stripped from the pattern at those points.  White space may appear
+            elsewhere in the pattern; this is not stripped.  If the SH_GLOB
+            option is set, so that an opening parenthesis can be unambiguously
+            treated as part of the case syntax, the expression is parsed into
+            separate words and these are treated as strict alternatives (as in
+            other shells).
+
+            If the list that is executed is terminated with ;& rather than ;;,
+            the following list is also executed.  The rule for the terminator
+            of the following list ;;, ;& or ;| is applied unless the esac is
+            reached.
+
+            If the list that is executed is terminated with ;| the shell
+            continues to scan the patterns looking for the next match,
+            executing the corresponding list, and applying the rule for the
+            corresponding terminator ;;, ;& or ;|.  Note that word is not
+            re-expanded; all applicable patterns are tested with the same word.
+
+     select name [ in word ... term ] do list done
+            where term is one or more newline or ; to terminate the words.
+            Print the set of words, each preceded by a number.  If the in word
+            is omitted, use the positional parameters.  The PROMPT3 prompt is
+            printed and a line is read from the line editor if the shell is
+            interactive and that is active, or else standard input.  If this
+            line consists of the number of one of the listed words, then the
+            parameter name is set to the word corresponding to this number.  If
+            this line is empty, the selection list is printed again.
+            Otherwise, the value of the parameter name is set to null.  The
+            contents of the line read from standard input is saved in the
+            parameter REPLY.  list is executed for each selection until a break
+            or end-of-file is encountered.
+
+     ( list )
+            Execute list in a subshell.  Traps set by the trap builtin are
+            reset to their default values while executing list; an exception is
+            that ignored signals will continue to be ignored if the option
+            POSIXTRAPS is set.
+
+     { list }
+            Execute list.
+
+     { try-list } always { always-list }
+            First execute try-list.  Regardless of errors, or break or continue
+            commands encountered within try-list, execute always-list.
+            Execution then continues from the result of the execution of
+            try-list; in other words, any error, or break or continue command
+            is treated in the normal way, as if always-list were not present.
+            The two chunks of code are referred to as the ‘try block' and the
+            ‘always block'.
+
+            Optional newlines or semicolons may appear after the always; note,
+            however, that they may not appear between the preceding closing
+            brace and the always.
+
+            An ‘error' in this context is a condition such as a syntax error
+            which causes the shell to abort execution of the current function,
+            script, or list.  Syntax errors encountered while the shell is
+            parsing the code do not cause the always-list to be executed.  For
+            example, an erroneously constructed if block in try-list would
+            cause the shell to abort during parsing, so that always-list would
+            not be executed, while an erroneous substitution such as ${*foo*}
+            would cause a run-time error, after which always-list would be
+            executed.
+
+            An error condition can be tested and reset with the special integer
+            variable TRY_BLOCK_ERROR.  Outside an always-list the value is
+            irrelevant, but it is initialised to -1.  Inside always-list, the
+            value is 1 if an error occurred in the try-list, else 0.  If
+            TRY_BLOCK_ERROR is set to 0 during the always-list, the error
+            condition caused by the try-list is reset, and shell execution
+            continues normally after the end of always-list.  Altering the
+            value during the try-list is not useful (unless this forms part of
+            an enclosing always block).
+
+            Regardless of TRY_BLOCK_ERROR, after the end of always-list the
+            normal shell status $? is the value returned from try-list.  This
+            will be non-zero if there was an error, even if TRY_BLOCK_ERROR was
+            set to zero.
+
+            The following executes the given code, ignoring any errors it
+            causes.  This is an alternative to the usual convention of
+            protecting code by executing it in a subshell.
+
+                   {
+                       # code which may cause an error
+                     } always {
+                       # This code is executed regardless of the error.
+                       (( TRY_BLOCK_ERROR = 0 ))
+                   }
+                   # The error condition has been reset.
+
+            When a try block occurs outside of any function, a return or a exit
+            encountered in try-list does not cause the execution of
+            always-list.  Instead, the shell exits immediately after any EXIT
+            trap has been executed.  Otherwise, a return command encountered in
+            try-list will cause the execution of always-list, just like break
+            and continue.
+
+     function [ -T ] word ... [ () ] [ term ] { list }
+     word ... () [ term ] { list }
+     word ... () [ term ] command
+            where term is one or more newline or ;.  Define a function which is
+            referenced by any one of word.  Normally, only one word is
+            provided; multiple words are usually only useful for setting traps.
+            The body of the function is the list between the { and }.  See the
+            section ‘Functions'.
+
+            The options of function have the following meanings:
+
+            -T     Enable tracing for this function, as though with functions
+                   -T.  See the documentation of the -f option to the typeset
+                   builtin, in zshbuiltins(1).
+
+            If the option SH_GLOB is set for compatibility with other shells,
+            then whitespace may appear between the left and right parentheses
+            when there is a single word;  otherwise, the parentheses will be
+            treated as forming a globbing pattern in that case.
+
+            In any of the forms above, a redirection may appear outside the
+            function body, for example
+
+                   func() { ... } 2>&1
+
+            The redirection is stored with the function and applied whenever
+            the function is executed.  Any variables in the redirection are
+            expanded at the point the function is executed, but outside the
+            function scope.
+
+     time [ pipeline ]
+            The pipeline is executed, and timing statistics are reported on the
+            standard error in the form specified by the TIMEFMT parameter.  If
+            pipeline is omitted, print statistics about the shell process and
+            its children.
+
+     [[ exp ]]
+            Evaluates the conditional expression exp and return a zero exit
+            status if it is true.  See the section ‘Conditional Expressions'
+            for a description of exp.
+

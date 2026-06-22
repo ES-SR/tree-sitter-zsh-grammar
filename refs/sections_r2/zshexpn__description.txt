@@ -1,0 +1,34 @@
+     The following types of expansions are performed in the indicated order in
+     five steps:
+
+     History Expansion
+            This is performed only in interactive shells.
+
+     Alias Expansion
+            Aliases are expanded immediately before the command line is parsed
+            as explained under Aliasing in zshmisc(1).
+
+     Process Substitution
+     Parameter Expansion
+     Command Substitution
+     Arithmetic Expansion
+     Brace Expansion
+            These five are performed in left-to-right fashion.  On each
+            argument, any of the five steps that are needed are performed one
+            after the other.  Hence, for example, all the parts of parameter
+            expansion are completed before command substitution is started.
+            After these expansions, all unquoted occurrences of the characters
+            ‘\',‘'' and ‘"' are removed.
+
+     Filename Expansion
+            If the SH_FILE_EXPANSION option is set, the order of expansion is
+            modified for compatibility with sh and ksh.  In that case filename
+            expansion is performed immediately after alias expansion, preceding
+            the set of five expansions mentioned above.
+
+     Filename Generation
+            This expansion, commonly referred to as globbing, is always done
+            last.
+
+     The following sections explain the types of expansion in detail.
+

@@ -1,0 +1,361 @@
+     Patterns used for filename generation may end in a list of qualifiers
+     enclosed in parentheses.  The qualifiers specify which filenames that
+     otherwise match the given pattern will be inserted in the argument list.
+
+     If the option BARE_GLOB_QUAL is set, then a trailing set of parentheses
+     containing no ‘|' or ‘(' characters (or ‘~' if it is special) is taken as
+     a set of glob qualifiers.  A glob subexpression that would normally be
+     taken as glob qualifiers, for example ‘(^x)', can be forced to be treated
+     as part of the glob pattern by doubling the parentheses, in this case
+     producing ‘((^x))'.
+
+     If the option EXTENDED_GLOB is set, a different syntax for glob qualifiers
+     is available, namely ‘(#qx)' where x is any of the same glob qualifiers
+     used in the other format.  The qualifiers must still appear at the end of
+     the pattern.  However, with this syntax multiple glob qualifiers may be
+     chained together.  They are treated as a logical AND of the individual
+     sets of flags.  Also, as the syntax is unambiguous, the expression will be
+     treated as glob qualifiers just as long any parentheses contained within
+     it are balanced; appearance of ‘|', ‘(' or ‘~' does not negate the effect.
+     Note that qualifiers will be recognised in this form even if a bare glob
+     qualifier exists at the end of the pattern, for example ‘*(#q*)(.)' will
+     recognise executable regular files if both options are set; however, mixed
+     syntax should probably be avoided for the sake of clarity.  Note that
+     within conditions using the ‘[[' form the presence of a parenthesised
+     expression (#q...) at the end of a string indicates that globbing should
+     be performed; the expression may include glob qualifiers, but it is also
+     valid if it is simply (#q).  This does not apply to the right hand side of
+     pattern match operators as the syntax already has special significance.
+
+     A qualifier may be any one of the following:
+
+     /      directories
+
+     F      ‘full' (i.e. non-empty) directories.  Note that the opposite sense
+            (^F) expands to empty directories and all non-directories.  Use
+            (/^F) for empty directories.
+
+     .      plain files
+
+     @      symbolic links
+
+     =      sockets
+
+     p      named pipes (FIFOs)
+
+     *      executable plain files (0100 or 0010 or 0001)
+
+     %      device files (character or block special)
+
+     %b     block special files
+
+     %c     character special files
+
+     r      owner-readable files (0400)
+
+     w      owner-writable files (0200)
+
+     x      owner-executable files (0100)
+
+     A      group-readable files (0040)
+
+     I      group-writable files (0020)
+
+     E      group-executable files (0010)
+
+     R      world-readable files (0004)
+
+     W      world-writable files (0002)
+
+     X      world-executable files (0001)
+
+     s      setuid files (04000)
+
+     S      setgid files (02000)
+
+     t      files with the sticky bit (01000)
+
+     fspec  files with access rights matching spec. This spec may be a octal
+            number optionally preceded by a ‘=', a ‘+', or a ‘-'. If none of
+            these characters is given, the behavior is the same as for ‘='. The
+            octal number describes the mode bits to be expected, if combined
+            with a ‘=', the value given must match the file-modes exactly, with
+            a ‘+', at least the bits in the given number must be set in the
+            file-modes, and with a ‘-', the bits in the number must not be set.
+            Giving a ‘?' instead of a octal digit anywhere in the number
+            ensures that the corresponding bits in the file-modes are not
+            checked, this is only useful in combination with ‘='.
+
+            If the qualifier ‘f' is followed by any other character anything up
+            to the next matching character (‘[', ‘{', and ‘<' match ‘]', ‘}',
+            and ‘>' respectively, any other character matches itself) is taken
+            as a list of comma-separated sub-specs. Each sub-spec may be either
+            an octal number as described above or a list of any of the
+            characters ‘u', ‘g', ‘o', and ‘a', followed by a ‘=', a ‘+', or a
+            ‘-', followed by a list of any of the characters ‘r', ‘w', ‘x',
+            ‘s', and ‘t', or an octal digit. The first list of characters
+            specify which access rights are to be checked. If a ‘u' is given,
+            those for the owner of the file are used, if a ‘g' is given, those
+            of the group are checked, a ‘o' means to test those of other users,
+            and the ‘a' says to test all three groups. The ‘=', ‘+', and ‘-'
+            again says how the modes are to be checked and have the same
+            meaning as described for the first form above. The second list of
+            characters finally says which access rights are to be expected: ‘r'
+            for read access, ‘w' for write access, ‘x' for the right to execute
+            the file (or to search a directory), ‘s' for the setuid and setgid
+            bits, and ‘t' for the sticky bit.
+
+            Thus, ‘*(f70?)' gives the files for which the owner has read,
+            write, and execute permission, and for which other group members
+            have no rights, independent of the permissions for other users. The
+            pattern ‘*(f-100)' gives all files for which the owner does not
+            have execute permission, and ‘*(f:gu+w,o-rx:)' gives the files for
+            which the owner and the other members of the group have at least
+            write permission, and for which other users don't have read or
+            execute permission.
+
+     estring
+     +cmd   The string will be executed as shell code.  The filename will be
+            included in the list if and only if the code returns a zero status
+            (usually the status of the last command).
+
+            In the first form, the first character after the ‘e' will be used
+            as a separator and anything up to the next matching separator will
+            be taken  as the string; ‘[', ‘{', and ‘<' match ‘]', ‘}', and ‘>',
+            respectively, while any other character matches itself. Note that
+            expansions must be quoted in the string to prevent them from being
+            expanded before globbing is done.  string is then executed as shell
+            code.  The string globqual is appended to the array
+            zsh_eval_context the duration of execution.
+
+            During the execution of string the filename currently being tested
+            is available in the parameter REPLY; the parameter may be altered
+            to a string to be inserted into the list instead of the original
+            filename.  In addition, the parameter reply may be set to an array
+            or a string, which overrides the value of REPLY.  If set to an
+            array, the latter is inserted into the command line word by word.
+
+            For example, suppose a directory contains a single file ‘lonely'.
+            Then the expression ‘*(e:'reply=(${REPLY}{1,2})':)' will cause the
+            words ‘lonely1' and ‘lonely2' to be inserted into the command line.
+            Note the quoting of string.
+
+            The form +cmd has the same effect, but no delimiters appear around
+            cmd.  Instead, cmd is taken as the longest sequence of characters
+            following the + that are alphanumeric or underscore.  Typically cmd
+            will be the name of a shell function that contains the appropriate
+            test.  For example,
+
+                   nt() { [[ $REPLY -nt $NTREF ]] }
+                   NTREF=reffile
+                   ls -ld -- *(+nt)
+
+            lists all files in the directory that have been modified more
+            recently than reffile.
+
+     ddev   files on the device dev
+
+     l[-|+]ct
+            files having a link count less than ct (-), greater than ct (+), or
+            equal to ct
+
+     U      files owned by the effective user ID
+
+     G      files owned by the effective group ID
+
+     uid    files owned by user ID id if that is a number.  Otherwise, id
+            specifies a user name: the character after the ‘u' will be taken as
+            a separator and the string between it and the next matching
+            separator will be taken as a user name.  The starting separators
+            ‘[', ‘{', and ‘<' match the final separators ‘]', ‘}', and ‘>',
+            respectively; any other character matches itself.  The selected
+            files are those owned by this user.  For example, ‘u:foo:' or
+            ‘u[foo]' selects files owned by user ‘foo'.
+
+     gid    like uid but with group IDs or names
+
+     a[Mwhms][-|+]n
+            files accessed exactly n days ago.  Files accessed within the last
+            n days are selected using a negative value for n (-n).  Files
+            accessed more than n days ago are selected by a positive n value
+            (+n).  Optional unit specifiers ‘M', ‘w', ‘h', ‘m' or ‘s' (e.g.
+            ‘ah5') cause the check to be performed with months (of 30 days),
+            weeks, hours, minutes or seconds instead of days, respectively.  An
+            explicit ‘d' for days is also allowed.
+
+            Any fractional part of the difference between the access time and
+            the current part in the appropriate units is ignored in the
+            comparison.  For instance, ‘echo *(ah-5)' would echo files accessed
+            within the last five hours, while ‘echo *(ah+5)' would echo files
+            accessed at least six hours ago, as times strictly between five and
+            six hours are treated as five hours.
+
+     m[Mwhms][-|+]n
+            like the file access qualifier, except that it uses the file
+            modification time.
+
+     c[Mwhms][-|+]n
+            like the file access qualifier, except that it uses the file inode
+            change time.
+
+     L[+|-]n
+            files less than n bytes (-), more than n bytes (+), or exactly n
+            bytes in length.
+
+            If this flag is directly followed by a size specifier ‘k' (‘K'),
+            ‘m' (‘M'), or ‘p' (‘P') (e.g. ‘Lk-50') the check is performed with
+            kilobytes, megabytes, or blocks (of 512 bytes) instead.  (On some
+            systems additional specifiers are available for gigabytes, ‘g' or
+            ‘G', and terabytes, ‘t' or ‘T'.) If a size specifier is used a file
+            is regarded as "exactly" the size if the file size rounded up to
+            the next unit is equal to the test size.  Hence ‘*(Lm1)' matches
+            files from 1 byte up to 1 Megabyte inclusive.  Note also that the
+            set of files "less than" the test size only includes files that
+            would not match the equality test; hence ‘*(Lm-1)' only matches
+            files of zero size.
+
+     ^      negates all qualifiers following it
+
+     -      toggles between making the qualifiers work on symbolic links (the
+            default) and the files they point to, if any; any symbolic link for
+            whose target the ‘stat' system call fails (whatever the cause of
+            the failure) is treated as a file in its own right
+
+     M      sets the MARK_DIRS option for the current pattern
+
+     T      appends a trailing qualifier mark to the filenames, analogous to
+            the LIST_TYPES option, for the current pattern (overrides M)
+
+     N      sets the NULL_GLOB option for the current pattern
+
+     D      sets the GLOB_DOTS option for the current pattern
+
+     n      sets the NUMERIC_GLOB_SORT option for the current pattern
+
+     Yn     enables short-circuit mode: the pattern will expand to at most n
+            filenames.  If more than n matches exist, only the first n matches
+            in directory traversal order will be considered.
+
+            Implies oN when no oc qualifier is used.
+
+     oc     specifies how the names of the files should be sorted. The
+            following values of c sort in the following ways:
+
+            n      By name.
+            L      By the size (length) of the files.
+            l      By number of links.
+            a      By time of last access, youngest first.
+            m      By time of last modification, youngest first.
+            c      By time of last inode change, youngest first.
+            d      By directories: files in subdirectories appear before those
+                   in the current directory at each level of the search -- this
+                   is best combined with other criteria, for example ‘odon' to
+                   sort on names for files within the same directory.
+            N      No sorting is performed.
+            estring
+            +cmd   Sort by shell code (see below).
+
+            Note that the modifiers ^ and - are used, so ‘*(^-oL)' gives a list
+            of all files sorted by file size in descending order, following any
+            symbolic links.  Unless oN is used, multiple order specifiers may
+            occur to resolve ties.
+
+            The default sorting is n (by name) unless the Y glob qualifier is
+            used, in which case it is N (unsorted).
+
+            oe and o+ are special cases; they are each followed by shell code,
+            delimited as for the e glob qualifier and the + glob qualifier
+            respectively (see above).  The code is executed for each matched
+            file with the parameter REPLY set to the name of the file on entry
+            and globsort appended to zsh_eval_context.  The code should modify
+            the parameter REPLY in some fashion.  On return, the value of the
+            parameter is used instead of the file name as the string on which
+            to sort.  Unlike other sort operators, oe and o+ may be repeated,
+            but note that the maximum number of sort operators of any kind that
+            may appear in any glob expression is 12.
+
+     Oc     like ‘o', but sorts in descending order; i.e. ‘*(^oc)' is the same
+            as ‘*(Oc)' and ‘*(^Oc)' is the same as ‘*(oc)'; ‘Od' puts files in
+            the current directory before those in subdirectories at each level
+            of the search.
+
+     [beg[,end]]
+            specifies which of the matched filenames should be included in the
+            returned list. The syntax is the same as for array subscripts. beg
+            and the optional end may be mathematical expressions. As in
+            parameter subscripting they may be negative to make them count from
+            the last match backward. E.g.: ‘*(-OL[1,3])' gives a list of the
+            names of the three largest files.
+
+     Pstring
+            The string will be prepended to each glob match as a separate word.
+            string is delimited in the same way as arguments to the e glob
+            qualifier described above.  The qualifier can be repeated; the
+            words are prepended separately so that the resulting command line
+            contains the words in the same order they were given in the list of
+            glob qualifiers.
+
+            A typical use for this is to prepend an option before all
+            occurrences of a file name; for example, the pattern ‘*(P:-f:)'
+            produces the command line arguments ‘-f file1 -f file2 ...'
+
+            If the modifier ^ is active, then string will be appended instead
+            of prepended.  Prepending and appending is done independently so
+            both can be used on the same glob expression; for example by
+            writing ‘*(P:foo:^P:bar:^P:baz:)' which produces the command line
+            arguments ‘foo baz file1 bar ...'
+
+     More than one of these lists can be combined, separated by commas. The
+     whole list matches if at least one of the sublists matches (they are
+     ‘or'ed, the qualifiers in the sublists are ‘and'ed).  Some qualifiers,
+     however, affect all matches generated, independent of the sublist in which
+     they are given.  These are the qualifiers ‘M', ‘T', ‘N', ‘D', ‘n', ‘o',
+     ‘O' and the subscripts given in brackets (‘[...]').
+
+     If a ‘:' appears in a qualifier list, the remainder of the expression in
+     parenthesis is interpreted as a modifier (see the section ‘Modifiers' in
+     the section ‘History Expansion').  Each modifier must be introduced by a
+     separate ‘:'.  Note also that the result after modification does not have
+     to be an existing file.  The name of any existing file can be followed by
+     a modifier of the form ‘(:...)' even if no actual filename generation is
+     performed, although note that the presence of the parentheses causes the
+     entire expression to be subjected to any global pattern matching options
+     such as NULL_GLOB. Thus:
+
+            ls -ld -- *(-/)
+
+     lists all directories and symbolic links that point to directories, and
+
+            ls -ld -- *(-@)
+
+     lists all broken symbolic links, and
+
+            ls -ld -- *(%W)
+
+     lists all world-writable device files in the current directory, and
+
+            ls -ld -- *(W,X)
+
+     lists all files in the current directory that are world-writable or
+     world-executable, and
+
+            print -rC1 /tmp/foo*(u0^@:t)
+
+     outputs the basename of all root-owned files beginning with the string
+     ‘foo' in /tmp, ignoring symlinks, and
+
+            ls -ld -- *.*~(lex|parse).[ch](^D^l1)
+
+     lists all files having a link count of one whose names contain a dot (but
+     not those starting with a dot, since GLOB_DOTS is explicitly switched off)
+     except for lex.c, lex.h, parse.c and parse.h.
+
+            print -rC1 b*.pro(#q:s/pro/shmo/)(#q.:s/builtin/shmiltin/)
+
+     demonstrates how colon modifiers and other qualifiers may be chained
+     together.  The ordinary qualifier ‘.' is applied first, then the colon
+     modifiers in order from left to right.  So if EXTENDED_GLOB is set and the
+     base pattern matches the regular file builtin.pro, the shell will print
+     ‘shmiltin.shmo'.
+
+zsh 5.9.1                         May 31, 2026                       ZSHEXPN(1)

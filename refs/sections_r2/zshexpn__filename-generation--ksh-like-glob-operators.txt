@@ -1,0 +1,22 @@
+     If the KSH_GLOB option is set, the effects of parentheses can be modified
+     by a preceding ‘@', ‘*', ‘+', ‘?' or ‘!'.  This character need not be
+     unquoted to have special effects, but the ‘(' must be.
+
+     @(...)
+            Match the pattern in the parentheses.  (Like ‘(...)'.)
+
+     *(...)
+            Match any number of occurrences.  (Like ‘(...)#', except that
+            recursive directory searching is not supported.)
+
+     +(...)
+            Match at least one occurrence.  (Like ‘(...)##', except that
+            recursive directory searching is not supported.)
+
+     ?(...)
+            Match zero or one occurrence.  (Like ‘(|...)'.)
+
+     !(...)
+            Match anything but the expression in parentheses.  (Like
+            ‘(^(...))'.)
+

@@ -1,0 +1,5 @@
+     If a word begins with an unquoted ‘=' and the EQUALS option is set, the
+     remainder of the word is taken as the name of a command.  If a command
+     exists by that name, the word is replaced by the full pathname of the
+     command.
+
