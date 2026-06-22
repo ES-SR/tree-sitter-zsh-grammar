@@ -1,0 +1,22 @@
+     A character may be quoted (that is, made to stand for itself) by preceding
+     it with a ‘\'.  ‘\' followed by a newline is ignored.
+
+     A string enclosed between ‘$'' and ‘'' is processed the same way as the
+     string arguments of the print builtin, and the resulting string is
+     considered to be entirely quoted.  A literal ‘'' character can be included
+     in the string by using the ‘\'' escape.
+
+     All characters enclosed between a pair of single quotes ('') that is not
+     preceded by a ‘$' are quoted.  A single quote cannot appear within single
+     quotes unless the option RC_QUOTES is set, in which case a pair of single
+     quotes are turned into a single quote.  For example,
+
+            print ''''
+
+     outputs nothing apart from a newline if RC_QUOTES is not set, but one
+     single quote if it is set.
+
+     Inside double quotes (""), parameter and command substitution occur, and
+     ‘\' quotes the characters ‘\', ‘‘', ‘"', ‘$', and the first character of
+     $histchars (default ‘!').
+

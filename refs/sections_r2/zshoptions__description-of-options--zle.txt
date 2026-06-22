@@ -1,0 +1,46 @@
+     BEEP (+B) <D>
+            Beep on error in ZLE.
+
+     COMBINING_CHARS
+            Assume that the terminal displays combining characters correctly.
+            Specifically, if a base alphanumeric character is followed by one
+            or more zero-width punctuation characters, assume that the
+            zero-width characters will be displayed as modifications to the
+            base character within the same width.  Not all terminals handle
+            this.  If this option is not set, zero-width characters are
+            displayed separately with special mark-up.
+
+            If this option is set, the pattern test [[:WORD:]] matches a
+            zero-width punctuation character on the assumption that it will be
+            used as part of a word in combination with a word character.
+            Otherwise the base shell does not handle combining characters
+            specially.
+
+     EMACS  If ZLE is loaded, turning on this option has the equivalent effect
+            of ‘bindkey -e'.  In addition, the VI option is unset.  Turning it
+            off has no effect.  The option setting is not guaranteed to reflect
+            the current keymap.  This option is provided for compatibility;
+            bindkey is the recommended interface.
+
+     OVERSTRIKE
+            Start up the line editor in overstrike mode.
+
+     SINGLE_LINE_ZLE (-M) <K>
+            Use single-line command line editing instead of multi-line.
+
+            Note that although this is on by default in ksh emulation it only
+            provides superficial compatibility with the ksh line editor and
+            reduces the effectiveness of the zsh line editor.  As it has no
+            effect on shell syntax, many users may wish to disable this option
+            when using ksh emulation interactively.
+
+     VI     If ZLE is loaded, turning on this option has the equivalent effect
+            of ‘bindkey -v'.  In addition, the EMACS option is unset.  Turning
+            it off has no effect.  The option setting is not guaranteed to
+            reflect the current keymap.  This option is provided for
+            compatibility; bindkey is the recommended interface.
+
+     ZLE (-Z)
+            Use the zsh line editor.  Set by default in interactive shells
+            connected to a terminal.
+

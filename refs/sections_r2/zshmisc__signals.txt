@@ -1,0 +1,14 @@
+     The INT and QUIT signals for an invoked command are ignored if the command
+     is followed by ‘&' and the MONITOR option is not active.  The shell itself
+     always ignores the QUIT signal.  Otherwise, signals have the values
+     inherited by the shell from its parent (but see the TRAPNAL special
+     functions in the section ‘Functions').
+
+     Certain jobs are run asynchronously by the shell other than those
+     explicitly put into the background; even in cases where the shell would
+     usually wait for such jobs, an explicit exit command or exit due to the
+     option ERR_EXIT will cause the shell to exit without waiting.  Examples of
+     such asynchronous jobs are process substitution, see the section PROCESS
+     SUBSTITUTION in the zshexpn(1) manual page, and the handler processes for
+     multios, see the section MULTIOS in the zshmisc(1) manual page.
+

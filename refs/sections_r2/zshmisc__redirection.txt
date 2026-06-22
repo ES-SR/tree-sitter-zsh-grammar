@@ -1,0 +1,133 @@
+     If a command is followed by & and job control is not active, then the
+     default standard input for the command is the empty file /dev/null.
+     Otherwise, the environment for the execution of a command contains the
+     file descriptors of the invoking shell as modified by input/output
+     specifications.
+
+     The following may appear anywhere in a simple command or may precede or
+     follow a complex command.  Expansion occurs before word or digit is used
+     except as noted below.  If the result of substitution on word produces
+     more than one filename, redirection occurs for each separate filename in
+     turn.
+
+     < word
+            Open file word for reading as standard input.  It is an error to
+            open a file in this fashion if it does not exist.
+
+     <> word
+            Open file word for reading and writing as standard input.  If the
+            file does not exist then it is created.
+
+     > word
+            Open file word for writing as standard output.  If the file does
+            not exist then it is created.  If the file exists, and the CLOBBER
+            option is unset, this causes an error; otherwise, it is truncated
+            to zero length.
+
+     >| word
+     >! word
+            Same as >, except that the file is truncated to zero length if it
+            exists, regardless of CLOBBER.
+
+     >> word
+            Open file word for writing in append mode as standard output.  If
+            the file does not exist, and the CLOBBER and APPEND_CREATE options
+            are both unset, this causes an error; otherwise, the file is
+            created.
+
+     >>| word
+     >>! word
+            Same as >>, except that the file is created if it does not exist,
+            regardless of CLOBBER and APPEND_CREATE.
+
+     <<[-] word
+            The shell input is read up to a line that is the same as word, or
+            to an end-of-file.  No parameter expansion, command substitution or
+            filename generation is performed on word.  The resulting document,
+            called a here-document, becomes the standard input.
+
+            If any character of word is quoted with single or double quotes or
+            a ‘\', no interpretation is placed upon the characters of the
+            document.  Otherwise, parameter and command substitution occurs,
+            ‘\' followed by a newline is removed, and ‘\' must be used to quote
+            the characters ‘\', ‘$', ‘‘' and the first character of word.
+
+            Note that word itself does not undergo shell expansion.  Backquotes
+            in word do not have their usual effect; instead they behave
+            similarly to double quotes, except that the backquotes themselves
+            are passed through unchanged.  (This information is given for
+            completeness and it is not recommended that backquotes be used.)
+            Quotes in the form $'...' have their standard effect of expanding
+            backslashed references to special characters.
+
+            If <<- is used, then all leading tabs are stripped from word and
+            from the document.
+
+     <<< word
+            Perform shell expansion on word and pass the result to standard
+            input.  This is known as a here-string.  Compare the use of word in
+            here-documents above, where word does not undergo shell expansion.
+            The result will have a trailing newline after it.
+
+     <& number
+     >& number
+            The standard input/output is duplicated from file descriptor number
+            (see dup2(2)).
+
+     <& -
+     >& -   Close the standard input/output.
+
+     <& p
+     >& p   The input/output from/to the coprocess is moved to the standard
+            input/output.
+
+     >& word
+     &> word
+            (Except where ‘>& word' matches one of the above syntaxes; ‘&>' can
+            always be used to avoid this ambiguity.)  Redirects both standard
+            output and standard error (file descriptor 2) in the manner of ‘>
+            word'.  Note that this does not have the same effect as ‘> word
+            2>&1' in the presence of multios (see the section below).
+
+     >&| word
+     >&! word
+     &>| word
+     &>! word
+            Redirects both standard output and standard error (file descriptor
+            2) in the manner of ‘>| word'.
+
+     >>& word
+     &>> word
+            Redirects both standard output and standard error (file descriptor
+            2) in the manner of ‘>> word'.
+
+     >>&| word
+     >>&! word
+     &>>| word
+     &>>! word
+            Redirects both standard output and standard error (file descriptor
+            2) in the manner of ‘>>| word'.
+
+     If one of the above is preceded by a digit, then the file descriptor
+     referred to is that specified by the digit instead of the default 0 or 1.
+     The order in which redirections are specified is significant.  The shell
+     evaluates each redirection in terms of the (file descriptor, file)
+     association at the time of evaluation.  For example:
+
+            ... 1>fname 2>&1
+
+     first associates file descriptor 1 with file fname.  It then associates
+     file descriptor 2 with the file associated with file descriptor 1 (that
+     is, fname).  If the order of redirections were reversed, file descriptor 2
+     would be associated with the terminal (assuming file descriptor 1 had
+     been) and then file descriptor 1 would be associated with file fname.
+
+     The ‘|&' command separator described in Simple Commands & Pipelines in
+     zshmisc(1) is a shorthand for ‘2>&1 |'.
+
+     The various forms of process substitution, ‘<(list)', and ‘=(list)' for
+     input and ‘>(list)' for output, are often used together with redirection.
+     For example, if word in an output redirection is of the form ‘>(list)'
+     then the output is piped to the command represented by list.  See Process
+     Substitution in zshexpn(1).
+

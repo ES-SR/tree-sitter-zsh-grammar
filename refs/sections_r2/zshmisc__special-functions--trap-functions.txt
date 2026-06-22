@@ -1,0 +1,81 @@
+     The functions below are treated specially but do not have corresponding
+     hook arrays.
+
+     TRAPNAL
+            If defined and non-null, this function will be executed whenever
+            the shell catches a signal SIGNAL, where NAL is a signal name as
+            specified for the kill builtin.  The signal number will be passed
+            as the first parameter to the function.
+
+            If a function of this form is defined and null, the shell and
+            processes spawned by it will ignore SIGNAL.
+
+            The return status from the function is handled specially.  If it is
+            zero, the signal is assumed to have been handled, and execution
+            continues normally.  Otherwise, the shell will behave as
+            interrupted except that the return status of the trap is retained.
+
+            Programs terminated by uncaught signals typically return the status
+            128 plus the signal number.  Hence the following causes the handler
+            for SIGINT to print a message, then mimic the usual effect of the
+            signal.
+
+                   TRAPINT() {
+                     print "Caught SIGINT, aborting."
+                     return $(( 128 + $1 ))
+                   }
+
+            The functions TRAPZERR, TRAPDEBUG and TRAPEXIT are never executed
+            inside other traps.
+
+     TRAPDEBUG
+            If the option DEBUG_BEFORE_CMD is set (as it is by default),
+            executed before each command; otherwise executed after each
+            command.  See the description of the trap builtin in zshbuiltins(1)
+            for details of additional features provided in debug traps.
+
+     TRAPEXIT
+            Executed when the shell exits, or when the current function exits
+            if defined inside a function.  The value of $? at the start of
+            execution is the exit status of the shell or the return status of
+            the function exiting.
+
+     TRAPZERR
+            Executed whenever a command has a non-zero exit status.  However,
+            the function is not executed if the command occurred in a sublist
+            followed by ‘&&' or ‘||'; only the final command in a sublist of
+            this type causes the trap to be executed.  The function TRAPERR
+            acts the same as TRAPZERR on systems where there is no SIGERR (this
+            is the usual case).
+
+     The functions beginning ‘TRAP' may alternatively be defined with the trap
+     builtin:  this may be preferable for some uses.  Setting a trap with one
+     form removes any trap of the other form for the same signal; removing a
+     trap in either form removes all traps for the same signal.  The forms
+
+            TRAPNAL() {
+             # code
+            }
+
+     ('function traps') and
+
+            trap '
+             # code
+            ' NAL
+
+     ('list traps') are equivalent in most ways, the exceptions being the
+     following:
+
+     •      Function traps have all the properties of normal functions,
+            appearing in the list of functions and being called with their own
+            function context rather than the context where the trap was
+            triggered.
+
+     •      The return status from function traps is special, whereas a return
+            from a list trap causes the surrounding context to return with the
+            given status.
+
+     •      Function traps are not reset within subshells, in accordance with
+            zsh behaviour; list traps are reset, in accordance with POSIX
+            behaviour.
+

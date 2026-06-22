@@ -1,0 +1,268 @@
+     APPEND_CREATE <K> <S>
+            This option only applies when NO_CLOBBER (-C) is in effect.
+
+            If this option is not set, the shell will report an error when a
+            append redirection (>>) is used on a file that does not already
+            exists (the traditional zsh behaviour of NO_CLOBBER).  If the
+            option is set, no error is reported (POSIX behaviour).
+
+     BASH_REMATCH
+            When set, matches performed with the =~ operator will set the
+            BASH_REMATCH array variable, instead of the default MATCH and match
+            variables.  The first element of the BASH_REMATCH array will
+            contain the entire matched text and subsequent elements will
+            contain extracted substrings.  This option makes more sense when
+            KSH_ARRAYS is also set, so that the entire matched portion is
+            stored at index 0 and the first substring is at index 1.  Without
+            this option, the MATCH variable contains the entire matched text
+            and the match array variable contains substrings.
+
+     BSD_ECHO <S>
+            Make the echo builtin compatible with the BSD echo(1) command.
+            This disables backslashed escape sequences in echo strings unless
+            the -e option is specified.
+
+     CONTINUE_ON_ERROR
+            If a fatal error is encountered (see the section ERRORS in
+            zshmisc(1)), and the code is running in a script, the shell will
+            resume execution at the next statement in the script at the top
+            level, in other words outside all functions or shell constructs
+            such as loops and conditions.  This mimics the behaviour of
+            interactive shells, where the shell returns to the line editor to
+            read a new command; it was the normal behaviour in versions of zsh
+            before 5.0.1.
+
+     CSH_JUNKIE_HISTORY <C>
+            A history reference without an event specifier will always refer to
+            the previous command.  Without this option, such a history
+            reference refers to the same event as the previous history
+            reference on the current command line, defaulting to the previous
+            command.
+
+     CSH_JUNKIE_LOOPS <C>
+            Allow loop bodies to take the form ‘list; end' instead of ‘do list;
+            done'.
+
+     CSH_JUNKIE_QUOTES <C>
+            Changes the rules for single- and double-quoted text to match that
+            of csh.  These require that embedded newlines be preceded by a
+            backslash; unescaped newlines will cause an error message.  In
+            double-quoted strings, it is made impossible to escape ‘$', ‘‘' or
+            ‘"' (and ‘\' itself no longer needs escaping).  Command
+            substitutions are only expanded once, and cannot be nested.
+
+     CSH_NULLCMD <C>
+            Do not use the values of NULLCMD and READNULLCMD when running
+            redirections with no command.  This make such redirections fail
+            (see the section ‘Redirection').
+
+     KSH_ARRAYS <K> <S>
+            Emulate ksh array handling as closely as possible.  If this option
+            is set, array elements are numbered from zero, an array parameter
+            without subscript refers to the first element instead of the whole
+            array, and braces are required to delimit a subscript (‘${path[2]}'
+            rather than just ‘$path[2]') or to apply modifiers to any parameter
+            (‘${PWD:h}' rather than ‘$PWD:h').
+
+     KSH_AUTOLOAD <K> <S>
+            Emulate ksh function autoloading.  This means that when a function
+            is autoloaded, the corresponding file is merely executed, and must
+            define the function itself.  (By default, the function is defined
+            to the contents of the file.  However, the most common ksh-style
+            case - of the file containing only a simple definition of the
+            function - is always handled in the ksh-compatible manner.)
+
+     KSH_OPTION_PRINT <K>
+            Alters the way options settings are printed: instead of separate
+            lists of set and unset options, all options are shown, marked ‘on'
+            if they are in the non-default state, ‘off' otherwise.
+
+     KSH_TYPESET
+            This option is now obsolete: a better appropximation to the
+            behaviour of other shells is obtained with the reserved word
+            interface to declare, export, float, integer, local, readonly and
+            typeset.  Note that the option is only applied when the reserved
+            word interface is not in use.
+
+            Alters the way arguments to the typeset family of commands,
+            including declare, export, float, integer, local and readonly, are
+            processed.  Without this option, zsh will perform normal word
+            splitting after command and parameter expansion in arguments of an
+            assignment; with it, word splitting does not take place in those
+            cases.
+
+     KSH_ZERO_SUBSCRIPT
+            Treat use of a subscript of value zero in array or string
+            expressions as a reference to the first element, i.e. the element
+            that usually has the subscript 1.  Ignored if KSH_ARRAYS is also
+            set.
+
+            If neither this option nor KSH_ARRAYS is set, accesses to an
+            element of an array or string with subscript zero return an empty
+            element or string, while attempts to set element zero of an array
+            or string are treated as an error.  However, attempts to set an
+            otherwise valid subscript range that includes zero will succeed.
+            For example, if KSH_ZERO_SUBSCRIPT is not set,
+
+                   array[0]=(element)
+
+            is an error, while
+
+                   array[0,1]=(element)
+
+            is not and will replace the first element of the array.
+
+            This option is for compatibility with older versions of the shell
+            and is not recommended in new code.
+
+     POSIX_ALIASES <K> <S>
+            When this option is set, reserved words are not candidates for
+            alias expansion:  it is still possible to declare any of them as an
+            alias, but the alias will never be expanded.  Reserved words are
+            described in the section RESERVED WORDS in zshmisc(1).
+
+            Alias expansion takes place while text is being read; hence when
+            this option is set it does not take effect until the end of any
+            function or other piece of shell code parsed as one unit.  Note
+            this may cause differences from other shells even when the option
+            is in effect.  For example, when running a command with ‘zsh -c',
+            or even ‘zsh -o posixaliases -c', the entire command argument is
+            parsed as one unit, so aliases defined within the argument are not
+            available even in later lines.  If in doubt, avoid use of aliases
+            in non-interactive code.
+
+     POSIX_ARGZERO
+            This option may be used to temporarily disable FUNCTION_ARGZERO and
+            thereby restore the value of $0 to the name used to invoke the
+            shell (or as set by the -c command line option).  For compatibility
+            with previous versions of the shell, emulations use
+            NO_FUNCTION_ARGZERO instead of POSIX_ARGZERO, which may result in
+            unexpected scoping of $0 if the emulation mode is changed inside a
+            function or script.  To avoid this, explicitly enable POSIX_ARGZERO
+            in the emulate command:
+
+                   emulate sh -o POSIX_ARGZERO
+
+            Note that NO_POSIX_ARGZERO has no effect unless FUNCTION_ARGZERO
+            was already enabled upon entry to the function or script.
+
+     POSIX_BUILTINS <K> <S>
+            When this option is set the command builtin can be used to execute
+            shell builtin commands.  Parameter assignments specified before
+            shell functions and special builtins are kept after the command
+            completes unless the special builtin is prefixed with the command
+            builtin.  Special builtins are ., :, break, continue, declare,
+            eval, exit, export, integer, local, readonly, return, set, shift,
+            source, times, trap and unset.
+
+            In addition, various error conditions associated with the above
+            builtins or exec cause a non-interactive shell to exit and an
+            interactive shell to return to its top-level processing.
+
+            Furthermore, functions and shell builtins are not executed after an
+            exec prefix; the command to be executed must be an external command
+            found in the path.
+
+            Furthermore, the getopts builtin behaves in a POSIX-compatible
+            fashion in that the associated variable OPTIND is not made local to
+            functions, and its value is calculated differently to match other
+            shells.
+
+            Moreover, the warning and special exit code from [[ -o
+            non_existent_option ]] are suppressed.
+
+     POSIX_IDENTIFIERS <K> <S>
+            When this option is set, only the ASCII characters a to z, A to Z,
+            0 to 9 and _ may be used in identifiers (names of shell parameters
+            and modules).
+
+            In addition, setting this option limits the effect of parameter
+            substitution with no braces, so that the expression $# is treated
+            as the parameter $# even if followed by a valid parameter name.
+            When it is unset, zsh allows expressions of the form $#name to
+            refer to the length of $name, even for special variables, for
+            example in expressions such as $#- and $#*.
+
+            Another difference is that with the option set assignment to an
+            unset variable in arithmetic context causes the variable to be
+            created as a scalar rather than a numeric type.  So after ‘unset t;
+            (( t = 3 ))'. without POSIX_IDENTIFIERS set t has integer type,
+            while with it set it has scalar type.
+
+            When the option is unset and multibyte character support is enabled
+            (i.e. it is compiled in and the option MULTIBYTE is set), then
+            additionally any alphanumeric characters in the local character set
+            may be used in identifiers.  Note that scripts and functions
+            written with this feature are not portable, and also that both
+            options must be set before the script or function is parsed;
+            setting them during execution is not sufficient as the syntax
+            variable=value has already been parsed as a command rather than an
+            assignment.
+
+            If multibyte character support is not compiled into the shell this
+            option is ignored; all octets with the top bit set may be used in
+            identifiers.  This is non-standard but is the traditional zsh
+            behaviour.
+
+     POSIX_STRINGS <K> <S>
+            This option affects processing of quoted strings.  Currently it
+            only affects the behaviour of null characters, i.e. character 0 in
+            the portable character set corresponding to US ASCII.
+
+            When this option is not set, null characters embedded within
+            strings of the form $'...' are treated as ordinary characters. The
+            entire string is maintained within the shell and output to files
+            where necessary, although owing to restrictions of the library
+            interface the string is truncated at the null character in file
+            names, environment variables, or in arguments to external programs.
+
+            When this option is set, the $'...' expression is truncated at the
+            null character.  Note that remaining parts of the same string
+            beyond the termination of the quotes are not truncated.
+
+            For example, the command line argument a$'b\0c'd is treated with
+            the option off as the characters a, b, null, c, d, and with the
+            option on as the characters a, b, d.
+
+     POSIX_TRAPS <K> <S>
+            When this option is set, the usual zsh behaviour of executing traps
+            for EXIT on exit from shell functions is suppressed.  In that case,
+            manipulating EXIT traps always alters the global trap for exiting
+            the shell; the LOCAL_TRAPS option is ignored for the EXIT trap.
+
+            Also, a return statement executed in a trap with no argument passes
+            back from the function the value from the surrounding context, not
+            from code executed within the trap.
+
+            Furthermore, if a trap is set to be ignored, this state persists
+            when a subshell is entered.  Without the option, the trap would be
+            reset to its default state at this point.
+
+     SH_FILE_EXPANSION <K> <S>
+            Perform filename expansion (e.g., ~ expansion) before parameter
+            expansion, command substitution, arithmetic expansion and brace
+            expansion.  If this option is unset, it is performed after brace
+            expansion, so things like ‘~$USERNAME' and ‘~{pfalstad,rc}' will
+            work.
+
+     SH_NULLCMD <K> <S>
+            Do not use the values of NULLCMD and READNULLCMD when doing
+            redirections, use ‘:' instead (see the section ‘Redirection').
+
+     SH_OPTION_LETTERS <K> <S>
+            If this option is set the shell tries to interpret single letter
+            options (which are used with set and setopt) like ksh does.  This
+            also affects the value of the - special parameter.
+
+     SH_WORD_SPLIT (-y) <K> <S>
+            Causes field splitting to be performed on unquoted parameter
+            expansions.  Note that this option has nothing to do with word
+            splitting.  (See zshexpn(1).)
+
+     TRAPS_ASYNC
+            While waiting for a program to exit, handle signals and run traps
+            immediately.  Otherwise the trap is run after a child process has
+            exited.  Note this does not affect the point at which traps are run
+            for any case other than when the shell is waiting for a child
+            process.
+

@@ -1,0 +1,246 @@
+     BAD_PATTERN (+2) <C> <Z>
+            If a pattern for filename generation is badly formed, print an
+            error message.  (If this option is unset, the pattern will be left
+            unchanged.)
+
+     BARE_GLOB_QUAL <Z>
+            In a glob pattern, treat a trailing set of parentheses as a
+            qualifier list, if it contains no ‘|', ‘(' or (if special) ‘~'
+            characters.  See the section ‘Filename Generation'.
+
+     BRACE_CCL
+            Expand expressions in braces which would not otherwise undergo
+            brace expansion to a lexically ordered list of all the characters.
+            See the section ‘Brace Expansion'.
+
+     CASE_GLOB <D>
+            Make globbing (filename generation) sensitive to case.  Note that
+            other uses of patterns are always sensitive to case.  If the option
+            is unset, the presence of any character which is special to
+            filename generation will cause case-insensitive matching.  For
+            example, cvs(/) can match the directory CVS owing to the presence
+            of the globbing flag (unless the option BARE_GLOB_QUAL is unset).
+
+     CASE_MATCH <D>
+            Make regular expressions using the zsh/regex module (including
+            matches with =~) sensitive to case.
+
+     CASE_PATHS
+            If CASE_PATHS is not set (the default), CASE_GLOB affects the
+            interpretation of every path component, whenever a special
+            character appears in any component.  When CASE_PATHS is set, file
+            path components that do not contain special filename generation
+            characters are always sensitive to case, thus restricting
+            NO_CASE_GLOB to components that contain globbing characters.
+
+            Note that if the filesystem itself is not sensitive to case, then
+            CASE_PATHS has no effect.
+
+     CSH_NULL_GLOB <C>
+            If a pattern for filename generation has no matches, delete the
+            pattern from the argument list; do not report an error unless all
+            the patterns in a command have no matches.  Overrides NOMATCH.
+
+     EQUALS <Z>
+            Perform = filename expansion.  (See the section ‘Filename
+            Expansion'.)
+
+     EXTENDED_GLOB
+            Treat the ‘#', ‘~' and ‘^' characters as part of patterns for
+            filename generation, etc.  (An initial unquoted ‘~' always produces
+            named directory expansion.)
+
+     FORCE_FLOAT
+            Constants in arithmetic evaluation will be treated as floating
+            point even without the use of a decimal point; the values of
+            integer variables will be converted to floating point when used in
+            arithmetic expressions.  Integers in any base will be converted.
+
+     GLOB (+F, ksh: +f) <D>
+            Perform filename generation (globbing).  (See the section ‘Filename
+            Generation'.)
+
+     GLOB_ASSIGN <C>
+            If this option is set, filename generation (globbing) is performed
+            on the right hand side of scalar parameter assignments of the form
+            ‘name=pattern (e.g. ‘foo=*').  If the result has more than one word
+            the parameter will become an array with those words as arguments.
+            This option is provided for backwards compatibility only: globbing
+            is always performed on the right hand side of array assignments of
+            the form ‘name=(value)' (e.g. ‘foo=(*)') and this form is
+            recommended for clarity; with this option set, it is not possible
+            to predict whether the result will be an array or a scalar.
+
+     GLOB_DOTS (-4)
+            Do not require a leading ‘.' in a filename to be matched
+            explicitly.
+
+     GLOB_STAR_SHORT
+            When this option is set and the default zsh-style globbing is in
+            effect, the pattern ‘**/*' can be abbreviated to ‘**' and the
+            pattern ‘***/*' can be abbreviated to ***.  Hence ‘**.c' finds a
+            file ending in .c in any subdirectory, and ‘***.c' does the same
+            while also following symbolic links.  A / immediately after the
+            ‘**' or ‘***' forces the pattern to be treated as the unabbreviated
+            form.
+
+     GLOB_SUBST <C> <K> <S>
+            Treat any characters resulting from parameter expansion as being
+            eligible for filename expansion and filename generation, and any
+            characters resulting from command substitution as being eligible
+            for filename generation.  Braces (and commas in between) do not
+            become eligible for expansion.
+
+     HIST_SUBST_PATTERN
+            Substitutions using the :s and :& history modifiers are performed
+            with pattern matching instead of string matching.  This occurs
+            wherever history modifiers are valid, including glob qualifiers and
+            parameters.  See the section ‘Modifiers' in zshexpn(1).
+
+     IGNORE_BRACES (-I) <S>
+            Do not perform brace expansion.  For historical reasons this also
+            includes the effect of the IGNORE_CLOSE_BRACES option.
+
+     IGNORE_CLOSE_BRACES
+            When neither this option nor IGNORE_BRACES is set, a sole close
+            brace character ‘}' is syntactically significant at any point on a
+            command line.  This has the effect that no semicolon or newline is
+            necessary before the brace terminating a function or current shell
+            construct.  When either option is set, a closing brace is
+            syntactically significant only in command position.  Unlike
+            IGNORE_BRACES, this option does not disable brace expansion.
+
+            For example, with both options unset a function may be defined in
+            the following fashion:
+
+                   args() { echo $# }
+
+            while if either option is set, this does not work and something
+            equivalent to the following is required:
+
+                   args() { echo $#; }
+
+     KSH_GLOB <K>
+            In pattern matching, the interpretation of parentheses is affected
+            by a preceding ‘@', ‘*', ‘+', ‘?' or ‘!'.  See the section
+            ‘Filename Generation'.
+
+     MAGIC_EQUAL_SUBST
+            All unquoted arguments of the form ‘anything=expression' appearing
+            after the command name have filename expansion (that is, where
+            expression has a leading ‘~' or ‘=') performed on expression as if
+            it were a parameter assignment.  The argument is not otherwise
+            treated specially; it is passed to the command as a single
+            argument, and not used as an actual parameter assignment.  For
+            example, in echo foo=~/bar:~/rod, both occurrences of ~ would be
+            replaced.  Note that this happens anyway with typeset and similar
+            statements.
+
+            This option respects the setting of the KSH_TYPESET option.  In
+            other words, if both options are in effect, arguments looking like
+            assignments will not undergo word splitting.
+
+     MARK_DIRS (-8, ksh: -X)
+            Append a trailing ‘/' to all directory names resulting from
+            filename generation (globbing).
+
+     MULTIBYTE <D>
+            Respect multibyte characters when found in strings.  When this
+            option is set, strings are examined using the system library to
+            determine how many bytes form a character, depending on the current
+            locale.  This affects the way characters are counted in pattern
+            matching, parameter values and various delimiters.
+
+            The option is on by default if the shell was compiled with
+            MULTIBYTE_SUPPORT; otherwise it is off by default and has no effect
+            if turned on.
+
+            If the option is off a single byte is always treated as a single
+            character.  This setting is designed purely for examining strings
+            known to contain raw bytes or other values that may not be
+            characters in the current locale.  It is not necessary to unset the
+            option merely because the character set for the current locale does
+            not contain multibyte characters.
+
+            The option does not affect the shell's editor,  which always uses
+            the locale to determine multibyte characters.  This is because the
+            character set displayed by the terminal emulator is independent of
+            shell settings.
+
+     NOMATCH (+3) <C> <Z>
+            If a pattern for filename generation has no matches, print an
+            error, instead of leaving it unchanged in the argument list.  This
+            also applies to file expansion of an initial ‘~' or ‘='.
+
+     NULL_GLOB (-G)
+            If a pattern for filename generation has no matches, delete the
+            pattern from the argument list instead of reporting an error.
+            Overrides NOMATCH.
+
+     NUMERIC_GLOB_SORT
+            If numeric filenames are matched by a filename generation pattern,
+            sort the filenames numerically rather than lexicographically.
+
+     RC_EXPAND_PARAM (-P)
+            Array expansions of the form ‘foo${xx}bar', where the parameter xx
+            is set to (a b c), are substituted with ‘fooabar foobbar foocbar'
+            instead of the default ‘fooa b cbar'.  Note that an empty array
+            will therefore cause all arguments to be removed.
+
+     REMATCH_PCRE
+            If set, regular expression matching with the =~ operator will use
+            Perl-Compatible Regular Expressions from the PCRE library.  (The
+            zsh/pcre module must be available.)  If not set, regular
+            expressions will use the extended regexp syntax provided by the
+            system libraries.
+
+     SH_GLOB <K> <S>
+            Disables the special meaning of ‘(', ‘|', ‘)' and '<' for globbing
+            the result of parameter and command substitutions, and in some
+            other places where the shell accepts patterns.  If SH_GLOB is set
+            but KSH_GLOB is not, the shell allows the interpretation of
+            subshell expressions enclosed in parentheses in some cases where
+            there is no space before the opening parenthesis, e.g. !(true) is
+            interpreted as if there were a space after the !.  This option is
+            set by default if zsh is invoked as sh or ksh.
+
+     UNSET (+u, ksh: +u) <K> <S> <Z>
+            Treat unset parameters as if they were empty when substituting, and
+            as if they were zero when reading their values in arithmetic
+            expansion and arithmetic commands.  Otherwise they are treated as
+            an error.
+
+     WARN_CREATE_GLOBAL
+            Print a warning message when a global parameter is created in a
+            function by an assignment or in math context.  This often indicates
+            that a parameter has not been declared local when it should have
+            been.  Parameters explicitly declared global from within a function
+            using typeset -g do not cause a warning.  Note that there is no
+            warning when a local parameter is assigned to in a nested function,
+            which may also indicate an error.
+
+     WARN_NESTED_VAR
+            Print a warning message when an existing parameter from an
+            enclosing function scope, or global, is set in a function by an
+            assignment or in math context.  Assignment to shell special
+            parameters does not cause a warning.  This is the companion to
+            WARN_CREATE_GLOBAL as in this case the warning is only printed when
+            a parameter is not created.  Where possible, use of typeset -g to
+            set the parameter suppresses the error, but note that this needs to
+            be used every time the parameter is set.  To restrict the effect of
+            this option to a single function scope, use ‘functions -W'.
+
+            For example, the following code produces a warning for the
+            assignment inside the function nested as that overrides the value
+            within toplevel
+
+                   toplevel() {
+                     local foo="in fn"
+                     nested
+                   }
+                   nested() {
+                        foo="in nested"
+                   }
+                   setopt warn_nested_var
+                   toplevel
+

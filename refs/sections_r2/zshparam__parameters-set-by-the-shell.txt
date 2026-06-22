@@ -1,0 +1,377 @@
+     In the parameter lists that follow, the mark ‘<S>' indicates that the
+     parameter is special.  ‘<Z>' indicates that the parameter does not exist
+     when the shell initializes in sh or ksh emulation mode.
+
+     The parameters ‘!', ‘#', ‘*', ‘-', ‘?', ‘@', ‘$', ‘ARGC', ‘HISTCMD',
+     ‘LINENO', ‘PPID', ‘status', ‘TTYIDLE', ‘zsh_eval_context',
+     ‘ZSH_EVAL_CONTEXT', and ‘ZSH_SUBSHELL' are read-only and thus cannot be
+     restored by the user, so they are not output by ‘typeset -p'.  This also
+     applies to many read-only parameters loaded from modules.
+
+     The following parameters are automatically set by the shell:
+
+     ! <S>  The process ID of the last command started in the background with
+            &, put into the background with the bg builtin, or spawned with
+            coproc.
+
+     # <S>  The number of positional parameters in decimal.  Note that some
+            confusion may occur with the syntax $#param which substitutes the
+            length of param.  Use ${#} to resolve ambiguities.  In particular,
+            the sequence ‘$#-...' in an arithmetic expression is interpreted as
+            the length of the parameter -, q.v.
+
+     ARGC <S> <Z>
+            Same as #.
+
+     $ <S>  The process ID of this shell, set when the shell initializes.
+            Processes forked from the shell without executing a new program,
+            such as command substitutions and commands grouped with (...), are
+            subshells that duplicate the current shell, and thus substitute the
+            same value for $$ as their parent shell.
+
+     - <S>  Flags supplied to the shell on invocation or by the set or setopt
+            commands.
+
+     * <S>  An array containing the positional parameters.
+
+     argv <S> <Z>
+            Same as *.  Assigning to argv changes the local positional
+            parameters, but argv is not itself a local parameter.  Deleting
+            argv with unset in any function deletes it everywhere, although
+            only the innermost positional parameter array is deleted (so * and
+            @ in other scopes are not affected).
+
+     @ <S>  Same as argv[@], even when argv is not set.
+
+     ? <S>  The exit status returned by the last command.
+
+     0 <S>  The name used to invoke the current shell, or as set by the -c
+            command line option upon invocation.  If the FUNCTION_ARGZERO
+            option is set, $0 is set upon entry to a shell function to the name
+            of the function, and upon entry to a sourced script to the name of
+            the script, and reset to its previous value when the function or
+            script returns.
+
+     status <S> <Z>
+            Same as ?.
+
+     pipestatus <S> <Z>
+            An array containing the exit statuses returned by all commands in
+            the last pipeline.
+
+     _ <S>  The last argument of the previous command.  Also, this parameter is
+            set in the environment of every command executed to the full
+            pathname of the command.
+
+     CPUTYPE
+            The machine type (microprocessor class or machine model), as
+            determined at run time.
+
+     EGID <S>
+            The effective group ID of the shell process.  If you have
+            sufficient privileges, you may change the effective group ID of the
+            shell process by assigning to this parameter.  Also (assuming
+            sufficient privileges), you may start a single command with a
+            different effective group ID by ‘(EGID=gid; command)'
+
+            If this is made local, it is not implicitly set to 0, but may be
+            explicitly set locally.
+
+     EUID <S>
+            The effective user ID of the shell process.  If you have sufficient
+            privileges, you may change the effective user ID of the shell
+            process by assigning to this parameter.  Also (assuming sufficient
+            privileges), you may start a single command with a different
+            effective user ID by ‘(EUID=uid; command)'
+
+            If this is made local, it is not implicitly set to 0, but may be
+            explicitly set locally.
+
+     ERRNO <S>
+            The value of errno (see errno(3)) as set by the most recently
+            failed system call.  This value is system dependent and is intended
+            for debugging purposes.  It is also useful with the zsh/system
+            module which allows the number to be turned into a name or message.
+
+            To use this parameter, it must first be assigned a value (typically
+            0 (zero)).  It is initially unset for scripting compatibility.
+
+     FUNCNEST <S>
+            Integer.  If greater than or equal to zero, the maximum nesting
+            depth of shell functions.  When it is exceeded, an error is raised
+            at the point where a function is called.  The default value is
+            determined when the shell is configured, but is typically 500.
+            Increasing the value increases the danger of a runaway function
+            recursion causing the shell to crash.  Setting a negative value
+            turns off the check.
+
+     GID <S>
+            The real group ID of the shell process.  If you have sufficient
+            privileges, you may change the group ID of the shell process by
+            assigning to this parameter.  Also (assuming sufficient
+            privileges), you may start a single command under a different group
+            ID by ‘(GID=gid; command)'
+
+            If this is made local, it is not implicitly set to 0, but may be
+            explicitly set locally.
+
+     HISTCMD
+            The current history event number in an interactive shell, in other
+            words the event number for the command that caused $HISTCMD to be
+            read.  If the current history event modifies the history, HISTCMD
+            changes to the new maximum history event number.
+
+     HOST   The current hostname.
+
+     LINENO <S>
+            The line number of the current line within the current script,
+            sourced file, or shell function being executed, whichever was
+            started most recently.  Note that in the case of shell functions
+            the line number refers to the function as it appeared in the
+            original definition, not necessarily as displayed by the functions
+            builtin.
+
+     LOGNAME
+            If the corresponding variable is not set in the environment of the
+            shell, it is initialized to the login name corresponding to the
+            current login session. This parameter is exported by default but
+            this can be disabled using the typeset builtin.  The value is set
+            to the string returned by the getlogin(3) system call if that is
+            available.
+
+     MACHTYPE
+            The machine type (microprocessor class or machine model), as
+            determined at compile time.
+
+     OLDPWD
+            The previous working directory.  This is set when the shell
+            initializes and whenever the directory changes.
+
+     OPTARG <S>
+            The value of the last option argument processed by the getopts
+            command.
+
+     OPTIND <S>
+            The index of the last option argument processed by the getopts
+            command.
+
+     OSTYPE
+            The operating system, as determined at compile time.
+
+     PPID <S>
+            The process ID of the parent of the shell, set when the shell
+            initializes.  As with $$, the value does not change in subshells
+            created as a duplicate of the current shell.
+
+     PWD    The present working directory.  This is set when the shell
+            initializes and whenever the directory changes.
+
+     RANDOM <S>
+            A pseudo-random integer from 0 to 32767, newly generated each time
+            this parameter is referenced.  The random number generator can be
+            seeded by assigning a numeric value to RANDOM.
+
+            The values of RANDOM form an intentionally-repeatable pseudo-random
+            sequence; subshells that reference RANDOM will result in identical
+            pseudo-random values unless the value of RANDOM is referenced or
+            seeded in the parent shell in between subshell invocations.
+
+     SECONDS <S>
+            The number of seconds since shell invocation.  If this parameter is
+            assigned a value, then the value returned upon reference will be
+            the value that was assigned plus the number of seconds since the
+            assignment.
+
+            Unlike other special parameters, the type of the SECONDS parameter
+            can be changed using the typeset command.  The type may be changed
+            only to one of the floating point types or back to integer.  For
+            example, ‘typeset -F SECONDS' causes the value to be reported as a
+            floating point number.  The value is available to microsecond
+            accuracy, although the shell may show more or fewer digits
+            depending on the use of typeset.  See the documentation for the
+            builtin typeset in zshbuiltins(1) for more details.
+
+     SHLVL <S>
+            Incremented by one each time a new shell is started.
+
+     signals
+            An array containing the names of the signals.  Note that with the
+            standard zsh numbering of array indices, where the first element
+            has index 1, the signals are offset by 1 from the signal number
+            used by the operating system.  For example, on typical Unix-like
+            systems HUP is signal number 1, but is referred to as $signals[2].
+            This is because of EXIT at position 1 in the array, which is used
+            internally by zsh but is not known to the operating system. On many
+            systems there is a block of reserved or unused signal numbers
+            before the POSIX real-time signals so the array index can't be used
+            as an accurate indicator of their signal number. Use, for example,
+            kill -l SIGRTMIN instead.
+
+     TRY_BLOCK_ERROR <S>
+            In an always block, indicates whether the preceding list of code
+            caused an error.  The value is 1 to indicate an error, 0 otherwise.
+            It may be reset, clearing the error condition.  See Complex
+            Commands in zshmisc(1)
+
+     TRY_BLOCK_INTERRUPT <S>
+            This variable works in a similar way to TRY_BLOCK_ERROR, but
+            represents the status of an interrupt from the signal SIGINT, which
+            typically comes from the keyboard when the user types ^C.  If set
+            to 0, any such interrupt will be reset; otherwise, the interrupt is
+            propagated after the always block.
+
+            Note that it is possible that an interrupt arrives during the
+            execution of the always block; this interrupt is also propagated.
+
+     TTY    The name of the tty associated with the shell, if any.
+
+     TTYIDLE <S>
+            The idle time of the tty associated with the shell in seconds or -1
+            if there is no such tty.
+
+     UID <S>
+            The real user ID of the shell process.  If you have sufficient
+            privileges, you may change the user ID of the shell by assigning to
+            this parameter.  Also (assuming sufficient privileges), you may
+            start a single command under a different user ID by ‘(UID=uid;
+            command)'
+
+            If this is made local, it is not implicitly set to 0, but may be
+            explicitly set locally.
+
+     USERNAME <S>
+            The username corresponding to the real user ID of the shell
+            process.  If you have sufficient privileges, you may change the
+            username (and also the user ID and group ID) of the shell by
+            assigning to this parameter.  Also (assuming sufficient
+            privileges), you may start a single command under a different
+            username (and user ID and group ID) by ‘(USERNAME=username;
+            command)'
+
+     VENDOR
+            The vendor, as determined at compile time.
+
+     zsh_eval_context <S> <Z> (ZSH_EVAL_CONTEXT <S>)
+            An array (colon-separated list) indicating the context of shell
+            code that is being run.  Each time a piece of shell code that is
+            stored within the shell is executed a string is temporarily
+            appended to the array to indicate the type of operation that is
+            being performed.  Read in order the array gives an indication of
+            the stack of operations being performed with the most immediate
+            context last.
+
+            Note that the variable does not give information on syntactic
+            context such as pipelines or subshells.  Use $ZSH_SUBSHELL to
+            detect subshells.
+
+            The context is one of the following:
+            cmdarg
+                   Code specified by the -c option to the command line that
+                   invoked the shell.
+
+            cmdsubst
+                   Command substitution using the ‘...‘ or $(...) construct.
+
+            equalsubst
+                   File substitution using the =(...) construct.
+
+            eval   Code executed by the eval builtin.
+
+            evalautofunc
+                   Code executed with the KSH_AUTOLOAD mechanism in order to
+                   define an autoloaded function.
+
+            fc     Code from the shell history executed by the -e option to the
+                   fc builtin.
+
+            file   Lines of code being read directly from a file, for example
+                   by the source builtin.
+
+            filecode
+                   Lines of code being read from a .zwc file instead of
+                   directly from the source file.
+
+            globqual
+                   Code executed by the e or + glob qualifier.
+
+            globsort
+                   Code executed to order files by the o glob qualifier.
+
+            insubst
+                   File substitution using the <(...) construct.
+
+            loadautofunc
+                   Code read directly from a file to define an autoloaded
+                   function.
+
+            outsubst
+                   File substitution using the >(...) construct.
+
+            sched  Code executed by the sched builtin.
+
+            shfunc
+                   A shell function.
+
+            stty   Code passed to stty by the STTY environment variable.
+                   Normally this is passed directly to the system's stty
+                   command, so this value is unlikely to be seen in practice.
+
+            style  Code executed as part of a style retrieved by the zstyle
+                   builtin from the zsh/zutil module.
+
+            toplevel
+                   The highest execution level of a script or interactive
+                   shell.
+
+            trap   Code executed as a trap defined by the trap builtin.  Traps
+                   defined as functions have the context shfunc.  As traps are
+                   asynchronous they may have a different hierarchy from other
+                   code.
+
+            zpty   Code executed by the zpty builtin from the zsh/zpty module.
+
+            zregexparse-guard
+                   Code executed as a guard by the zregexparse command from the
+                   zsh/zutil module.
+
+            zregexparse-action
+                   Code executed as an action by the zregexparse command from
+                   the zsh/zutil module.
+
+     ZSH_ARGZERO
+            If zsh was invoked to run a script, this is the name of the script.
+            Otherwise, it is the name used to invoke the current shell.  This
+            is the same as the value of $0 when the POSIX_ARGZERO option is
+            set, but is always available.
+
+     ZSH_EXECUTION_STRING
+            If the shell was started with the option -c, this contains the
+            argument passed to the option.  Otherwise it is not set.
+
+     ZSH_NAME
+            Expands to the basename of the command used to invoke this instance
+            of zsh.
+
+     ZSH_PATCHLEVEL
+            The output of ‘git describe --tags --long' for the zsh repository
+            used to build the shell.  This is most useful in order to keep
+            track of versions of the shell during development between releases;
+            hence most users should not use it and should instead rely on
+            $ZSH_VERSION.
+
+     zsh_scheduled_events
+            See the section ‘The zsh/sched Module' in zshmodules(1).
+
+     ZSH_SCRIPT
+            If zsh was invoked to run a script, this is the name of the script,
+            otherwise it is unset.
+
+     ZSH_SUBSHELL
+            Readonly integer.  Initially zero, incremented each time the shell
+            forks to create a subshell for executing code.  Hence ‘(print
+            $ZSH_SUBSHELL)' and ‘print $(print $ZSH_SUBSHELL)' output 1, while
+            ‘( (print $ZSH_SUBSHELL) )' outputs 2.
+
+     ZSH_VERSION
+            The version number of the release of zsh.
+

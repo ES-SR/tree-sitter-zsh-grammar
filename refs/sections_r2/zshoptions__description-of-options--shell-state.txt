@@ -1,0 +1,68 @@
+     INTERACTIVE (-i, ksh: -i)
+            This is an interactive shell.  This option is set upon
+            initialisation if the standard input is a tty and commands are
+            being read from standard input.  (See the discussion of
+            SHIN_STDIN.)  This heuristic may be overridden by specifying a
+            state for this option on the command line.  The value of this
+            option can only be changed via flags supplied at invocation of the
+            shell.  It cannot be changed once zsh is running.
+
+     LOGIN (-l, ksh: -l)
+            This is a login shell.  If this option is not explicitly set, the
+            shell becomes a login shell if the first character of the argv[0]
+            passed to the shell is a ‘-'.
+
+     PRIVILEGED (-p, ksh: -p)
+            Turn on privileged mode. Typically this is used when script is to
+            be run with elevated privileges. This should be done as follows
+            directly with the -p option to zsh so that it takes effect during
+            startup.
+
+                   #!/bin/zsh -p
+
+            The option is enabled automatically on startup if the effective
+            user (group) ID is not equal to the real user (group) ID. In this
+            case, turning the option off causes the effective user and group
+            IDs to be set to the real user and group IDs. Be aware that if that
+            fails the shell may be running with different IDs than was intended
+            so a script should check for failure and act accordingly, for
+            example:
+
+                   unsetopt privileged || exit
+
+            The PRIVILEGED option disables sourcing user startup files.  If zsh
+            is invoked as ‘sh' or ‘ksh' with this option set, /etc/suid_profile
+            is sourced (after /etc/profile on interactive shells). Sourcing
+            ~/.profile is disabled and the contents of the ENV variable is
+            ignored. This option cannot be changed using the -m option of
+            setopt and unsetopt, and changing it inside a function always
+            changes it globally regardless of the LOCAL_OPTIONS option.
+
+     RESTRICTED (-r)
+            Enables restricted mode.  This option cannot be changed using
+            unsetopt, and setting it inside a function always changes it
+            globally regardless of the LOCAL_OPTIONS option.  See the section
+            ‘Restricted Shell'.
+
+     SHIN_STDIN (-s, ksh: -s)
+            Commands are being read from the standard input.  Commands are read
+            from standard input if no command is specified with -c and no file
+            of commands is specified.  If SHIN_STDIN is set explicitly on the
+            command line, any argument that would otherwise have been taken as
+            a file to run will instead be treated as a normal positional
+            parameter.  Note that setting or unsetting this option on the
+            command line does not necessarily affect the state the option will
+            have while the shell is running - that is purely an indicator of
+            whether or not commands are actually being read from standard
+            input.  The value of this option can only be changed via flags
+            supplied at invocation of the shell.  It cannot be changed once zsh
+            is running.
+
+     SINGLE_COMMAND (-t, ksh: -t)
+            If the shell is reading from standard input, it exits after a
+            single command has been executed.  This also makes the shell
+            non-interactive, unless the INTERACTIVE option is explicitly set on
+            the command line.  The value of this option can only be changed via
+            flags supplied at invocation of the shell.  It cannot be changed
+            once zsh is running.
+

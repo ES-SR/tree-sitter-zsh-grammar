@@ -1,0 +1,101 @@
+     This discussion applies mainly to associative array key strings and to
+     patterns used for reverse subscripting (the ‘r', ‘R', ‘i', etc. flags),
+     but it may also affect parameter substitutions that appear as part of an
+     arithmetic expression in an ordinary subscript.
+
+     To avoid subscript parsing limitations in assignments to associative array
+     elements, use the append syntax:
+
+            aa+=('key with "*strange*" characters' 'value string')
+
+     The basic rule to remember when writing a subscript expression is that all
+     text between the opening ‘[' and the closing ‘]' is interpreted as if it
+     were in double quotes (see zshmisc(1)).  However, unlike double quotes
+     which normally cannot nest, subscript expressions may appear inside
+     double-quoted strings or inside other subscript expressions (or both!), so
+     the rules have two important differences.
+
+     The first difference is that brackets (‘[' and ‘]') must appear as
+     balanced pairs in a subscript expression unless they are preceded by a
+     backslash (‘\').  Therefore, within a subscript expression (and unlike
+     true double-quoting) the sequence ‘\[' becomes ‘[', and similarly ‘\]'
+     becomes ‘]'.  This applies even in cases where a backslash is not normally
+     required; for example, the pattern ‘[^[]' (to match any character other
+     than an open bracket) should be written ‘[^\[]' in a reverse-subscript
+     pattern.  However, note that ‘\[^\[\]' and even ‘\[^[]' mean the same
+     thing, because backslashes are always stripped when they appear before
+     brackets!
+
+     The same rule applies to parentheses (‘(' and ‘)') and braces (‘{' and
+     ‘}'): they must appear either in balanced pairs or preceded by a
+     backslash, and backslashes that protect parentheses or braces are removed
+     during parsing.  This is because parameter expansions may be surrounded by
+     balanced braces, and subscript flags are introduced by balanced
+     parentheses.
+
+     The second difference is that a double-quote (‘"') may appear as part of a
+     subscript expression without being preceded by a backslash, and therefore
+     that the two characters ‘\"' remain as two characters in the subscript (in
+     true double-quoting, ‘\"' becomes ‘"').  However, because of the standard
+     shell quoting rules, any double-quotes that appear must occur in balanced
+     pairs unless preceded by a backslash.  This makes it more difficult to
+     write a subscript expression that contains an odd number of double-quote
+     characters, but the reason for this difference is so that when a subscript
+     expression appears inside true double-quotes, one can still write ‘\"'
+     (rather than ‘\\\"') for ‘"'.
+
+     To use an odd number of double quotes as a key in an assignment, use the
+     typeset builtin and an enclosing pair of double quotes; to refer to the
+     value of that key, again use double quotes:
+
+            typeset -A aa
+            typeset "aa[one\"two\"three\"quotes]"=QQQ
+            print "$aa[one\"two\"three\"quotes]"
+
+     It is important to note that the quoting rules do not change when a
+     parameter expansion with a subscript is nested inside another subscript
+     expression.  That is, it is not necessary to use additional backslashes
+     within the inner subscript expression; they are removed only once, from
+     the innermost subscript outwards.  Parameters are also expanded from the
+     innermost subscript first, as each expansion is encountered left to right
+     in the outer expression.
+
+     A further complication arises from a way in which subscript parsing is not
+     different from double quote parsing.  As in true double-quoting, the
+     sequences ‘\*', and ‘\@' remain as two characters when they appear in a
+     subscript expression.  To use a literal ‘*' or ‘@' as an associative array
+     key, the ‘e' flag must be used:
+
+            typeset -A aa
+            aa[(e)*]=star
+            print $aa[(e)*]
+
+     A last detail must be considered when reverse subscripting is performed.
+     Parameters appearing in the subscript expression are first expanded and
+     then the complete expression is interpreted as a pattern.  This has two
+     effects: first, parameters behave as if GLOB_SUBST were on (and it cannot
+     be turned off); second, backslashes are interpreted twice, once when
+     parsing the array subscript and again when parsing the pattern.  In a
+     reverse subscript, it's necessary to use four backslashes to cause a
+     single backslash to match literally in the pattern.  For complex patterns,
+     it is often easiest to assign the desired pattern to a parameter and then
+     refer to that parameter in the subscript, because then the backslashes,
+     brackets, parentheses, etc., are seen only when the complete expression is
+     converted to a pattern.  To match the value of a parameter literally in a
+     reverse subscript, rather than as a pattern, use ‘${(q)name}' (see
+     zshexpn(1)) to quote the expanded value.
+
+     Note that the ‘k' and ‘K' flags are reverse subscripting for an ordinary
+     array, but are not reverse subscripting for an associative array!  (For an
+     associative array, the keys in the array itself are interpreted as
+     patterns by those flags; the subscript is a plain string in that case.)
+
+     One final note, not directly related to subscripting: the numeric names of
+     positional parameters (described below) are parsed specially, so for
+     example ‘$2foo' is equivalent to ‘${2}foo'.  Therefore, to use subscript
+     syntax to extract a substring from a positional parameter, the expansion
+     must be surrounded by braces; for example, ‘${2[3,5]}' evaluates to the
+     third through fifth characters of the second positional parameter, but
+     ‘$2[3,5]' is the entire second parameter concatenated with the filename
+     generation pattern ‘[3,5]'.
+

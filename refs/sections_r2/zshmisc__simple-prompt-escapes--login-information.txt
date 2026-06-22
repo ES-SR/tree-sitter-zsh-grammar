@@ -1,0 +1,14 @@
+     %l     The line (tty) the user is logged in on, without ‘/dev/' prefix.
+            If the name starts with ‘/dev/tty', that prefix is stripped.
+
+     %M     The full machine hostname.
+
+     %m     The hostname up to the first ‘.'.  An integer may follow the ‘%' to
+            specify how many components of the hostname are desired.  With a
+            negative integer, trailing components of the hostname are shown.
+
+     %n     $USERNAME.
+
+     %y     The line (tty) the user is logged in on, without ‘/dev/' prefix.
+            This does not treat ‘/dev/tty' names specially.
+

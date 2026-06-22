@@ -1,0 +1,66 @@
+     Individual elements of an array may be selected using a subscript.  A
+     subscript of the form ‘[exp]' selects the single element exp, where exp is
+     an arithmetic expression which will be subject to arithmetic expansion as
+     if it were surrounded by ‘$((...))'.  The elements are numbered beginning
+     with 1, unless the KSH_ARRAYS option is set in which case they are
+     numbered from zero.
+
+     Subscripts may be used inside braces used to delimit a parameter name,
+     thus ‘${foo[2]}' is equivalent to ‘$foo[2]'.  If the KSH_ARRAYS option is
+     set, the braced form is the only one that works, as bracketed expressions
+     otherwise are not treated as subscripts.
+
+     If the KSH_ARRAYS option is not set, then by default accesses to an array
+     element with a subscript that evaluates to zero return an empty string,
+     while an attempt to write such an element is treated as an error.  For
+     backward compatibility the KSH_ZERO_SUBSCRIPT option can be set to cause
+     subscript values 0 and 1 to be equivalent; see the description of the
+     option in zshoptions(1).
+
+     The same subscripting syntax is used for associative arrays, except that
+     no arithmetic expansion is applied to exp.  However, the parsing rules for
+     arithmetic expressions still apply, which affects the way that certain
+     special characters must be protected from interpretation.  See Subscript
+     Parsing below for details.
+
+     A subscript of the form ‘[*]' or ‘[@]' evaluates to all elements of an
+     array; there is no difference between the two except when they appear
+     within double quotes.  ‘"$foo[*]"' evaluates to ‘"$foo[1] $foo[2] ..."',
+     whereas ‘"$foo[@]"' evaluates to ‘"$foo[1]" "$foo[2]" ...'.  For
+     associative arrays, ‘[*]' or ‘[@]' evaluate to all the values, in no
+     particular order.  Note that this does not substitute the keys; see the
+     documentation for the ‘k' flag under Parameter Expansion Flags in
+     zshexpn(1) for complete details.  When an array parameter is referenced as
+     ‘$name' (with no subscript) it evaluates to ‘$name[*]', unless the
+     KSH_ARRAYS option is set in which case it evaluates to ‘${name[0]}' (for
+     an associative array, this means the value of the key ‘0', which may not
+     exist even if there are values for other keys).
+
+     A subscript of the form ‘[exp1,exp2]' selects all elements in the range
+     exp1 to exp2, inclusive. (Associative arrays are unordered, and so do not
+     support ranges.) If one of the subscripts evaluates to a negative number,
+     say -n, then the nth element from the end of the array is used.  Thus
+     ‘$foo[-3]' is the third element from the end of the array foo, and
+     ‘$foo[1,-1]' is the same as ‘$foo[*]'.
+
+     Subscripting may also be performed on non-array values, in which case the
+     subscripts specify a substring to be extracted.  For example, if FOO is
+     set to ‘foobar', then ‘echo $FOO[2,5]' prints ‘ooba'.  Note that some
+     forms of subscripting described below perform pattern matching, and in
+     that case the substring extends from the start of the match of the first
+     subscript to the end of the match of the second subscript.  For example,
+
+            string="abcdefghijklm"
+            print ${string[(r)d?,(r)h?]}
+
+     prints ‘defghi'.  This is an obvious generalisation of the rule for
+     single-character matches.  For a single subscript, only a single character
+     is referenced (not the range of characters covered by the match).
+
+     Note that in substring operations the second subscript is handled
+     differently by the r and R subscript flags: the former takes the shortest
+     match as the length and the latter the longest match.  Hence in the former
+     case a * at the end is redundant while in the latter case it matches the
+     whole remainder of the string.  This does not affect the result of the
+     single subscript case as here the length of the match is irrelevant.
+

@@ -1,0 +1,101 @@
+     To assign an array value, write one of:
+
+            set -A name value ...
+            name=(value ...)
+            name=([key]=value ...)
+
+     If no parameter name exists, an ordinary array parameter is created.  If
+     the parameter name exists and is a scalar, it is replaced by a new array.
+
+     In the third form, key is an expression that will be evaluated in
+     arithmetic context (in its simplest form, an integer) that gives the index
+     of the element to be assigned with value.  In this form any elements not
+     explicitly mentioned that come before the largest index to which a value
+     is assigned are assigned an empty string.  The indices may be in any
+     order.  Note that this syntax is strict: [ and ]= must not be quoted, and
+     key may not consist of the unquoted string ]=, but is otherwise treated as
+     a simple string.  The enhanced forms of subscript expression that may be
+     used when directly subscripting a variable name, described in the section
+     ‘Array Subscripts' below, are not available.
+
+     The syntaxes with and without the explicit key may be mixed.  An implicit
+     key is deduced by incrementing the index from the previously assigned
+     element.  Note that it is not treated as an error if latter assignments in
+     this form overwrite earlier assignments.
+
+     For example, assuming the option KSH_ARRAYS is not set, the following:
+
+            array=(one [3]=three four)
+
+     causes the array variable array to contain four elements one, an empty
+     string, three and four, in that order.
+
+     In the forms where only value is specified, full command line expansion is
+     performed.
+
+     In the [key]=value form, both key and value undergo all forms of expansion
+     allowed for single word shell expansions (this does not include filename
+     generation); these are as performed by the parameter expansion flag (e) as
+     described in zshexpn(1).  Nested parentheses may surround value and are
+     included as part of the value, which is joined into a plain string; this
+     differs from ksh which allows the values themselves to be arrays.  A
+     future version of zsh may support that.  To cause the brackets to be
+     interpreted as a character class for filename generation, and therefore to
+     treat the resulting list of files as a set of values, quote the equal sign
+     using any form of quoting.  Example:
+
+            name=([a-z]'='*)
+
+     To append to an array without changing the existing values, use one of the
+     following:
+
+            name+=(value ...)
+            name+=([key]=value ...)
+
+     In the second form key may specify an existing index as well as an index
+     off the end of the old array; any existing value is overwritten by value.
+     Also, it is possible to use [key]+=value to append to the existing value
+     at that index.
+
+     Within the parentheses on the right hand side of either form of the
+     assignment, newlines and semicolons are treated the same as white space,
+     separating individual values.  Any consecutive sequence of such characters
+     has the same effect.
+
+     Ordinary array parameters may also be explicitly declared with:
+
+            typeset -a name
+
+     Associative arrays must be declared before assignment, by using:
+
+            typeset -A name
+
+     When name refers to an associative array, the list in an assignment is
+     interpreted as alternating keys and values:
+
+            set -A name key value ...
+            name=(key value ...)
+            name=([key]=value ...)
+
+     Note that only one of the two syntaxes above may be used in any given
+     assignment; the forms may not be mixed.  This is unlike the case of
+     numerically indexed arrays.
+
+     Every key must have a value in this case.  Note that this assigns to the
+     entire array, deleting any elements that do not appear in the list.  The
+     append syntax may also be used with an associative array:
+
+            name+=(key value ...)
+            name+=([key]=value ...)
+
+     This adds a new key/value pair if the key is not already present, and
+     replaces the value for the existing key if it is.  In the second form it
+     is also possible to use [key]+=value to append to the existing value at
+     that key.  Expansion is performed identically to the corresponding forms
+     for normal arrays, as described above.
+
+     To create an empty array (including associative arrays), use one of:
+
+            set -A name
+            name=()
+

@@ -1,0 +1,68 @@
+     A simple command is a sequence of optional parameter assignments followed
+     by blank-separated words, with optional redirections interspersed.  For a
+     description of assignment, see the beginning of zshparam(1).
+
+     The first word is the command to be executed, and the remaining words, if
+     any, are arguments to the command.  If a command name is given, the
+     parameter assignments modify the environment of the command when it is
+     executed.  The value of a simple command is its exit status, or 128 plus
+     the signal number if terminated by a signal.  For example,
+
+            echo foo
+
+     is a simple command with arguments.
+
+     A pipeline is either a simple command, or a sequence of two or more simple
+     commands where each command is separated from the next by ‘|' or ‘|&'.
+     Where commands are separated by ‘|', the standard output of the first
+     command is connected to the standard input of the next.  ‘|&' is shorthand
+     for ‘2>&1 |', which connects both the standard output and the standard
+     error of the command to the standard input of the next.  The value of a
+     pipeline is the value of the last command, unless the pipeline is preceded
+     by ‘!' in which case the value is the logical inverse of the value of the
+     last command.  For example,
+
+            echo foo | sed 's/foo/bar/'
+
+     is a pipeline, where the output (‘foo' plus a newline) of the first
+     command will be passed to the input of the second.
+
+     If a pipeline is preceded by ‘coproc', it is executed as a coprocess; a
+     two-way pipe is established between it and the parent shell.  The shell
+     can read from or write to the coprocess by means of the ‘>&p' and ‘<&p'
+     redirection operators or with ‘print -p' and ‘read -p'.  A pipeline cannot
+     be preceded by both ‘coproc' and ‘!'.  If job control is active, the
+     coprocess can be treated in other than input and output as an ordinary
+     background job.
+
+     A sublist is either a single pipeline, or a sequence of two or more
+     pipelines separated by ‘&&' or ‘||'.  If two pipelines are separated by
+     ‘&&', the second pipeline is executed only if the first succeeds (returns
+     a zero status).  If two pipelines are separated by ‘||', the second is
+     executed only if the first fails (returns a nonzero status).  Both
+     operators have equal precedence and are left associative.  The value of
+     the sublist is the value of the last pipeline executed.  For example,
+
+            dmesg | grep panic && print yes
+
+     is a sublist consisting of two pipelines, the second just a simple command
+     which will be executed if and only if the grep command returns a zero
+     status.  If it does not, the value of the sublist is that return status,
+     else it is the status returned by the print (almost certainly zero).
+
+     A list is a sequence of zero or more sublists, in which each sublist is
+     terminated by ‘;', ‘&', ‘&|', ‘&!', or a newline.  This terminator may
+     optionally be omitted from the last sublist in the list when the list
+     appears as a complex command inside ‘(...)' or ‘{...}'.  When a sublist is
+     terminated by ‘;' or newline, the shell waits for it to finish before
+     executing the next sublist.  If a sublist is terminated by a ‘&', ‘&|', or
+     ‘&!', the shell executes the last pipeline in it in the background, and
+     does not wait for it to finish (note the difference from other shells
+     which execute the whole sublist in the background).  A backgrounded
+     pipeline returns a status of zero.
+
+     More generally, a list can be seen as a set of any shell commands
+     whatsoever, including the complex commands below; this is implied wherever
+     the word ‘list' appears in later descriptions.  For example, the commands
+     in a shell function form a special sort of list.
+

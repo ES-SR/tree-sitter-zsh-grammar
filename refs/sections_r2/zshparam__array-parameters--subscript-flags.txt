@@ -1,0 +1,129 @@
+     If the opening bracket, or the comma in a range, in any subscript
+     expression is directly followed by an opening parenthesis, the string up
+     to the matching closing one is considered to be a list of flags, as in
+     ‘name[(flags)exp]'.
+
+     The flags s, n and b take an argument; the delimiter is shown below as
+     ‘:', but any character, or the matching pairs ‘(...)', ‘{...}', ‘[...]',
+     or ‘<...>', may be used, but note that ‘<...>' can only be used if the
+     subscript is inside a double quoted expression or a parameter substitution
+     enclosed in braces as otherwise the expression is interpreted as a
+     redirection.
+
+     The flags currently understood are:
+
+     w      If the parameter subscripted is a scalar then this flag makes
+            subscripting work on words instead of characters.  The default word
+            separator is whitespace.  When combined with the i or I flag, the
+            effect is to produce the index of the first character of the
+            first/last word which matches the given pattern; note that a failed
+            match in this case always yields 0.
+
+     s:string:
+            This gives the string that separates words (for use with the w
+            flag).  The delimiter character : is arbitrary; see above.
+
+     p      Recognize the same escape sequences as the print builtin in the
+            string argument of a subsequent ‘s' flag.
+
+     f      If the parameter subscripted is a scalar then this flag makes
+            subscripting work on lines instead of characters, i.e. with
+            elements separated by newlines.  This is a shorthand for ‘pws:\n:'.
+
+     r      Reverse subscripting: if this flag is given, the exp is taken as a
+            pattern and the result is the first matching array element,
+            substring or word (if the parameter is an array, if it is a scalar,
+            or if it is a scalar and the ‘w' flag is given, respectively).  The
+            subscript used is the number of the matching element, so that pairs
+            of subscripts such as ‘$foo[(r)??,3]' and ‘$foo[(r)??,(r)f*]' are
+            possible if the parameter is not an associative array.  If the
+            parameter is an associative array, only the value part of each pair
+            is compared to the pattern, and the result is that value.
+
+            If a search through an ordinary array failed, the search sets the
+            subscript to one past the end of the array, and hence
+            ${array[(r)pattern]} will substitute the empty string.  Thus the
+            success of a search can be tested by using the (i) flag, for
+            example (assuming the option KSH_ARRAYS is not in effect):
+
+                   [[ ${array[(i)pattern]} -le ${#array} ]]
+
+            If KSH_ARRAYS is in effect, the -le should be replaced by -lt.
+
+     R      Like ‘r', but gives the last match.  For associative arrays, gives
+            all possible matches. May be used for assigning to ordinary array
+            elements, but not for assigning to associative arrays.  On failure,
+            for normal arrays this has the effect of returning the element
+            corresponding to subscript 0; this is empty unless one of the
+            options KSH_ARRAYS or KSH_ZERO_SUBSCRIPT is in effect.
+
+            Note that in subscripts with both ‘r' and ‘R' pattern characters
+            are active even if they were substituted for a parameter
+            (regardless of the setting of GLOB_SUBST which controls this
+            feature in normal pattern matching).  The flag ‘e' can be added to
+            inhibit pattern matching.  As this flag does not inhibit other
+            forms of substitution, care is still required; using a parameter to
+            hold the key has the desired effect:
+
+                   key2='original key'
+                   print ${array[(Re)$key2]}
+
+     i      Like ‘r', but gives the index of the match instead; this may not be
+            combined with a second argument.  On the left side of an
+            assignment, behaves like ‘r'.  For associative arrays, the key part
+            of each pair is compared to the pattern, and the first matching key
+            found is the result.  On failure substitutes the length of the
+            array plus one, as discussed under the description of ‘r', or the
+            empty string for an associative array.
+
+            Note: Although ‘i' may be applied to a scalar substitution to find
+            the offset of a substring, the results are likely to be misleading
+            when searching within substitutions that yield an empty string, or
+            when searching for the empty substring.
+
+     I      Like ‘i', but gives the index of the last match, or all possible
+            matching keys in an associative array.  On failure substitutes 0,
+            or the empty string for an associative array.  This flag is best
+            when testing for values or keys that do not exist.
+
+            Note: If the option KSH_ARRAYS is in effect and no match is found,
+            the result is indistinguishable from the case when the first
+            element of the array matches.
+
+     k      If used in a subscript on an associative array, this flag causes
+            the keys to be interpreted as patterns, and returns the value for
+            the first key found where exp is matched by the key.  Note this
+            could be any such key as no ordering of associative arrays is
+            defined.  This flag does not work on the left side of an assignment
+            to an associative array element.  If used on another type of
+            parameter, this behaves like ‘r'.
+
+     K      On an associative array this is like ‘k' but returns all values
+            where exp is matched by the keys.  On other types of parameters
+            this has the same effect as ‘R'.
+
+     n:expr:
+            If combined with ‘r', ‘R', ‘i' or ‘I', makes them give the nth or
+            nth last match (if expr evaluates to n).  This flag is ignored when
+            the array is associative.  The delimiter character : is arbitrary;
+            see above.
+
+     b:expr:
+            If combined with ‘r', ‘R', ‘i' or ‘I', makes them begin at the nth
+            or nth last element, word, or character (if expr evaluates to n).
+            This flag is ignored when the array is associative.  The delimiter
+            character : is arbitrary; see above.
+
+     e      This flag causes any pattern matching that would be performed on
+            the subscript to use plain string matching instead.  Hence
+            ‘${array[(re)*]}' matches only the array element whose value is *.
+            Note that other forms of substitution such as parameter
+            substitution are not inhibited.
+
+            This flag can also be used to force * or @ to be interpreted as a
+            single key rather than as a reference to all values.  It may be
+            used for either purpose on the left side of an assignment.
+
+     See Parameter Expansion Flags (zshexpn(1)) for additional ways to
+     manipulate the results of array subscripting.
+

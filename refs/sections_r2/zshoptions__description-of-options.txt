@@ -1,0 +1,8 @@
+     In the following list, options set by default in all emulations are marked
+     <D>; those set by default only in csh, ksh, sh, or zsh emulations are
+     marked <C>, <K>, <S>, <Z> as appropriate.  When listing options (by
+     ‘setopt', ‘unsetopt', ‘set -o' or ‘set +o'), those turned on by default
+     appear in the list prefixed with ‘no'.  Hence (unless KSH_OPTION_PRINT is
+     set), ‘setopt' shows all options whose settings are changed from the
+     default.
+

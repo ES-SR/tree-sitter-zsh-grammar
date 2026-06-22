@@ -1,0 +1,71 @@
+     AUTO_CONTINUE
+            With this option set, stopped jobs that are removed from the job
+            table with the disown builtin command are automatically sent a CONT
+            signal to make them running.
+
+     AUTO_RESUME (-W)
+            Treat single word simple commands without redirection as candidates
+            for resumption of an existing job.
+
+     BG_NICE (-6) <C> <Z>
+            Run all background jobs at a lower priority.  This option is set by
+            default.
+
+     CHECK_JOBS <Z>
+            Report the status of background and suspended jobs before exiting a
+            shell with job control; a second attempt to exit the shell will
+            succeed.  NO_CHECK_JOBS is best used only in combination with
+            NO_HUP, else such jobs will be killed automatically.
+
+            The check is omitted if the commands run from the previous command
+            line included a ‘jobs' command, since it is assumed the user is
+            aware that there are background or suspended jobs.  A ‘jobs'
+            command run from one of the hook functions defined in the section
+            SPECIAL FUNCTIONS in zshmisc(1) is not counted for this purpose.
+
+     CHECK_RUNNING_JOBS <Z>
+            Check for both running and suspended jobs when CHECK_JOBS is
+            enabled.  When this option is disabled, zsh checks only for
+            suspended jobs, which matches the default behavior of bash.
+
+            This option has no effect unless CHECK_JOBS is set.
+
+     HUP <Z>
+            Send the HUP signal to running jobs when the shell exits.
+
+     LONG_LIST_JOBS (-R)
+            Print job notifications in the long format by default.
+
+     MONITOR (-m, ksh: -m)
+            Allow job control.  Set by default in interactive shells.
+
+     NOTIFY (-5, ksh: -b) <Z>
+            Report the status of background jobs immediately, rather than
+            waiting until just before printing a prompt.
+
+     POSIX_JOBS <K> <S>
+            This option makes job control more compliant with the POSIX
+            standard.
+
+            When the option is not set, the MONITOR option is unset on entry to
+            subshells, so that job control is no longer active.  When the
+            option is set, the MONITOR option and job control remain active in
+            the subshell, but note that the subshell has no access to jobs in
+            the parent shell.
+
+            When the option is not set, jobs put in the background or
+            foreground with bg or fg are displayed with the same information
+            that would be reported by jobs.  When the option is set, only the
+            text is printed.  The output from jobs itself is not affected by
+            the option.
+
+            When the option is not set, job information from the parent shell
+            is saved for output within a subshell (for example, within a
+            pipeline).  When the option is set, the output of jobs is empty
+            until a job is started within the subshell.
+
+            In previous versions of the shell, it was necessary to enable
+            POSIX_JOBS in order for the builtin command wait to return the
+            status of background jobs that had already exited.  This is no
+            longer the case.
+

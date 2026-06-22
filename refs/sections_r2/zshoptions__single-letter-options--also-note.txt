@@ -1,0 +1,8 @@
+     -A     Used by set for setting arrays
+     -b     Used on the command line to specify end of option processing
+     -c     Used on the command line to specify a single command
+     -m     Used by setopt for pattern-matching option setting
+     -o     Used in all places to allow use of long option names
+     -s     Used by set to sort positional parameters
+
+zsh 5.9.1                         May 31, 2026                    ZSHOPTIONS(1)

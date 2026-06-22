@@ -1,0 +1,27 @@
+     A subscript may be used on the left side of an assignment like so:
+
+            name[exp]=value
+
+     In this form of assignment the element or range specified by exp is
+     replaced by the expression on the right side.  An array (but not an
+     associative array) may be created by assignment to a range or element.
+     Arrays do not nest, so assigning a parenthesized list of values to an
+     element or range changes the number of elements in the array, shifting the
+     other elements to accommodate the new values.  (This is not supported for
+     associative arrays.)
+
+     This syntax also works as an argument to the typeset command:
+
+            typeset "name[exp]"=value
+
+     The value may not be a parenthesized list in this case; only
+     single-element assignments may be made with typeset.  Note that quotes are
+     necessary in this case to prevent the brackets from being interpreted as
+     filename generation operators.  The noglob precommand modifier could be
+     used instead.
+
+     To delete an element of an ordinary array, assign ‘()' to that element.
+     To delete an element of an associative array, use the unset command:
+
+            unset "name[exp]"
+
