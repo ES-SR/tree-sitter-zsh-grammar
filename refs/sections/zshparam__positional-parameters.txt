@@ -1,0 +1,23 @@
+POSITIONAL PARAMETERS
+     The positional parameters provide access to the command-line arguments of
+     a shell function, shell script, or the shell itself; see the section
+     ‘Invocation', and also the section ‘Functions'.  The parameter n, where n
+     is a number, is the nth positional parameter.  The parameter ‘$0' is a
+     special case, see the section ‘Parameters Set By The Shell'.
+
+     The parameters *, @ and argv are arrays containing all the positional
+     parameters; thus ‘$argv[n]', etc., is equivalent to simply ‘$n'.  Note
+     that the options KSH_ARRAYS or KSH_ZERO_SUBSCRIPT apply to these arrays as
+     well, so with either of those options set, ‘${argv[0]}' is equivalent to
+     ‘$1' and so on.
+
+     Positional parameters may be changed after the shell or function starts by
+     using the set builtin, by assigning to the argv array, or by direct
+     assignment of the form ‘n=value' where n is the number of the positional
+     parameter to be changed.  This also creates (with empty values) any of the
+     positions from 1 to n that do not already have values.  Note that, because
+     the positional parameters form an array, an array assignment of the form
+     ‘n=(value ...)' is allowed, and has the effect of shifting all the values
+     at positions greater than n by as many positions as necessary to
+     accommodate the new values.
+

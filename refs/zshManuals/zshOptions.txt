@@ -1,0 +1,1589 @@
+[38;2;248;248;242mZSHOPTIONS(1)                    General Commands Manual                   ZSHOPTIONS(1)[0m
+
+[38;2;248;248;242mNAME[0m
+[38;2;248;248;242m       zshoptions - zsh options[0m
+
+[38;2;248;248;242mSPECIFYING OPTIONS[0m
+[38;2;248;248;242m       Options  are primarily referred to by name.  These names are case insensitive and[0m
+[38;2;248;248;242m       underscores are ignored.  For  example,  `allexport'  is  equivalent  to  `A__ll‐[0m
+[38;2;248;248;242m       eXP_ort'.[0m
+
+[38;2;248;248;242m       The sense of an option name may be inverted by preceding it with `no', so `setopt[0m
+[38;2;248;248;242m       No_Beep' is equivalent to `unsetopt beep'.  This inversion can only be done once,[0m
+[38;2;248;248;242m       so  `nonobeep'  is  not a synonym for `beep'.  Similarly, `tify' is not a synonym[0m
+[38;2;248;248;242m       for `nonotify' (the inversion of `notify').[0m
+
+[38;2;248;248;242m       Some options also have one or more single letter names.  There are  two  sets  of[0m
+[38;2;248;248;242m       single  letter  options:  one used by default, and another used to emulate sh/ksh[0m
+[38;2;248;248;242m       (used when the SH_OPTION_LETTERS option is set).  The single letter  options  can[0m
+[38;2;248;248;242m       be used on the shell command line, or with the set, setopt and unsetopt builtins,[0m
+[38;2;248;248;242m       as normal Unix options preceded by `-'.[0m
+
+[38;2;248;248;242m       The  sense  of  the single letter options may be inverted by using `+' instead of[0m
+[38;2;248;248;242m       `-'.  Some of the single letter option names refer to an  option  being  off,  in[0m
+[38;2;248;248;242m       which  case  the inversion of that name refers to the option being on.  For exam‐[0m
+[38;2;248;248;242m       ple, `+n' is the short name of `exec', and `-n' is the short name of  its  inver‐[0m
+[38;2;248;248;242m       sion, `noexec'.[0m
+
+[38;2;248;248;242m       In  strings  of  single letter options supplied to the shell at startup, trailing[0m
+[38;2;248;248;242m       whitespace will be ignored; for example the string `-f    ' will be treated  just[0m
+[38;2;248;248;242m       as  `-f',  but the string `-f i' is an error.  This is because many systems which[0m
+[38;2;248;248;242m       implement the `#!' mechanism for calling scripts do  not  strip  trailing  white‐[0m
+[38;2;248;248;242m       space.[0m
+
+[38;2;248;248;242m       It  is  possible for options to be set within a function scope.  See the descrip‐[0m
+[38;2;248;248;242m       tion of the option LOCAL_OPTIONS below.[0m
+
+[38;2;248;248;242mDESCRIPTION OF OPTIONS[0m
+[38;2;248;248;242m       In the following list, options set by default in all emulations are  marked  <D>;[0m
+[38;2;248;248;242m       those set by default only in csh, ksh, sh, or zsh emulations are marked <C>, <K>,[0m
+[38;2;248;248;242m       <S>, <Z> as appropriate.  When listing options (by `setopt', `unsetopt', `set -o'[0m
+[38;2;248;248;242m       or  `set  +o'), those turned on by default appear in the list prefixed with `no'.[0m
+[38;2;248;248;242m       Hence (unless KSH_OPTION_PRINT is set), `setopt' shows all options whose settings[0m
+[38;2;248;248;242m       are changed from the default.[0m
+
+[38;2;248;248;242m   Changing Directories[0m
+[38;2;248;248;242m       AUTO_CD (-J)[0m
+[38;2;248;248;242m              If a command is issued that can't be executed as a normal command, and the[0m
+[38;2;248;248;242m              command is the name of a directory, perform the cd command to that  direc‐[0m
+[38;2;248;248;242m              tory.   This  option  is  only applicable if the option SHIN_STDIN is set,[0m
+[38;2;248;248;242m              i.e. if commands are being read from standard input.  The  option  is  de‐[0m
+[38;2;248;248;242m              signed  for  interactive use; it is recommended that cd be used explicitly[0m
+[38;2;248;248;242m              in scripts to avoid ambiguity.[0m
+
+[38;2;248;248;242m       AUTO_PUSHD (-N)[0m
+[38;2;248;248;242m              Make cd push the old directory onto the directory stack.[0m
+
+[38;2;248;248;242m       CDABLE_VARS (-T)[0m
+[38;2;248;248;242m              If the argument to a cd command (or an implied cd with the AUTO_CD  option[0m
+[38;2;248;248;242m              set)  is  not  a directory, and does not begin with a slash, try to expand[0m
+[38;2;248;248;242m              the expression as if it were preceded by a `~' (see the section  `Filename[0m
+[38;2;248;248;242m              Expansion').[0m
+
+[38;2;248;248;242m       CD_SILENT[0m
+[38;2;248;248;242m              Never  print the working directory after a cd (whether explicit or implied[0m
+[38;2;248;248;242m              with the AUTO_CD option set). cd normally  prints  the  working  directory[0m
+[38;2;248;248;242m              when  the  argument given to it was -, a stack entry, or the name of a di‐[0m
+[38;2;248;248;242m              rectory found under CDPATH.  Note  that  this  is  distinct  from  pushd's[0m
+[38;2;248;248;242m              stack-printing behaviour, which is controlled by PUSHD_SILENT. This option[0m
+[38;2;248;248;242m              overrides the printing-related effects of POSIX_CD.[0m
+
+[38;2;248;248;242m       CHASE_DOTS[0m
+[38;2;248;248;242m              When  changing  to  a directory containing a path segment `..' which would[0m
+[38;2;248;248;242m              otherwise be treated as canceling the previous segment  in  the  path  (in[0m
+[38;2;248;248;242m              other  words,  `foo/..'  would be removed from the path, or if `..' is the[0m
+[38;2;248;248;242m              first part of the path, the last part of  the  current  working  directory[0m
+[38;2;248;248;242m              would  be  removed),  instead  resolve the path to the physical directory.[0m
+[38;2;248;248;242m              This option is overridden by CHASE_LINKS.[0m
+
+[38;2;248;248;242m              For example, suppose /foo/bar is a link to the directory /alt/rod.   With‐[0m
+[38;2;248;248;242m              out  this  option  set,  `cd /foo/bar/..' changes to /foo; with it set, it[0m
+[38;2;248;248;242m              changes to /alt.  The same applies if the current  directory  is  /foo/bar[0m
+[38;2;248;248;242m              and  `cd ..' is used.  Note that all other symbolic links in the path will[0m
+[38;2;248;248;242m              also be resolved.[0m
+
+[38;2;248;248;242m       CHASE_LINKS (-w)[0m
+[38;2;248;248;242m              Resolve symbolic links to their true values when changing directory.  This[0m
+[38;2;248;248;242m              also has the effect of CHASE_DOTS,  i.e.  a  `..'  path  segment  will  be[0m
+[38;2;248;248;242m              treated  as  referring  to the physical parent, even if the preceding path[0m
+[38;2;248;248;242m              segment is a symbolic link.[0m
+
+[38;2;248;248;242m       POSIX_CD <K> <S>[0m
+[38;2;248;248;242m              Modifies the behaviour of cd, chdir and pushd commands to make  them  more[0m
+[38;2;248;248;242m              compatible with the POSIX standard. The behaviour with the option unset is[0m
+[38;2;248;248;242m              described  in  the documentation for the cd builtin in zshbuiltins(1).  If[0m
+[38;2;248;248;242m              the option is set, the shell does not test for directories beneath the lo‐[0m
+[38;2;248;248;242m              cal directory (`.') until  after  all  directories  in  cdpath  have  been[0m
+[38;2;248;248;242m              tested,  and  the  cd and chdir commands do not recognise arguments of the[0m
+[38;2;248;248;242m              form `{+|-}n' as directory stack entries.[0m
+
+[38;2;248;248;242m              Also, if the option is set, the conditions under which  the  shell  prints[0m
+[38;2;248;248;242m              the  new directory after changing to it are modified.  It is no longer re‐[0m
+[38;2;248;248;242m              stricted to interactive shells (although printing of the  directory  stack[0m
+[38;2;248;248;242m              with  pushd is still limited to interactive shells); and any use of a com‐[0m
+[38;2;248;248;242m              ponent of CDPATH, including a `.' but excluding an empty component that is[0m
+[38;2;248;248;242m              otherwise treated as `.', causes the directory to be printed.[0m
+
+[38;2;248;248;242m       PUSHD_IGNORE_DUPS[0m
+[38;2;248;248;242m              Don't push multiple copies of the same directory onto the directory stack.[0m
+
+[38;2;248;248;242m       PUSHD_MINUS[0m
+[38;2;248;248;242m              Exchanges the meanings of `+' and `-' when used with a number to specify a[0m
+[38;2;248;248;242m              directory in the stack.[0m
+
+[38;2;248;248;242m       PUSHD_SILENT (-E)[0m
+[38;2;248;248;242m              Do not print the directory stack after pushd or popd.[0m
+
+[38;2;248;248;242m       PUSHD_TO_HOME (-D)[0m
+[38;2;248;248;242m              Have pushd with no arguments act like `pushd $HOME'.[0m
+
+[38;2;248;248;242m   Completion[0m
+[38;2;248;248;242m       ALWAYS_LAST_PROMPT <D>[0m
+[38;2;248;248;242m              If unset, key functions that list completions try to return  to  the  last[0m
+[38;2;248;248;242m              prompt  if  given a numeric argument. If set these functions try to return[0m
+[38;2;248;248;242m              to the last prompt if given no numeric argument.[0m
+
+[38;2;248;248;242m       ALWAYS_TO_END[0m
+[38;2;248;248;242m              If a completion is performed with the cursor within a  word,  and  a  full[0m
+[38;2;248;248;242m              completion  is inserted, the cursor is moved to the end of the word.  That[0m
+[38;2;248;248;242m              is, the cursor is moved to the end of the word if either a single match is[0m
+[38;2;248;248;242m              inserted or menu completion is performed.[0m
+
+[38;2;248;248;242m       AUTO_LIST (-9) <D>[0m
+[38;2;248;248;242m              Automatically list choices on an ambiguous completion.[0m
+
+[38;2;248;248;242m       AUTO_MENU <D>[0m
+[38;2;248;248;242m              Automatically use menu completion after the second consecutive request for[0m
+[38;2;248;248;242m              completion, for example by pressing the tab key repeatedly. This option is[0m
+[38;2;248;248;242m              overridden by MENU_COMPLETE.[0m
+
+[38;2;248;248;242m       AUTO_NAME_DIRS[0m
+[38;2;248;248;242m              Any parameter that is set to the absolute name of a directory  immediately[0m
+[38;2;248;248;242m              becomes  a  name for that directory, that will be used by the `%~' and re‐[0m
+[38;2;248;248;242m              lated prompt sequences, and will be available when completion is performed[0m
+[38;2;248;248;242m              on a word starting with `~'.  (Otherwise, the parameter must  be  used  in[0m
+[38;2;248;248;242m              the form `~param' first.)[0m
+
+[38;2;248;248;242m       AUTO_PARAM_KEYS <D>[0m
+[38;2;248;248;242m              If  a  parameter  name was completed and a following character (normally a[0m
+[38;2;248;248;242m              space) automatically inserted, and the next  character  typed  is  one  of[0m
+[38;2;248;248;242m              those that have to come directly after the name (like `}', `:', etc.), the[0m
+[38;2;248;248;242m              automatically  added  character  is  deleted,  so that the character typed[0m
+[38;2;248;248;242m              comes immediately after the parameter name.  Completion in a brace  expan‐[0m
+[38;2;248;248;242m              sion  is  affected  similarly: the added character is a `,', which will be[0m
+[38;2;248;248;242m              removed if `}' is typed next.[0m
+
+[38;2;248;248;242m       AUTO_PARAM_SLASH <D>[0m
+[38;2;248;248;242m              If a parameter is completed whose content is the name of a directory, then[0m
+[38;2;248;248;242m              add a trailing slash instead of a space.[0m
+
+[38;2;248;248;242m       AUTO_REMOVE_SLASH <D>[0m
+[38;2;248;248;242m              When the last character resulting from a completion is  a  slash  and  the[0m
+[38;2;248;248;242m              next  character  typed  is  a word delimiter, a slash, or a character that[0m
+[38;2;248;248;242m              ends a command (such as a semicolon or an ampersand), remove the slash.[0m
+
+[38;2;248;248;242m       BASH_AUTO_LIST[0m
+[38;2;248;248;242m              On an ambiguous completion, automatically list choices when the completion[0m
+[38;2;248;248;242m              function is called  twice  in  succession.   This  takes  precedence  over[0m
+[38;2;248;248;242m              AUTO_LIST.   The  setting of LIST_AMBIGUOUS is respected.  If AUTO_MENU is[0m
+[38;2;248;248;242m              set, the menu behaviour will then start with the third press.   Note  that[0m
+[38;2;248;248;242m              this will not work with MENU_COMPLETE, since repeated completion calls im‐[0m
+[38;2;248;248;242m              mediately cycle through the list in that case.[0m
+
+[38;2;248;248;242m       COMPLETE_ALIASES[0m
+[38;2;248;248;242m              Prevents aliases on the command line from being internally substituted be‐[0m
+[38;2;248;248;242m              fore  completion is attempted.  The effect is to make the alias a distinct[0m
+[38;2;248;248;242m              command for completion purposes.[0m
+
+[38;2;248;248;242m       COMPLETE_IN_WORD[0m
+[38;2;248;248;242m              If unset, the cursor is set to the  end  of  the  word  if  completion  is[0m
+[38;2;248;248;242m              started. Otherwise it stays there and completion is done from both ends.[0m
+
+[38;2;248;248;242m       GLOB_COMPLETE[0m
+[38;2;248;248;242m              When  the current word has a glob pattern, do not insert all the words re‐[0m
+[38;2;248;248;242m              sulting from the expansion but generate matches as for completion and  cy‐[0m
+[38;2;248;248;242m              cle through them like MENU_COMPLETE. The matches are generated as if a `*'[0m
+[38;2;248;248;242m              was  added  to  the  end  of the word, or inserted at the cursor when COM‐[0m
+[38;2;248;248;242m              PLETE_IN_WORD is set.  This actually uses pattern matching, not  globbing,[0m
+[38;2;248;248;242m              so  it  works  not only for files but for any completion, such as options,[0m
+[38;2;248;248;242m              user names, etc.[0m
+
+[38;2;248;248;242m              Note that when the pattern matcher is used, matching control (for example,[0m
+[38;2;248;248;242m              case-insensitive or anchored matching) cannot be  used.   This  limitation[0m
+[38;2;248;248;242m              only  applies  when the current word contains a pattern; simply turning on[0m
+[38;2;248;248;242m              the GLOB_COMPLETE option does not have this effect.[0m
+
+[38;2;248;248;242m       HASH_LIST_ALL <D>[0m
+[38;2;248;248;242m              Whenever a command completion or spelling correction  is  attempted,  make[0m
+[38;2;248;248;242m              sure  the  entire command path is hashed first.  This makes the first com‐[0m
+[38;2;248;248;242m              pletion slower but avoids false reports of spelling errors.[0m
+
+[38;2;248;248;242m       LIST_AMBIGUOUS <D>[0m
+[38;2;248;248;242m              This option works when AUTO_LIST or BASH_AUTO_LIST is also set.  If  there[0m
+[38;2;248;248;242m              is an unambiguous prefix to insert on the command line, that is done with‐[0m
+[38;2;248;248;242m              out a completion list being displayed; in other words, auto-listing behav‐[0m
+[38;2;248;248;242m              iour  only  takes  place  when  nothing would be inserted.  In the case of[0m
+[38;2;248;248;242m              BASH_AUTO_LIST, this means that the list will be delayed to the third call[0m
+[38;2;248;248;242m              of the function.[0m
+
+[38;2;248;248;242m       LIST_BEEP <D>[0m
+[38;2;248;248;242m              Beep on an ambiguous completion.  More accurately, this forces the comple‐[0m
+[38;2;248;248;242m              tion widgets to return status 1 on an ambiguous completion,  which  causes[0m
+[38;2;248;248;242m              the  shell to beep if the option BEEP is also set; this may be modified if[0m
+[38;2;248;248;242m              completion is called from a user-defined widget.[0m
+
+[38;2;248;248;242m       LIST_PACKED[0m
+[38;2;248;248;242m              Try to make the completion list smaller (occupying less lines) by printing[0m
+[38;2;248;248;242m              the matches in columns with different widths.[0m
+
+[38;2;248;248;242m       LIST_ROWS_FIRST[0m
+[38;2;248;248;242m              Lay out the matches in completion lists sorted horizontally, that is,  the[0m
+[38;2;248;248;242m              second match is to the right of the first one, not under it as usual.[0m
+
+[38;2;248;248;242m       LIST_TYPES (-X) <D>[0m
+[38;2;248;248;242m              When  listing  files  that are possible completions, show the type of each[0m
+[38;2;248;248;242m              file with a trailing identifying mark.[0m
+
+[38;2;248;248;242m       MENU_COMPLETE (-Y)[0m
+[38;2;248;248;242m              On an ambiguous completion, instead of listing possibilities  or  beeping,[0m
+[38;2;248;248;242m              insert  the  first  match  immediately.  Then when completion is requested[0m
+[38;2;248;248;242m              again, remove the first match and insert  the  second  match,  etc.   When[0m
+[38;2;248;248;242m              there  are  no  more  matches,  go  back  to  the  first  one  again.  re‐[0m
+[38;2;248;248;242m              verse-menu-complete may be used to loop through the list in the other  di‐[0m
+[38;2;248;248;242m              rection. This option overrides AUTO_MENU.[0m
+
+[38;2;248;248;242m       REC_EXACT (-S)[0m
+[38;2;248;248;242m              If the string on the command line exactly matches one of the possible com‐[0m
+[38;2;248;248;242m              pletions,  it  is accepted, even if there is another completion (i.e. that[0m
+[38;2;248;248;242m              string with something else added) that also matches.[0m
+
+[38;2;248;248;242m   Expansion and Globbing[0m
+[38;2;248;248;242m       BAD_PATTERN (+2) <C> <Z>[0m
+[38;2;248;248;242m              If a pattern for filename generation is badly formed, print an error  mes‐[0m
+[38;2;248;248;242m              sage.  (If this option is unset, the pattern will be left unchanged.)[0m
+
+[38;2;248;248;242m       BARE_GLOB_QUAL <Z>[0m
+[38;2;248;248;242m              In  a  glob  pattern,  treat  a trailing set of parentheses as a qualifier[0m
+[38;2;248;248;242m              list, if it contains no `|', `(' or (if special) `~' characters.  See  the[0m
+[38;2;248;248;242m              section `Filename Generation'.[0m
+
+[38;2;248;248;242m       BRACE_CCL[0m
+[38;2;248;248;242m              Expand  expressions  in braces which would not otherwise undergo brace ex‐[0m
+[38;2;248;248;242m              pansion to a lexically ordered list of all the characters.  See  the  sec‐[0m
+[38;2;248;248;242m              tion `Brace Expansion'.[0m
+
+[38;2;248;248;242m       CASE_GLOB <D>[0m
+[38;2;248;248;242m              Make  globbing  (filename  generation) sensitive to case.  Note that other[0m
+[38;2;248;248;242m              uses of patterns are always sensitive to case.  If the  option  is  unset,[0m
+[38;2;248;248;242m              the presence of any character which is special to filename generation will[0m
+[38;2;248;248;242m              cause case-insensitive matching.  For example, cvs(/) can match the direc‐[0m
+[38;2;248;248;242m              tory  CVS  owing  to  the presence of the globbing flag (unless the option[0m
+[38;2;248;248;242m              BARE_GLOB_QUAL is unset).[0m
+
+[38;2;248;248;242m       CASE_MATCH <D>[0m
+[38;2;248;248;242m              Make regular expressions using the  zsh/regex  module  (including  matches[0m
+[38;2;248;248;242m              with =~) sensitive to case.[0m
+
+[38;2;248;248;242m       CASE_PATHS[0m
+[38;2;248;248;242m              If  CASE_PATHS is not set (the default), CASE_GLOB affects the interpreta‐[0m
+[38;2;248;248;242m              tion of every path component, whenever a special character appears in  any[0m
+[38;2;248;248;242m              component.   When CASE_PATHS is set, file path components that do not con‐[0m
+[38;2;248;248;242m              tain special filename generation characters are always sensitive to  case,[0m
+[38;2;248;248;242m              thus  restricting NO_CASE_GLOB to components that contain globbing charac‐[0m
+[38;2;248;248;242m              ters.[0m
+
+[38;2;248;248;242m              Note that if  the  filesystem  itself  is  not  sensitive  to  case,  then[0m
+[38;2;248;248;242m              CASE_PATHS has no effect.[0m
+
+[38;2;248;248;242m       CSH_NULL_GLOB <C>[0m
+[38;2;248;248;242m              If  a  pattern  for filename generation has no matches, delete the pattern[0m
+[38;2;248;248;242m              from the argument list; do not report an error unless all the patterns  in[0m
+[38;2;248;248;242m              a command have no matches.  Overrides NOMATCH.[0m
+
+[38;2;248;248;242m       EQUALS <Z>[0m
+[38;2;248;248;242m              Perform = filename expansion.  (See the section `Filename Expansion'.)[0m
+
+[38;2;248;248;242m       EXTENDED_GLOB[0m
+[38;2;248;248;242m              Treat  the  `#',  `~'  and `^' characters as part of patterns for filename[0m
+[38;2;248;248;242m              generation, etc.  (An initial unquoted `~' always produces named directory[0m
+[38;2;248;248;242m              expansion.)[0m
+
+[38;2;248;248;242m       FORCE_FLOAT[0m
+[38;2;248;248;242m              Constants in arithmetic evaluation will be treated as floating point  even[0m
+[38;2;248;248;242m              without  the  use of a decimal point; the values of integer variables will[0m
+[38;2;248;248;242m              be converted to floating point when used in arithmetic expressions.  Inte‐[0m
+[38;2;248;248;242m              gers in any base will be converted.[0m
+
+[38;2;248;248;242m       GLOB (+F, ksh: +f) <D>[0m
+[38;2;248;248;242m              Perform filename generation (globbing).  (See the section `Filename Gener‐[0m
+[38;2;248;248;242m              ation'.)[0m
+
+[38;2;248;248;242m       GLOB_ASSIGN <C>[0m
+[38;2;248;248;242m              If this option is set, filename generation (globbing) is performed on  the[0m
+[38;2;248;248;242m              right  hand side of scalar parameter assignments of the form `name=pattern[0m
+[38;2;248;248;242m              (e.g. `foo=*').  If the result has more than one word the  parameter  will[0m
+[38;2;248;248;242m              become an array with those words as arguments. This option is provided for[0m
+[38;2;248;248;242m              backwards  compatibility  only:  globbing is always performed on the right[0m
+[38;2;248;248;242m              hand side of array assignments of the form `name=(value)' (e.g. `foo=(*)')[0m
+[38;2;248;248;242m              and this form is recommended for clarity; with this option set, it is  not[0m
+[38;2;248;248;242m              possible to predict whether the result will be an array or a scalar.[0m
+
+[38;2;248;248;242m       GLOB_DOTS (-4)[0m
+[38;2;248;248;242m              Do not require a leading `.' in a filename to be matched explicitly.[0m
+
+[38;2;248;248;242m       GLOB_STAR_SHORT[0m
+[38;2;248;248;242m              When  this  option is set and the default zsh-style globbing is in effect,[0m
+[38;2;248;248;242m              the pattern `**/*' can be abbreviated to `**' and the pattern `***/*'  can[0m
+[38;2;248;248;242m              be abbreviated to ***.  Hence `**.c' finds a file ending in .c in any sub‐[0m
+[38;2;248;248;242m              directory,  and `***.c' does the same while also following symbolic links.[0m
+[38;2;248;248;242m              A / immediately after the `**' or `***' forces the pattern to  be  treated[0m
+[38;2;248;248;242m              as the unabbreviated form.[0m
+
+[38;2;248;248;242m       GLOB_SUBST <C> <K> <S>[0m
+[38;2;248;248;242m              Treat  any characters resulting from parameter expansion as being eligible[0m
+[38;2;248;248;242m              for filename expansion and filename generation, and any characters result‐[0m
+[38;2;248;248;242m              ing from command substitution as being eligible for  filename  generation.[0m
+[38;2;248;248;242m              Braces (and commas in between) do not become eligible for expansion.[0m
+
+[38;2;248;248;242m       HIST_SUBST_PATTERN[0m
+[38;2;248;248;242m              Substitutions  using  the  :s  and :& history modifiers are performed with[0m
+[38;2;248;248;242m              pattern matching instead of string matching.  This occurs wherever history[0m
+[38;2;248;248;242m              modifiers are valid, including glob qualifiers and  parameters.   See  the[0m
+[38;2;248;248;242m              section `Modifiers' in zshexpn(1).[0m
+
+[38;2;248;248;242m       IGNORE_BRACES (-I) <S>[0m
+[38;2;248;248;242m              Do not perform brace expansion.  For historical reasons this also includes[0m
+[38;2;248;248;242m              the effect of the IGNORE_CLOSE_BRACES option.[0m
+
+[38;2;248;248;242m       IGNORE_CLOSE_BRACES[0m
+[38;2;248;248;242m              When  neither  this  option  nor  IGNORE_BRACES is set, a sole close brace[0m
+[38;2;248;248;242m              character `}' is syntactically significant at any point on a command line.[0m
+[38;2;248;248;242m              This has the effect that no semicolon or newline is necessary  before  the[0m
+[38;2;248;248;242m              brace  terminating a function or current shell construct.  When either op‐[0m
+[38;2;248;248;242m              tion is set, a closing brace is syntactically significant only in  command[0m
+[38;2;248;248;242m              position.  Unlike IGNORE_BRACES, this option does not disable brace expan‐[0m
+[38;2;248;248;242m              sion.[0m
+
+[38;2;248;248;242m              For example, with both options unset a function may be defined in the fol‐[0m
+[38;2;248;248;242m              lowing fashion:[0m
+
+[38;2;248;248;242m                     args() { echo $# }[0m
+
+[38;2;248;248;242m              while if either option is set, this does not work and something equivalent[0m
+[38;2;248;248;242m              to the following is required:[0m
+
+[38;2;248;248;242m                     args() { echo $#; }[0m
+
+[38;2;248;248;242m       KSH_GLOB <K>[0m
+[38;2;248;248;242m              In  pattern  matching,  the interpretation of parentheses is affected by a[0m
+[38;2;248;248;242m              preceding `@', `*', `+', `?' or `!'.  See the  section  `Filename  Genera‐[0m
+[38;2;248;248;242m              tion'.[0m
+
+[38;2;248;248;242m       MAGIC_EQUAL_SUBST[0m
+[38;2;248;248;242m              All  unquoted  arguments of the form `anything=expression' appearing after[0m
+[38;2;248;248;242m              the command name have filename expansion (that is, where expression has  a[0m
+[38;2;248;248;242m              leading  `~' or `=') performed on expression as if it were a parameter as‐[0m
+[38;2;248;248;242m              signment.  The argument is not otherwise treated specially; it  is  passed[0m
+[38;2;248;248;242m              to  the  command as a single argument, and not used as an actual parameter[0m
+[38;2;248;248;242m              assignment.  For example, in echo foo=~/bar:~/rod, both occurrences  of  ~[0m
+[38;2;248;248;242m              would be replaced.  Note that this happens anyway with typeset and similar[0m
+[38;2;248;248;242m              statements.[0m
+
+[38;2;248;248;242m              This  option  respects  the  setting  of the KSH_TYPESET option.  In other[0m
+[38;2;248;248;242m              words, if both options are in effect, arguments looking  like  assignments[0m
+[38;2;248;248;242m              will not undergo word splitting.[0m
+
+[38;2;248;248;242m       MARK_DIRS (-8, ksh: -X)[0m
+[38;2;248;248;242m              Append  a trailing `/' to all directory names resulting from filename gen‐[0m
+[38;2;248;248;242m              eration (globbing).[0m
+
+[38;2;248;248;242m       MULTIBYTE <D>[0m
+[38;2;248;248;242m              Respect multibyte characters when found in strings.  When this  option  is[0m
+[38;2;248;248;242m              set,  strings  are examined using the system library to determine how many[0m
+[38;2;248;248;242m              bytes form a character, depending on the current locale.  This affects the[0m
+[38;2;248;248;242m              way characters are counted in pattern matching, parameter values and vari‐[0m
+[38;2;248;248;242m              ous delimiters.[0m
+
+[38;2;248;248;242m              The option is on by default if the shell was compiled with  MULTIBYTE_SUP‐[0m
+[38;2;248;248;242m              PORT; otherwise it is off by default and has no effect if turned on.[0m
+
+[38;2;248;248;242m              If  the  option is off a single byte is always treated as a single charac‐[0m
+[38;2;248;248;242m              ter.  This setting is designed purely for examining strings known to  con‐[0m
+[38;2;248;248;242m              tain  raw  bytes or other values that may not be characters in the current[0m
+[38;2;248;248;242m              locale.  It is not necessary to unset the option merely because the  char‐[0m
+[38;2;248;248;242m              acter set for the current locale does not contain multibyte characters.[0m
+
+[38;2;248;248;242m              The  option does not affect the shell's editor,  which always uses the lo‐[0m
+[38;2;248;248;242m              cale to determine multibyte characters.  This is because the character set[0m
+[38;2;248;248;242m              displayed by the terminal emulator is independent of shell settings.[0m
+
+[38;2;248;248;242m       NOMATCH (+3) <C> <Z>[0m
+[38;2;248;248;242m              If a pattern for filename generation has no matches, print an  error,  in‐[0m
+[38;2;248;248;242m              stead  of leaving it unchanged in the argument list.  This also applies to[0m
+[38;2;248;248;242m              file expansion of an initial `~' or `='.[0m
+
+[38;2;248;248;242m       NULL_GLOB (-G)[0m
+[38;2;248;248;242m              If a pattern for filename generation has no matches,  delete  the  pattern[0m
+[38;2;248;248;242m              from the argument list instead of reporting an error.  Overrides NOMATCH.[0m
+
+[38;2;248;248;242m       NUMERIC_GLOB_SORT[0m
+[38;2;248;248;242m              If  numeric  filenames  are matched by a filename generation pattern, sort[0m
+[38;2;248;248;242m              the filenames numerically rather than lexicographically.[0m
+
+[38;2;248;248;242m       RC_EXPAND_PARAM (-P)[0m
+[38;2;248;248;242m              Array expansions of the form `foo${xx}bar', where the parameter xx is  set[0m
+[38;2;248;248;242m              to  (a b c), are substituted with `fooabar foobbar foocbar' instead of the[0m
+[38;2;248;248;242m              default `fooa b cbar'.  Note that an empty array will therefore cause  all[0m
+[38;2;248;248;242m              arguments to be removed.[0m
+
+[38;2;248;248;242m       REMATCH_PCRE[0m
+[38;2;248;248;242m              If  set,  regular  expression  matching  with  the  =~  operator  will use[0m
+[38;2;248;248;242m              Perl-Compatible Regular Expressions from the PCRE library.  (The  zsh/pcre[0m
+[38;2;248;248;242m              module  must  be available.)  If not set, regular expressions will use the[0m
+[38;2;248;248;242m              extended regexp syntax provided by the system libraries.[0m
+
+[38;2;248;248;242m       SH_GLOB <K> <S>[0m
+[38;2;248;248;242m              Disables the special meaning of `(', `|', `)' and '<' for globbing the re‐[0m
+[38;2;248;248;242m              sult of parameter and command substitutions,  and  in  some  other  places[0m
+[38;2;248;248;242m              where  the shell accepts patterns.  If SH_GLOB is set but KSH_GLOB is not,[0m
+[38;2;248;248;242m              the shell allows the interpretation of subshell  expressions  enclosed  in[0m
+[38;2;248;248;242m              parentheses  in  some  cases  where  there  is no space before the opening[0m
+[38;2;248;248;242m              parenthesis, e.g. !(true) is interpreted as if there were  a  space  after[0m
+[38;2;248;248;242m              the !.  This option is set by default if zsh is invoked as sh or ksh.[0m
+
+[38;2;248;248;242m       UNSET (+u, ksh: +u) <K> <S> <Z>[0m
+[38;2;248;248;242m              Treat  unset parameters as if they were empty when substituting, and as if[0m
+[38;2;248;248;242m              they were zero when reading  their  values  in  arithmetic  expansion  and[0m
+[38;2;248;248;242m              arithmetic commands.  Otherwise they are treated as an error.[0m
+
+[38;2;248;248;242m       WARN_CREATE_GLOBAL[0m
+[38;2;248;248;242m              Print  a  warning message when a global parameter is created in a function[0m
+[38;2;248;248;242m              by an assignment or in math context.  This often indicates that a  parame‐[0m
+[38;2;248;248;242m              ter  has not been declared local when it should have been.  Parameters ex‐[0m
+[38;2;248;248;242m              plicitly declared global from within a function using typeset  -g  do  not[0m
+[38;2;248;248;242m              cause  a warning.  Note that there is no warning when a local parameter is[0m
+[38;2;248;248;242m              assigned to in a nested function, which may also indicate an error.[0m
+
+[38;2;248;248;242m       WARN_NESTED_VAR[0m
+[38;2;248;248;242m              Print a warning message when an existing parameter from an enclosing func‐[0m
+[38;2;248;248;242m              tion scope, or global, is set in a function by an assignment  or  in  math[0m
+[38;2;248;248;242m              context.  Assignment to shell special parameters does not cause a warning.[0m
+[38;2;248;248;242m              This is the companion to WARN_CREATE_GLOBAL as in this case the warning is[0m
+[38;2;248;248;242m              only  printed  when  a  parameter  is not created.  Where possible, use of[0m
+[38;2;248;248;242m              typeset -g to set the parameter suppresses the error, but note  that  this[0m
+[38;2;248;248;242m              needs  to be used every time the parameter is set.  To restrict the effect[0m
+[38;2;248;248;242m              of this option to a single function scope, use `functions -W'.[0m
+
+[38;2;248;248;242m              For example, the following code produces a warning for the assignment  in‐[0m
+[38;2;248;248;242m              side the function nested as that overrides the value within toplevel[0m
+
+[38;2;248;248;242m                     toplevel() {[0m
+[38;2;248;248;242m                       local foo="in fn"[0m
+[38;2;248;248;242m                       nested[0m
+[38;2;248;248;242m                     }[0m
+[38;2;248;248;242m                     nested() {[0m
+[38;2;248;248;242m                          foo="in nested"[0m
+[38;2;248;248;242m                     }[0m
+[38;2;248;248;242m                     setopt warn_nested_var[0m
+[38;2;248;248;242m                     toplevel[0m
+
+[38;2;248;248;242m   History[0m
+[38;2;248;248;242m       APPEND_HISTORY <D>[0m
+[38;2;248;248;242m              If this is set, zsh sessions will append their history list to the history[0m
+[38;2;248;248;242m              file,  rather  than  replace it. Thus, multiple parallel zsh sessions will[0m
+[38;2;248;248;242m              all have the new entries from their history lists  added  to  the  history[0m
+[38;2;248;248;242m              file,  in  the  order that they exit.  The file will still be periodically[0m
+[38;2;248;248;242m              re-written to trim it when the number of lines grows 20% beyond the  value[0m
+[38;2;248;248;242m              specified by $SAVEHIST (see also the HIST_SAVE_BY_COPY option).[0m
+
+[38;2;248;248;242m       BANG_HIST (+K) <C> <Z>[0m
+[38;2;248;248;242m              Perform  textual  history expansion, csh-style, treating the character `!'[0m
+[38;2;248;248;242m              specially.[0m
+
+[38;2;248;248;242m       EXTENDED_HISTORY <C>[0m
+[38;2;248;248;242m              Save each command's beginning timestamp (in seconds since the  epoch)  and[0m
+[38;2;248;248;242m              the  duration  (in  seconds) to the history file.  The format of this pre‐[0m
+[38;2;248;248;242m              fixed data is:[0m
+
+[38;2;248;248;242m              `: <beginning time>:<elapsed seconds>;<command>'.[0m
+
+[38;2;248;248;242m       HIST_ALLOW_CLOBBER[0m
+[38;2;248;248;242m              Add `|' to output redirections in the history.  This allows history refer‐[0m
+[38;2;248;248;242m              ences to clobber files even when CLOBBER is unset.[0m
+
+[38;2;248;248;242m       HIST_BEEP <D>[0m
+[38;2;248;248;242m              Beep in ZLE when a widget attempts to access a history entry  which  isn't[0m
+[38;2;248;248;242m              there.[0m
+
+[38;2;248;248;242m       HIST_EXPIRE_DUPS_FIRST[0m
+[38;2;248;248;242m              If  the  internal  history  needs to be trimmed to add the current command[0m
+[38;2;248;248;242m              line, setting this option will cause the oldest history event that  has  a[0m
+[38;2;248;248;242m              duplicate  to  be  lost  before  losing a unique event from the list.  You[0m
+[38;2;248;248;242m              should be sure to set the value of HISTSIZE to a larger number than  SAVE‐[0m
+[38;2;248;248;242m              HIST  in  order to give you some room for the duplicated events, otherwise[0m
+[38;2;248;248;242m              this option will behave just like HIST_IGNORE_ALL_DUPS  once  the  history[0m
+[38;2;248;248;242m              fills up with unique events.[0m
+
+[38;2;248;248;242m       HIST_FCNTL_LOCK[0m
+[38;2;248;248;242m              When writing out the history file, by default zsh uses ad-hoc file locking[0m
+[38;2;248;248;242m              to avoid known problems with locking on some operating systems.  With this[0m
+[38;2;248;248;242m              option  locking  is  done  by means of the system's fcntl call, where this[0m
+[38;2;248;248;242m              method is available.  On recent operating systems this may provide  better[0m
+[38;2;248;248;242m              performance,  in  particular  avoiding  history  corruption when files are[0m
+[38;2;248;248;242m              stored on NFS.[0m
+
+[38;2;248;248;242m       HIST_FIND_NO_DUPS[0m
+[38;2;248;248;242m              When searching for history entries in the line editor, do not display  du‐[0m
+[38;2;248;248;242m              plicates  of  a line previously found, even if the duplicates are not con‐[0m
+[38;2;248;248;242m              tiguous.[0m
+
+[38;2;248;248;242m       HIST_IGNORE_ALL_DUPS[0m
+[38;2;248;248;242m              If a new command line being added to the history list duplicates an  older[0m
+[38;2;248;248;242m              one,  the  older  command  is removed from the list (even if it is not the[0m
+[38;2;248;248;242m              previous event).[0m
+
+[38;2;248;248;242m       HIST_IGNORE_DUPS (-h)[0m
+[38;2;248;248;242m              Do not enter command lines into the history list if they are duplicates of[0m
+[38;2;248;248;242m              the previous event.[0m
+
+[38;2;248;248;242m       HIST_IGNORE_SPACE (-g)[0m
+[38;2;248;248;242m              Remove command lines from the history list when the first character on the[0m
+[38;2;248;248;242m              line is a space, or when one of the expanded aliases  contains  a  leading[0m
+[38;2;248;248;242m              space.   Only  normal aliases (not global or suffix aliases) have this be‐[0m
+[38;2;248;248;242m              haviour.  Note that the command lingers in the internal history until  the[0m
+[38;2;248;248;242m              next  command is entered before it vanishes, allowing you to briefly reuse[0m
+[38;2;248;248;242m              or edit the line.  If you want to make it vanish right away without enter‐[0m
+[38;2;248;248;242m              ing another command, type a space and press return.[0m
+
+[38;2;248;248;242m       HIST_LEX_WORDS[0m
+[38;2;248;248;242m              By default, shell history that is read in from files is split  into  words[0m
+[38;2;248;248;242m              on  all white space.  This means that arguments with quoted whitespace are[0m
+[38;2;248;248;242m              not correctly handled, with the consequence that references  to  words  in[0m
+[38;2;248;248;242m              history  lines  that  have  been read from a file may be inaccurate.  When[0m
+[38;2;248;248;242m              this option is set, words read in from a history file are divided up in  a[0m
+[38;2;248;248;242m              similar fashion to normal shell command line handling.  Although this pro‐[0m
+[38;2;248;248;242m              duces  more accurately delimited words, if the size of the history file is[0m
+[38;2;248;248;242m              large this can be slow.  Trial and error is necessary to decide.[0m
+
+[38;2;248;248;242m       HIST_NO_FUNCTIONS[0m
+[38;2;248;248;242m              Remove function definitions from the history list.  Note that the function[0m
+[38;2;248;248;242m              lingers in the internal history until the next command is  entered  before[0m
+[38;2;248;248;242m              it vanishes, allowing you to briefly reuse or edit the definition.[0m
+
+[38;2;248;248;242m       HIST_NO_STORE[0m
+[38;2;248;248;242m              Remove  the  history  (fc  -l) command from the history list when invoked.[0m
+[38;2;248;248;242m              Note that the command lingers in the internal history until the next  com‐[0m
+[38;2;248;248;242m              mand  is entered before it vanishes, allowing you to briefly reuse or edit[0m
+[38;2;248;248;242m              the line.[0m
+
+[38;2;248;248;242m       HIST_REDUCE_BLANKS[0m
+[38;2;248;248;242m              Remove superfluous blanks from each command line being added to  the  his‐[0m
+[38;2;248;248;242m              tory list.[0m
+
+[38;2;248;248;242m       HIST_SAVE_BY_COPY <D>[0m
+[38;2;248;248;242m              When  the  history file is re-written, we normally write out a copy of the[0m
+[38;2;248;248;242m              file named $HISTFILE.new and then rename it over the old one.  However, if[0m
+[38;2;248;248;242m              this option is unset, we instead truncate the old history file  and  write[0m
+[38;2;248;248;242m              out  the new version in-place.  If one of the history-appending options is[0m
+[38;2;248;248;242m              enabled, this option only has an effect when  the  enlarged  history  file[0m
+[38;2;248;248;242m              needs  to be re-written to trim it down to size.  Disable this only if you[0m
+[38;2;248;248;242m              have special needs, as doing so makes it possible to lose history  entries[0m
+[38;2;248;248;242m              if zsh gets interrupted during the save.[0m
+
+[38;2;248;248;242m              When  writing out a copy of the history file, zsh preserves the old file's[0m
+[38;2;248;248;242m              permissions and group information, but will refuse to write out a new file[0m
+[38;2;248;248;242m              if it would change the history file's owner.[0m
+
+[38;2;248;248;242m       HIST_SAVE_NO_DUPS[0m
+[38;2;248;248;242m              When writing out the history file, older  commands  that  duplicate  newer[0m
+[38;2;248;248;242m              ones are omitted.[0m
+
+[38;2;248;248;242m       HIST_VERIFY[0m
+[38;2;248;248;242m              Whenever  the user enters a line with history expansion, don't execute the[0m
+[38;2;248;248;242m              line directly; instead, perform history expansion and reload the line into[0m
+[38;2;248;248;242m              the editing buffer.[0m
+
+[38;2;248;248;242m       INC_APPEND_HISTORY[0m
+[38;2;248;248;242m              This option works like APPEND_HISTORY except that new  history  lines  are[0m
+[38;2;248;248;242m              added to the $HISTFILE incrementally (as soon as they are entered), rather[0m
+[38;2;248;248;242m              than  waiting  until the shell exits.  The file will still be periodically[0m
+[38;2;248;248;242m              re-written to trim it when the number of lines grows 20% beyond the  value[0m
+[38;2;248;248;242m              specified by $SAVEHIST (see also the HIST_SAVE_BY_COPY option).[0m
+
+[38;2;248;248;242m       INC_APPEND_HISTORY_TIME[0m
+[38;2;248;248;242m              This  option  is a variant of INC_APPEND_HISTORY in which, where possible,[0m
+[38;2;248;248;242m              the history entry is written out to the file after  the  command  is  fin‐[0m
+[38;2;248;248;242m              ished,  so that the time taken by the command is recorded correctly in the[0m
+[38;2;248;248;242m              history file in EXTENDED_HISTORY format.  This means that the history  en‐[0m
+[38;2;248;248;242m              try  will  not  be available immediately from other instances of the shell[0m
+[38;2;248;248;242m              that are using the same history file.[0m
+
+[38;2;248;248;242m              This option is only useful if  INC_APPEND_HISTORY  and  SHARE_HISTORY  are[0m
+[38;2;248;248;242m              turned off.  The three options should be considered mutually exclusive.[0m
+
+[38;2;248;248;242m       SHARE_HISTORY <K>[0m
+
+[38;2;248;248;242m              This  option  both  imports  new  commands from the history file, and also[0m
+[38;2;248;248;242m              causes your typed commands to be appended to the history file (the  latter[0m
+[38;2;248;248;242m              is  like specifying INC_APPEND_HISTORY, which should be turned off if this[0m
+[38;2;248;248;242m              option is in effect).  The history lines are also output  with  timestamps[0m
+[38;2;248;248;242m              ala EXTENDED_HISTORY (which makes it easier to find the spot where we left[0m
+[38;2;248;248;242m              off reading the file after it gets re-written).[0m
+
+[38;2;248;248;242m              By  default, history movement commands visit the imported lines as well as[0m
+[38;2;248;248;242m              the local lines, but you can toggle this  on  and  off  with  the  set-lo‐[0m
+[38;2;248;248;242m              cal-history  zle binding.  It is also possible to create a zle widget that[0m
+[38;2;248;248;242m              will make some commands ignore imported commands, and some include them.[0m
+
+[38;2;248;248;242m              If you find that you want more control over when  commands  get  imported,[0m
+[38;2;248;248;242m              you  may  wish  to  turn  SHARE_HISTORY off, INC_APPEND_HISTORY or INC_AP‐[0m
+[38;2;248;248;242m              PEND_HISTORY_TIME (see above) on, and then manually import commands  when‐[0m
+[38;2;248;248;242m              ever you need them using `fc -RI'.[0m
+
+[38;2;248;248;242m   Initialisation[0m
+[38;2;248;248;242m       ALL_EXPORT (-a, ksh: -a)[0m
+[38;2;248;248;242m              All parameters subsequently defined are automatically exported.[0m
+
+[38;2;248;248;242m       GLOBAL_EXPORT <Z>[0m
+[38;2;248;248;242m              If this option is set, passing the -x flag to the builtins declare, float,[0m
+[38;2;248;248;242m              integer,  readonly  and typeset (but not local) will also set the -g flag;[0m
+[38;2;248;248;242m              hence parameters exported to the environment will not be made local to the[0m
+[38;2;248;248;242m              enclosing function, unless they were already or the flag +g is  given  ex‐[0m
+[38;2;248;248;242m              plicitly.   If the option is unset, exported parameters will be made local[0m
+[38;2;248;248;242m              in just the same way as any other parameter.[0m
+
+[38;2;248;248;242m              This option is set by default for backward compatibility; it is not recom‐[0m
+[38;2;248;248;242m              mended that its behaviour be relied upon.  Note that  the  builtin  export[0m
+[38;2;248;248;242m              always  sets both the -x and -g flags, and hence its effect extends beyond[0m
+[38;2;248;248;242m              the scope of the enclosing function; this is  the  most  portable  way  to[0m
+[38;2;248;248;242m              achieve this behaviour.[0m
+
+[38;2;248;248;242m       GLOBAL_RCS (+d) <D>[0m
+[38;2;248;248;242m              If  this  option  is  unset,  the startup files /etc/zprofile, /etc/zshrc,[0m
+[38;2;248;248;242m              /etc/zlogin and /etc/zlogout will not be run.   It  can  be  disabled  and[0m
+[38;2;248;248;242m              re-enabled  at  any  time,  including  inside local startup files (.zshrc,[0m
+[38;2;248;248;242m              etc.).[0m
+
+[38;2;248;248;242m       RCS (+f) <D>[0m
+[38;2;248;248;242m              After /etc/zshenv is sourced on startup, source  the  .zshenv,  /etc/zpro‐[0m
+[38;2;248;248;242m              file,  .zprofile,  /etc/zshrc,  .zshrc, /etc/zlogin, .zlogin, and .zlogout[0m
+[38;2;248;248;242m              files, as described in the section `Files'.  If this option is unset,  the[0m
+[38;2;248;248;242m              /etc/zshenv  file  is still sourced, but any of the others will not be; it[0m
+[38;2;248;248;242m              can be set at any time to prevent the remaining startup  files  after  the[0m
+[38;2;248;248;242m              currently executing one from being sourced.[0m
+
+[38;2;248;248;242m   Input/Output[0m
+[38;2;248;248;242m       ALIASES <D>[0m
+[38;2;248;248;242m              Expand aliases.[0m
+
+[38;2;248;248;242m       CLOBBER (+C, ksh: +C) <D>[0m
+[38;2;248;248;242m              Allows `>' redirection to truncate existing files.  Otherwise `>!' or `>|'[0m
+[38;2;248;248;242m              must be used to truncate a file.[0m
+
+[38;2;248;248;242m              If  the  option  is not set, and the option APPEND_CREATE is also not set,[0m
+[38;2;248;248;242m              `>>!' or `>>|' must be used to create a file.  If either  option  is  set,[0m
+[38;2;248;248;242m              `>>' may be used.[0m
+
+[38;2;248;248;242m       CLOBBER_EMPTY[0m
+[38;2;248;248;242m              This option is only used if the option CLOBBER is not set: note that it is[0m
+[38;2;248;248;242m              set by default.[0m
+
+[38;2;248;248;242m              If this option is set, then regular files of zero length may be ovewritten[0m
+[38;2;248;248;242m              (`clobbered').   Note  that  it is possible another process has written to[0m
+[38;2;248;248;242m              the file between this test and use of the file  by  the  current  process.[0m
+[38;2;248;248;242m              This  option should therefore not be used in cases where files to be clob‐[0m
+[38;2;248;248;242m              bered may be written to asynchronously.[0m
+
+[38;2;248;248;242m       CORRECT (-0)[0m
+[38;2;248;248;242m              Try  to  correct  the  spelling  of  commands.   Note   that,   when   the[0m
+[38;2;248;248;242m              HASH_LIST_ALL  option  is not set or when some directories in the path are[0m
+[38;2;248;248;242m              not readable, this may falsely report spelling errors the first time  some[0m
+[38;2;248;248;242m              commands are used.[0m
+
+[38;2;248;248;242m              The  shell  variable CORRECT_IGNORE may be set to a pattern to match words[0m
+[38;2;248;248;242m              that will never be offered as corrections.[0m
+
+[38;2;248;248;242m       CORRECT_ALL (-O)[0m
+[38;2;248;248;242m              Try to correct the spelling of all arguments in a line.[0m
+
+[38;2;248;248;242m              The shell variable CORRECT_IGNORE_FILE may be set to a  pattern  to  match[0m
+[38;2;248;248;242m              file names that will never be offered as corrections.[0m
+
+[38;2;248;248;242m       DVORAK Use the Dvorak keyboard instead of the standard qwerty keyboard as a basis[0m
+[38;2;248;248;242m              for  examining  spelling  mistakes for the CORRECT and CORRECT_ALL options[0m
+[38;2;248;248;242m              and the spell-word editor command.[0m
+
+[38;2;248;248;242m       FLOW_CONTROL <D>[0m
+[38;2;248;248;242m              If this option is unset, output flow  control  via  start/stop  characters[0m
+[38;2;248;248;242m              (usually assigned to ^S/^Q) is disabled in the shell's editor.[0m
+
+[38;2;248;248;242m       IGNORE_EOF (-7)[0m
+[38;2;248;248;242m              Do  not  exit  on end-of-file.  Require the use of exit or logout instead.[0m
+[38;2;248;248;242m              However, ten consecutive EOFs will cause the  shell  to  exit  anyway,  to[0m
+[38;2;248;248;242m              avoid the shell hanging if its tty goes away.[0m
+
+[38;2;248;248;242m              Also,  if  this option is set and the Zsh Line Editor is used, widgets im‐[0m
+[38;2;248;248;242m              plemented by shell functions can be  bound  to  EOF  (normally  Control-D)[0m
+[38;2;248;248;242m              without  printing  the normal warning message.  This works only for normal[0m
+[38;2;248;248;242m              widgets, not for completion widgets.[0m
+
+[38;2;248;248;242m       INTERACTIVE_COMMENTS (-k) <K> <S>[0m
+[38;2;248;248;242m              Allow comments even in interactive shells.[0m
+
+[38;2;248;248;242m       HASH_CMDS <D>[0m
+[38;2;248;248;242m              Note the location of each command the first time it is  executed.   Subse‐[0m
+[38;2;248;248;242m              quent  invocations of the same command will use the saved location, avoid‐[0m
+[38;2;248;248;242m              ing a path search.  If this option is unset, no path hashing  is  done  at[0m
+[38;2;248;248;242m              all.   However, when CORRECT is set, commands whose names do not appear in[0m
+[38;2;248;248;242m              the functions or aliases hash tables are hashed in order to avoid  report‐[0m
+[38;2;248;248;242m              ing them as spelling errors.[0m
+
+[38;2;248;248;242m       HASH_DIRS <D>[0m
+[38;2;248;248;242m              Whenever  a  command  name is hashed, hash the directory containing it, as[0m
+[38;2;248;248;242m              well as all directories that occur earlier in the path.  Has no effect  if[0m
+[38;2;248;248;242m              neither HASH_CMDS nor CORRECT is set.[0m
+
+[38;2;248;248;242m       HASH_EXECUTABLES_ONLY[0m
+[38;2;248;248;242m              When  hashing  commands  because  of  HASH_CMDS, check that the file to be[0m
+[38;2;248;248;242m              hashed is actually an executable.  This option is unset by default  as  if[0m
+[38;2;248;248;242m              the  path  contains a large number of commands, or consists of many remote[0m
+[38;2;248;248;242m              files, the additional tests can take a long  time.   Trial  and  error  is[0m
+[38;2;248;248;242m              needed to show if this option is beneficial.[0m
+
+[38;2;248;248;242m       MAIL_WARNING (-U)[0m
+[38;2;248;248;242m              Print  a  warning message if a mail file has been accessed since the shell[0m
+[38;2;248;248;242m              last checked.[0m
+
+[38;2;248;248;242m       PATH_DIRS (-Q)[0m
+[38;2;248;248;242m              Perform a path search even on command names with slashes in them.  Thus if[0m
+[38;2;248;248;242m              `/usr/local/bin' is in the user's path, and he or she  types  `X11/xinit',[0m
+[38;2;248;248;242m              the  command  `/usr/local/bin/X11/xinit' will be executed (assuming it ex‐[0m
+[38;2;248;248;242m              ists).  Commands explicitly beginning with `/', `./' or `../' are not sub‐[0m
+[38;2;248;248;242m              ject to the path  search.   This  also  applies  to  the  `.'  and  source[0m
+[38;2;248;248;242m              builtins.[0m
+
+[38;2;248;248;242m              Note  that subdirectories of the current directory are always searched for[0m
+[38;2;248;248;242m              executables specified in this form.  This takes place  before  any  search[0m
+[38;2;248;248;242m              indicated by this option, and regardless of whether `.' or the current di‐[0m
+[38;2;248;248;242m              rectory appear in the command search path.[0m
+
+[38;2;248;248;242m       PATH_SCRIPT <K> <S>[0m
+[38;2;248;248;242m              If  this  option is not set, a script passed as the first non-option argu‐[0m
+[38;2;248;248;242m              ment to the shell must contain the name of the file to open.  If this  op‐[0m
+[38;2;248;248;242m              tion  is set, and the script does not specify a directory path, the script[0m
+[38;2;248;248;242m              is looked for first in the current directory, then in  the  command  path.[0m
+[38;2;248;248;242m              See the section INVOCATION in zsh(1).[0m
+
+[38;2;248;248;242m       PRINT_EIGHT_BIT[0m
+[38;2;248;248;242m              Print  eight  bit characters literally in completion lists, etc.  This op‐[0m
+[38;2;248;248;242m              tion is not necessary if your system correctly returns the printability of[0m
+[38;2;248;248;242m              eight bit characters (see ctype(3)).[0m
+
+[38;2;248;248;242m       PRINT_EXIT_VALUE (-1)[0m
+[38;2;248;248;242m              Print the exit value of programs with non-zero exit status.  This is  only[0m
+[38;2;248;248;242m              available at the command line in interactive shells.[0m
+
+[38;2;248;248;242m       RC_QUOTES[0m
+[38;2;248;248;242m              Allow  the character sequence `''' to signify a single quote within singly[0m
+[38;2;248;248;242m              quoted strings.  Note this does not apply in quoted strings using the for‐[0m
+[38;2;248;248;242m              mat $'...', where a backslashed single quote can be used.[0m
+
+[38;2;248;248;242m       RM_STAR_SILENT (-H) <K> <S>[0m
+[38;2;248;248;242m              Do not query the user before executing `rm *' or `rm path/*'.[0m
+
+[38;2;248;248;242m       RM_STAR_WAIT[0m
+[38;2;248;248;242m              If querying the user before executing `rm *' or `rm  path/*',  first  wait[0m
+[38;2;248;248;242m              ten seconds and ignore anything typed in that time.  This avoids the prob‐[0m
+[38;2;248;248;242m              lem  of  reflexively  answering  `yes' to the query when one didn't really[0m
+[38;2;248;248;242m              mean it.  The wait and query can always be avoided by expanding the `*' in[0m
+[38;2;248;248;242m              ZLE (with tab).[0m
+
+[38;2;248;248;242m       SHORT_LOOPS <C> <Z>[0m
+[38;2;248;248;242m              Allow the short forms of for, repeat, select, if, and function constructs.[0m
+
+[38;2;248;248;242m       SHORT_REPEAT[0m
+[38;2;248;248;242m              Allow the short form repeat as SHORT_LOOPS but without enabling it for the[0m
+[38;2;248;248;242m              other constructs.[0m
+
+[38;2;248;248;242m       SUN_KEYBOARD_HACK (-L)[0m
+[38;2;248;248;242m              If a line ends with a backquote, and there are an odd number of backquotes[0m
+[38;2;248;248;242m              on the line, ignore the trailing backquote.  This is useful on  some  key‐[0m
+[38;2;248;248;242m              boards  where  the return key is too small, and the backquote key lies an‐[0m
+[38;2;248;248;242m              noyingly close to it.  As an alternative the variable  KEYBOARD_HACK  lets[0m
+[38;2;248;248;242m              you choose the character to be removed.[0m
+
+[38;2;248;248;242m   Job Control[0m
+[38;2;248;248;242m       AUTO_CONTINUE[0m
+[38;2;248;248;242m              With  this  option  set,  stopped jobs that are removed from the job table[0m
+[38;2;248;248;242m              with the disown builtin command are automatically sent a  CONT  signal  to[0m
+[38;2;248;248;242m              make them running.[0m
+
+[38;2;248;248;242m       AUTO_RESUME (-W)[0m
+[38;2;248;248;242m              Treat  single  word  simple commands without redirection as candidates for[0m
+[38;2;248;248;242m              resumption of an existing job.[0m
+
+[38;2;248;248;242m       BG_NICE (-6) <C> <Z>[0m
+[38;2;248;248;242m              Run all background jobs at a lower priority.  This option is  set  by  de‐[0m
+[38;2;248;248;242m              fault.[0m
+
+[38;2;248;248;242m       CHECK_JOBS <Z>[0m
+[38;2;248;248;242m              Report  the status of background and suspended jobs before exiting a shell[0m
+[38;2;248;248;242m              with job control; a  second  attempt  to  exit  the  shell  will  succeed.[0m
+[38;2;248;248;242m              NO_CHECK_JOBS is best used only in combination with NO_HUP, else such jobs[0m
+[38;2;248;248;242m              will be killed automatically.[0m
+
+[38;2;248;248;242m              The  check  is  omitted if the commands run from the previous command line[0m
+[38;2;248;248;242m              included a `jobs' command, since it is assumed  the  user  is  aware  that[0m
+[38;2;248;248;242m              there  are background or suspended jobs.  A `jobs' command run from one of[0m
+[38;2;248;248;242m              the hook functions defined in the section SPECIAL FUNCTIONS in  zshmisc(1)[0m
+[38;2;248;248;242m              is not counted for this purpose.[0m
+
+[38;2;248;248;242m       CHECK_RUNNING_JOBS <Z>[0m
+[38;2;248;248;242m              Check  for  both  running  and  suspended jobs when CHECK_JOBS is enabled.[0m
+[38;2;248;248;242m              When this option is disabled, zsh checks only for  suspended  jobs,  which[0m
+[38;2;248;248;242m              matches the default behavior of bash.[0m
+
+[38;2;248;248;242m              This option has no effect unless CHECK_JOBS is set.[0m
+
+[38;2;248;248;242m       HUP <Z>[0m
+[38;2;248;248;242m              Send the HUP signal to running jobs when the shell exits.[0m
+
+[38;2;248;248;242m       LONG_LIST_JOBS (-R)[0m
+[38;2;248;248;242m              Print job notifications in the long format by default.[0m
+
+[38;2;248;248;242m       MONITOR (-m, ksh: -m)[0m
+[38;2;248;248;242m              Allow job control.  Set by default in interactive shells.[0m
+
+[38;2;248;248;242m       NOTIFY (-5, ksh: -b) <Z>[0m
+[38;2;248;248;242m              Report  the status of background jobs immediately, rather than waiting un‐[0m
+[38;2;248;248;242m              til just before printing a prompt.[0m
+
+[38;2;248;248;242m       POSIX_JOBS <K> <S>[0m
+[38;2;248;248;242m              This option makes job control more compliant with the POSIX standard.[0m
+
+[38;2;248;248;242m              When the option is not set, the MONITOR option is unset on entry  to  sub‐[0m
+[38;2;248;248;242m              shells,  so that job control is no longer active.  When the option is set,[0m
+[38;2;248;248;242m              the MONITOR option and job control remain active in the subshell, but note[0m
+[38;2;248;248;242m              that the subshell has no access to jobs in the parent shell.[0m
+
+[38;2;248;248;242m              When the option is not set, jobs put in the background or foreground  with[0m
+[38;2;248;248;242m              bg or fg are displayed with the same information that would be reported by[0m
+[38;2;248;248;242m              jobs.   When the option is set, only the text is printed.  The output from[0m
+[38;2;248;248;242m              jobs itself is not affected by the option.[0m
+
+[38;2;248;248;242m              When the option is not set, job information from the parent shell is saved[0m
+[38;2;248;248;242m              for output within a subshell (for example, within a pipeline).   When  the[0m
+[38;2;248;248;242m              option  is  set, the output of jobs is empty until a job is started within[0m
+[38;2;248;248;242m              the subshell.[0m
+
+[38;2;248;248;242m              In previous versions of the shell, it was necessary to  enable  POSIX_JOBS[0m
+[38;2;248;248;242m              in  order  for the builtin command wait to return the status of background[0m
+[38;2;248;248;242m              jobs that had already exited.  This is no longer the case.[0m
+
+[38;2;248;248;242m   Prompting[0m
+[38;2;248;248;242m       PROMPT_BANG <K>[0m
+[38;2;248;248;242m              If set, `!' is treated specially in prompt expansion.   See  EXPANSION  OF[0m
+[38;2;248;248;242m              PROMPT SEQUENCES in zshmisc(1).[0m
+
+[38;2;248;248;242m       PROMPT_CR (+V) <D>[0m
+[38;2;248;248;242m              Print  a carriage return just before printing a prompt in the line editor.[0m
+[38;2;248;248;242m              This is on by default as multi-line editing is only possible if the editor[0m
+[38;2;248;248;242m              knows where the start of the line appears.[0m
+
+[38;2;248;248;242m       PROMPT_SP <D>[0m
+[38;2;248;248;242m              Attempt to preserve a partial line (i.e. a line that did not  end  with  a[0m
+[38;2;248;248;242m              newline)  that  would otherwise be covered up by the command prompt due to[0m
+[38;2;248;248;242m              the PROMPT_CR option.  This works by outputting some cursor-control  char‐[0m
+[38;2;248;248;242m              acters,  including  a series of spaces, that should make the terminal wrap[0m
+[38;2;248;248;242m              to the next line when a partial line is present (note that  this  is  only[0m
+[38;2;248;248;242m              successful if your terminal has automatic margins, which is typical).[0m
+
+[38;2;248;248;242m              When  a partial line is preserved, by default you will see an inverse+bold[0m
+[38;2;248;248;242m              character at the end of the partial line:  a `%' for a normal  user  or  a[0m
+[38;2;248;248;242m              `#'  for root.  If set, the shell parameter PROMPT_EOL_MARK can be used to[0m
+[38;2;248;248;242m              customize how the end of partial lines are shown.[0m
+
+[38;2;248;248;242m              NOTE: if the PROMPT_CR option is not set, enabling this option  will  have[0m
+[38;2;248;248;242m              no effect.  This option is on by default.[0m
+
+[38;2;248;248;242m       PROMPT_PERCENT <C> <Z>[0m
+[38;2;248;248;242m              If  set,  `%'  is treated specially in prompt expansion.  See EXPANSION OF[0m
+[38;2;248;248;242m              PROMPT SEQUENCES in zshmisc(1).[0m
+
+[38;2;248;248;242m       PROMPT_SUBST <K> <S>[0m
+[38;2;248;248;242m              If set, parameter expansion, command substitution and arithmetic expansion[0m
+[38;2;248;248;242m              are performed in prompts.  Substitutions within prompts do not affect  the[0m
+[38;2;248;248;242m              command status.[0m
+
+[38;2;248;248;242m       TRANSIENT_RPROMPT[0m
+[38;2;248;248;242m              Remove  any right prompt from display when accepting a command line.  This[0m
+[38;2;248;248;242m              may be useful with terminals with other cut/paste methods.[0m
+
+[38;2;248;248;242m   Scripts and Functions[0m
+[38;2;248;248;242m       ALIAS_FUNC_DEF <S>[0m
+[38;2;248;248;242m              By default, zsh does not allow the definition of functions using the `name[0m
+[38;2;248;248;242m              ()' syntax if name was expanded as an alias: this causes an  error.   This[0m
+[38;2;248;248;242m              is usually the desired behaviour, as otherwise the combination of an alias[0m
+[38;2;248;248;242m              and a function based on the same definition can easily cause problems.[0m
+
+[38;2;248;248;242m              When this option is set, aliases can be used for defining functions.[0m
+
+[38;2;248;248;242m              For  example,  consider the following definitions as they might occur in a[0m
+[38;2;248;248;242m              startup file.[0m
+
+[38;2;248;248;242m                     alias foo=bar[0m
+[38;2;248;248;242m                     foo() {[0m
+[38;2;248;248;242m                       print This probably does not do what you expect.[0m
+[38;2;248;248;242m                     }[0m
+
+[38;2;248;248;242m              Here, foo is expanded as an alias to bar before the () is encountered,  so[0m
+[38;2;248;248;242m              the  function  defined  would be named bar.  By default this is instead an[0m
+[38;2;248;248;242m              error in native mode.  Note that quoting any part of the function name, or[0m
+[38;2;248;248;242m              using the keyword function, avoids the problem, so is recommended when the[0m
+[38;2;248;248;242m              function name can also be an alias.[0m
+
+[38;2;248;248;242m       C_BASES[0m
+[38;2;248;248;242m              Output hexadecimal numbers in the standard C format,  for  example  `0xFF'[0m
+[38;2;248;248;242m              instead  of the usual `16#FF'.  If the option OCTAL_ZEROES is also set (it[0m
+[38;2;248;248;242m              is not by default), octal numbers will be treated similarly and hence  ap‐[0m
+[38;2;248;248;242m              pear  as `077' instead of `8#77'.  This option has no effect on the choice[0m
+[38;2;248;248;242m              of the output base, nor on the output of bases other than hexadecimal  and[0m
+[38;2;248;248;242m              octal.   Note  that these formats will be understood on input irrespective[0m
+[38;2;248;248;242m              of the setting of C_BASES.[0m
+
+[38;2;248;248;242m       C_PRECEDENCES[0m
+[38;2;248;248;242m              This alters the precedence of arithmetic operators to be more like  C  and[0m
+[38;2;248;248;242m              other  programming  languages;  the  section ARITHMETIC EVALUATION in zsh‐[0m
+[38;2;248;248;242m              misc(1) has an explicit list.[0m
+
+[38;2;248;248;242m       DEBUG_BEFORE_CMD <D>[0m
+[38;2;248;248;242m              Run the DEBUG trap before each command; otherwise it  is  run  after  each[0m
+[38;2;248;248;242m              command.  Setting this option mimics the behaviour of ksh 93; with the op‐[0m
+[38;2;248;248;242m              tion unset the behaviour is that of ksh 88.[0m
+
+[38;2;248;248;242m       ERR_EXIT (-e, ksh: -e)[0m
+[38;2;248;248;242m              If  a  command  has a non-zero exit status, execute the ZERR trap, if set,[0m
+[38;2;248;248;242m              and exit.  This is disabled while running initialization scripts.[0m
+
+[38;2;248;248;242m              The behaviour is also disabled inside DEBUG traps.  In this case  the  op‐[0m
+[38;2;248;248;242m              tion  is  handled specially: it is unset on entry to the trap.  If the op‐[0m
+[38;2;248;248;242m              tion DEBUG_BEFORE_CMD is set, as it is by default, and the option ERR_EXIT[0m
+[38;2;248;248;242m              is found to have been set on exit, then the command for  which  the  DEBUG[0m
+[38;2;248;248;242m              trap  is being executed is skipped.  The option is restored after the trap[0m
+[38;2;248;248;242m              exits.[0m
+
+[38;2;248;248;242m              Non-zero status in a command list containing && or || is ignored for  com‐[0m
+[38;2;248;248;242m              mands not at the end of the list.  Hence[0m
+
+[38;2;248;248;242m                     false && true[0m
+
+[38;2;248;248;242m              does not trigger exit.[0m
+
+[38;2;248;248;242m              Exiting  due  to  ERR_EXIT has certain interactions with asynchronous jobs[0m
+[38;2;248;248;242m              noted in the section JOBS in zshmisc(1).[0m
+
+[38;2;248;248;242m       ERR_RETURN[0m
+[38;2;248;248;242m              If a command has a non-zero exit status, return immediately from  the  en‐[0m
+[38;2;248;248;242m              closing  function.  The logic is similar to that for ERR_EXIT, except that[0m
+[38;2;248;248;242m              an implicit return statement is executed instead of an  exit.   This  will[0m
+[38;2;248;248;242m              trigger an exit at the outermost level of a non-interactive script.[0m
+
+[38;2;248;248;242m              Normally this option inherits the behaviour of ERR_EXIT that code followed[0m
+[38;2;248;248;242m              by `&&' `||' does not trigger a return.  Hence in the following:[0m
+
+[38;2;248;248;242m                     summit || true[0m
+
+[38;2;248;248;242m              no  return  is forced as the combined effect always has a zero return sta‐[0m
+[38;2;248;248;242m              tus.[0m
+
+[38;2;248;248;242m              Note. however, that if summit in the above example is itself  a  function,[0m
+[38;2;248;248;242m              code inside it is considered separately: it may force a return from summit[0m
+[38;2;248;248;242m              (assuming  the option remains set within summit), but not from the enclos‐[0m
+[38;2;248;248;242m              ing context.  This behaviour is different from  ERR_EXIT  which  is  unaf‐[0m
+[38;2;248;248;242m              fected by function scope.[0m
+
+[38;2;248;248;242m       EVAL_LINENO <Z>[0m
+[38;2;248;248;242m              If  set,  line numbers of expressions evaluated using the builtin eval are[0m
+[38;2;248;248;242m              tracked separately of the enclosing environment.  This applies both to the[0m
+[38;2;248;248;242m              parameter LINENO and the line number output by the prompt escape  %i.   If[0m
+[38;2;248;248;242m              the  option  is  set, the prompt escape %N will output the string `(eval)'[0m
+[38;2;248;248;242m              instead of the script or function name as an indication.   (The two prompt[0m
+[38;2;248;248;242m              escapes are typically used in the parameter PS4 to be output when the  op‐[0m
+[38;2;248;248;242m              tion XTRACE is set.)  If EVAL_LINENO is unset, the line number of the sur‐[0m
+[38;2;248;248;242m              rounding script or function is retained during the evaluation.[0m
+
+[38;2;248;248;242m       EXEC (+n, ksh: +n) <D>[0m
+[38;2;248;248;242m              Do  execute  commands.  Without this option, commands are read and checked[0m
+[38;2;248;248;242m              for syntax errors, but not executed.  This option cannot be turned off  in[0m
+[38;2;248;248;242m              an  interactive  shell,  except  when  `-n'  is  supplied  to the shell at[0m
+[38;2;248;248;242m              startup.[0m
+
+[38;2;248;248;242m       FUNCTION_ARGZERO <C> <Z>[0m
+[38;2;248;248;242m              When executing a shell function or sourcing a script, set  $0  temporarily[0m
+[38;2;248;248;242m              to  the  name of the function/script.  Note that toggling FUNCTION_ARGZERO[0m
+[38;2;248;248;242m              from on to off (or off to on) does not change the  current  value  of  $0.[0m
+[38;2;248;248;242m              Only  the  state upon entry to the function or script has an effect.  Com‐[0m
+[38;2;248;248;242m              pare POSIX_ARGZERO.[0m
+
+[38;2;248;248;242m       LOCAL_LOOPS[0m
+[38;2;248;248;242m              When this option is not set, the effect of break and continue commands may[0m
+[38;2;248;248;242m              propagate outside function scope, affecting loops  in  calling  functions.[0m
+[38;2;248;248;242m              When  the  option is set in a calling function, a break or a continue that[0m
+[38;2;248;248;242m              is not caught within a called function (regardless of the setting  of  the[0m
+[38;2;248;248;242m              option  within  that  function)  produces a warning and the effect is can‐[0m
+[38;2;248;248;242m              celled.[0m
+
+[38;2;248;248;242m       LOCAL_OPTIONS <K>[0m
+[38;2;248;248;242m              If this option is set at the point of return from a shell  function,  most[0m
+[38;2;248;248;242m              options  (including  this one) which were in force upon entry to the func‐[0m
+[38;2;248;248;242m              tion are restored; options that are not restored are  PRIVILEGED  and  RE‐[0m
+[38;2;248;248;242m              STRICTED.   Otherwise,  only  this option, and the LOCAL_LOOPS, XTRACE and[0m
+[38;2;248;248;242m              PRINT_EXIT_VALUE options are restored.  Hence if this is explicitly  unset[0m
+[38;2;248;248;242m              by a shell function the other options in force at the point of return will[0m
+[38;2;248;248;242m              remain  so.  A shell function can also guarantee itself a known shell con‐[0m
+[38;2;248;248;242m              figuration with a formulation like `emulate -L zsh'; the -L activates  LO‐[0m
+[38;2;248;248;242m              CAL_OPTIONS.[0m
+
+[38;2;248;248;242m       LOCAL_PATTERNS[0m
+[38;2;248;248;242m              If  this  option  is set at the point of return from a shell function, the[0m
+[38;2;248;248;242m              state of pattern disables, as set with the builtin command  `disable  -p',[0m
+[38;2;248;248;242m              is  restored  to what it was when the function was entered.  The behaviour[0m
+[38;2;248;248;242m              of this option is similar to the effect of LOCAL_OPTIONS on options; hence[0m
+[38;2;248;248;242m              `emulate -L sh' (or indeed any other emulation with the -L  option)  acti‐[0m
+[38;2;248;248;242m              vates LOCAL_PATTERNS.[0m
+
+[38;2;248;248;242m       LOCAL_TRAPS <K>[0m
+[38;2;248;248;242m              If  this  option  is set when a signal trap is set inside a function, then[0m
+[38;2;248;248;242m              the previous status of the trap for that signal will be restored when  the[0m
+[38;2;248;248;242m              function  exits.   Note that this option must be set prior to altering the[0m
+[38;2;248;248;242m              trap behaviour in a function; unlike LOCAL_OPTIONS, the value on exit from[0m
+[38;2;248;248;242m              the function is irrelevant.  However, it does not need to  be  set  before[0m
+[38;2;248;248;242m              any  global trap for that to be correctly restored by a function.  For ex‐[0m
+[38;2;248;248;242m              ample,[0m
+
+[38;2;248;248;242m                     unsetopt localtraps[0m
+[38;2;248;248;242m                     trap - INT[0m
+[38;2;248;248;242m                     fn() { setopt localtraps; trap '' INT; sleep 3; }[0m
+
+[38;2;248;248;242m              will restore normal handling of SIGINT after the function exits.[0m
+
+[38;2;248;248;242m       MULTI_FUNC_DEF <Z>[0m
+[38;2;248;248;242m              Allow  definitions  of  multiple  functions  at  once  in  the  form  `fn1[0m
+[38;2;248;248;242m              fn2...()';  if  the option is not set, this causes a parse error.  Defini‐[0m
+[38;2;248;248;242m              tion of multiple functions with the function keyword  is  always  allowed.[0m
+[38;2;248;248;242m              Multiple function definitions are not often used and can cause obscure er‐[0m
+[38;2;248;248;242m              rors.[0m
+
+[38;2;248;248;242m       MULTIOS <Z>[0m
+[38;2;248;248;242m              Perform  implicit  tees  or  cats when multiple redirections are attempted[0m
+[38;2;248;248;242m              (see the section `Redirection').[0m
+
+[38;2;248;248;242m       OCTAL_ZEROES <S>[0m
+[38;2;248;248;242m              Interpret any integer constant beginning with a 0 as octal, per  IEEE  Std[0m
+[38;2;248;248;242m              1003.2-1992  (ISO  9945-2:1993).   This  is  not  enabled by default as it[0m
+[38;2;248;248;242m              causes problems with parsing of, for example, date and time  strings  with[0m
+[38;2;248;248;242m              leading zeroes.[0m
+
+[38;2;248;248;242m              Sequences  of  digits indicating a numeric base such as the `08' component[0m
+[38;2;248;248;242m              in `08#77' are always interpreted as decimal, regardless  of  leading  ze‐[0m
+[38;2;248;248;242m              roes.[0m
+
+[38;2;248;248;242m       PIPE_FAIL[0m
+[38;2;248;248;242m              By  default,  when  a pipeline exits the exit status recorded by the shell[0m
+[38;2;248;248;242m              and returned by the shell variable $? reflects that of the rightmost  ele‐[0m
+[38;2;248;248;242m              ment  of  a  pipeline.  If this option is set, the exit status instead re‐[0m
+[38;2;248;248;242m              flects the status of the  rightmost  element  of  the  pipeline  that  was[0m
+[38;2;248;248;242m              non-zero, or zero if all elements exited with zero status.[0m
+
+[38;2;248;248;242m       SOURCE_TRACE[0m
+[38;2;248;248;242m              If  set,  zsh  will  print an informational message announcing the name of[0m
+[38;2;248;248;242m              each file it loads.  The format of the output is similar to that  for  the[0m
+[38;2;248;248;242m              XTRACE  option,  with  the message <sourcetrace>.  A file may be loaded by[0m
+[38;2;248;248;242m              the shell itself when it starts up and shuts down (Startup/Shutdown Files)[0m
+[38;2;248;248;242m              or by the use of the `source' and `dot' builtin commands.[0m
+
+[38;2;248;248;242m       TYPESET_SILENT[0m
+[38;2;248;248;242m              If this is unset, executing any of the `typeset' family of  commands  with[0m
+[38;2;248;248;242m              no options and a list of parameters that have no values to be assigned but[0m
+[38;2;248;248;242m              already  exist  will display the value of the parameter.  If the option is[0m
+[38;2;248;248;242m              set, they will only be shown when parameters are selected  with  the  `-m'[0m
+[38;2;248;248;242m              option.  The option `-p' is available whether or not the option is set.[0m
+
+[38;2;248;248;242m       TYPESET_TO_UNSET <K> <S>[0m
+[38;2;248;248;242m              When declaring a new parameter with any of the `typeset' family of related[0m
+[38;2;248;248;242m              commands,  the parameter remains unset unless and until a value is explic‐[0m
+[38;2;248;248;242m              ity assigned to it, either in the `typeset' command itself or as  a  later[0m
+[38;2;248;248;242m              assignment statement.[0m
+
+[38;2;248;248;242m       VERBOSE (-v, ksh: -v)[0m
+[38;2;248;248;242m              Print shell input lines as they are read.[0m
+
+[38;2;248;248;242m       XTRACE (-x, ksh: -x)[0m
+[38;2;248;248;242m              Print  commands  and  their arguments as they are executed.  The output is[0m
+[38;2;248;248;242m              preceded by the value of $PS4, formatted as described in the  section  EX‐[0m
+[38;2;248;248;242m              PANSION OF PROMPT SEQUENCES in zshmisc(1).[0m
+
+[38;2;248;248;242m   Shell Emulation[0m
+[38;2;248;248;242m       APPEND_CREATE <K> <S>[0m
+[38;2;248;248;242m              This option only applies when NO_CLOBBER (-C) is in effect.[0m
+
+[38;2;248;248;242m              If  this  option  is not set, the shell will report an error when a append[0m
+[38;2;248;248;242m              redirection (>>) is used on a file that does not already exists (the  tra‐[0m
+[38;2;248;248;242m              ditional  zsh behaviour of NO_CLOBBER).  If the option is set, no error is[0m
+[38;2;248;248;242m              reported (POSIX behaviour).[0m
+
+[38;2;248;248;242m       BASH_REMATCH[0m
+[38;2;248;248;242m              When set, matches performed with the =~ operator will set the BASH_REMATCH[0m
+[38;2;248;248;242m              array variable, instead of the default MATCH  and  match  variables.   The[0m
+[38;2;248;248;242m              first  element  of  the BASH_REMATCH array will contain the entire matched[0m
+[38;2;248;248;242m              text and subsequent elements will contain extracted substrings.  This  op‐[0m
+[38;2;248;248;242m              tion  makes  more  sense  when  KSH_ARRAYS is also set, so that the entire[0m
+[38;2;248;248;242m              matched portion is stored at index 0 and the first substring is  at  index[0m
+[38;2;248;248;242m              1.   Without  this  option, the MATCH variable contains the entire matched[0m
+[38;2;248;248;242m              text and the match array variable contains substrings.[0m
+
+[38;2;248;248;242m       BSD_ECHO <S>[0m
+[38;2;248;248;242m              Make the echo builtin compatible with the BSD echo(1) command.  This  dis‐[0m
+[38;2;248;248;242m              ables backslashed escape sequences in echo strings unless the -e option is[0m
+[38;2;248;248;242m              specified.[0m
+
+[38;2;248;248;242m       CONTINUE_ON_ERROR[0m
+[38;2;248;248;242m              If  a  fatal  error is encountered (see the section ERRORS in zshmisc(1)),[0m
+[38;2;248;248;242m              and the code is running in a script, the shell will  resume  execution  at[0m
+[38;2;248;248;242m              the  next statement in the script at the top level, in other words outside[0m
+[38;2;248;248;242m              all functions or shell constructs such as loops and conditions.  This mim‐[0m
+[38;2;248;248;242m              ics the behaviour of interactive shells, where the shell  returns  to  the[0m
+[38;2;248;248;242m              line editor to read a new command; it was the normal behaviour in versions[0m
+[38;2;248;248;242m              of zsh before 5.0.1.[0m
+
+[38;2;248;248;242m       CSH_JUNKIE_HISTORY <C>[0m
+[38;2;248;248;242m              A  history  reference  without an event specifier will always refer to the[0m
+[38;2;248;248;242m              previous command.  Without this option, such a history reference refers to[0m
+[38;2;248;248;242m              the same event as the previous history reference on  the  current  command[0m
+[38;2;248;248;242m              line, defaulting to the previous command.[0m
+
+[38;2;248;248;242m       CSH_JUNKIE_LOOPS <C>[0m
+[38;2;248;248;242m              Allow loop bodies to take the form `list; end' instead of `do list; done'.[0m
+
+[38;2;248;248;242m       CSH_JUNKIE_QUOTES <C>[0m
+[38;2;248;248;242m              Changes the rules for single- and double-quoted text to match that of csh.[0m
+[38;2;248;248;242m              These require that embedded newlines be preceded by a backslash; unescaped[0m
+[38;2;248;248;242m              newlines  will  cause  an  error message.  In double-quoted strings, it is[0m
+[38;2;248;248;242m              made impossible to escape `$', ``' or `"' (and `\' itself no longer  needs[0m
+[38;2;248;248;242m              escaping).   Command  substitutions  are only expanded once, and cannot be[0m
+[38;2;248;248;242m              nested.[0m
+
+[38;2;248;248;242m       CSH_NULLCMD <C>[0m
+[38;2;248;248;242m              Do not use the values of NULLCMD and READNULLCMD when running redirections[0m
+[38;2;248;248;242m              with no command.  This make such redirections fail (see the section `Redi‐[0m
+[38;2;248;248;242m              rection').[0m
+
+[38;2;248;248;242m       KSH_ARRAYS <K> <S>[0m
+[38;2;248;248;242m              Emulate ksh array handling as closely as possible.  If this option is set,[0m
+[38;2;248;248;242m              array elements are numbered from zero, an  array  parameter  without  sub‐[0m
+[38;2;248;248;242m              script  refers to the first element instead of the whole array, and braces[0m
+[38;2;248;248;242m              are required  to  delimit  a  subscript  (`${path[2]}'  rather  than  just[0m
+[38;2;248;248;242m              `$path[2]') or to apply modifiers to any parameter (`${PWD:h}' rather than[0m
+[38;2;248;248;242m              `$PWD:h').[0m
+
+[38;2;248;248;242m       KSH_AUTOLOAD <K> <S>[0m
+[38;2;248;248;242m              Emulate  ksh function autoloading.  This means that when a function is au‐[0m
+[38;2;248;248;242m              toloaded, the corresponding file is merely executed, and must  define  the[0m
+[38;2;248;248;242m              function  itself.  (By default, the function is defined to the contents of[0m
+[38;2;248;248;242m              the file.  However, the most common ksh-style case - of the file  contain‐[0m
+[38;2;248;248;242m              ing  only  a  simple definition of the function - is always handled in the[0m
+[38;2;248;248;242m              ksh-compatible manner.)[0m
+
+[38;2;248;248;242m       KSH_OPTION_PRINT <K>[0m
+[38;2;248;248;242m              Alters the way options settings are printed: instead of separate lists  of[0m
+[38;2;248;248;242m              set  and  unset options, all options are shown, marked `on' if they are in[0m
+[38;2;248;248;242m              the non-default state, `off' otherwise.[0m
+
+[38;2;248;248;242m       KSH_TYPESET[0m
+[38;2;248;248;242m              This option is now obsolete: a better appropximation to the  behaviour  of[0m
+[38;2;248;248;242m              other  shells is obtained with the reserved word interface to declare, ex‐[0m
+[38;2;248;248;242m              port, float, integer, local, readonly and typeset.  Note that  the  option[0m
+[38;2;248;248;242m              is only applied when the reserved word interface is not in use.[0m
+
+[38;2;248;248;242m              Alters  the way arguments to the typeset family of commands, including de‐[0m
+[38;2;248;248;242m              clare, export, float, integer, local and readonly, are processed.  Without[0m
+[38;2;248;248;242m              this option, zsh will perform normal word splitting after command and  pa‐[0m
+[38;2;248;248;242m              rameter  expansion  in arguments of an assignment; with it, word splitting[0m
+[38;2;248;248;242m              does not take place in those cases.[0m
+
+[38;2;248;248;242m       KSH_ZERO_SUBSCRIPT[0m
+[38;2;248;248;242m              Treat use of a subscript of value zero in array or string expressions as a[0m
+[38;2;248;248;242m              reference to the first element, i.e. the element that usually has the sub‐[0m
+[38;2;248;248;242m              script 1.  Ignored if KSH_ARRAYS is also set.[0m
+
+[38;2;248;248;242m              If neither this option nor KSH_ARRAYS is set, accesses to an element of an[0m
+[38;2;248;248;242m              array or string with subscript zero return an  empty  element  or  string,[0m
+[38;2;248;248;242m              while attempts to set element zero of an array or string are treated as an[0m
+[38;2;248;248;242m              error.   However,  attempts to set an otherwise valid subscript range that[0m
+[38;2;248;248;242m              includes zero will succeed.  For example,  if  KSH_ZERO_SUBSCRIPT  is  not[0m
+[38;2;248;248;242m              set,[0m
+
+[38;2;248;248;242m                     array[0]=(element)[0m
+
+[38;2;248;248;242m              is an error, while[0m
+
+[38;2;248;248;242m                     array[0,1]=(element)[0m
+
+[38;2;248;248;242m              is not and will replace the first element of the array.[0m
+
+[38;2;248;248;242m              This  option  is for compatibility with older versions of the shell and is[0m
+[38;2;248;248;242m              not recommended in new code.[0m
+
+[38;2;248;248;242m       POSIX_ALIASES <K> <S>[0m
+[38;2;248;248;242m              When this option is set, reserved words are not candidates for  alias  ex‐[0m
+[38;2;248;248;242m              pansion:  it is still possible to declare any of them as an alias, but the[0m
+[38;2;248;248;242m              alias will never be expanded.  Reserved words are described in the section[0m
+[38;2;248;248;242m              RESERVED WORDS in zshmisc(1).[0m
+
+[38;2;248;248;242m              Alias  expansion takes place while text is being read; hence when this op‐[0m
+[38;2;248;248;242m              tion is set it does not take effect until the end of any function or other[0m
+[38;2;248;248;242m              piece of shell code parsed as one unit.  Note this may  cause  differences[0m
+[38;2;248;248;242m              from  other  shells  even when the option is in effect.  For example, when[0m
+[38;2;248;248;242m              running a command with `zsh -c', or even `zsh -o posixaliases -c', the en‐[0m
+[38;2;248;248;242m              tire command argument is parsed as one unit, so aliases defined within the[0m
+[38;2;248;248;242m              argument are not available even in later lines.  If in doubt, avoid use of[0m
+[38;2;248;248;242m              aliases in non-interactive code.[0m
+
+[38;2;248;248;242m       POSIX_ARGZERO[0m
+[38;2;248;248;242m              This option may  be  used  to  temporarily  disable  FUNCTION_ARGZERO  and[0m
+[38;2;248;248;242m              thereby  restore  the value of $0 to the name used to invoke the shell (or[0m
+[38;2;248;248;242m              as set by the -c command line option).  For  compatibility  with  previous[0m
+[38;2;248;248;242m              versions  of  the  shell,  emulations  use  NO_FUNCTION_ARGZERO instead of[0m
+[38;2;248;248;242m              POSIX_ARGZERO, which may result in unexpected scoping of $0 if the  emula‐[0m
+[38;2;248;248;242m              tion  mode is changed inside a function or script.  To avoid this, explic‐[0m
+[38;2;248;248;242m              itly enable POSIX_ARGZERO in the emulate command:[0m
+
+[38;2;248;248;242m                     emulate sh -o POSIX_ARGZERO[0m
+
+[38;2;248;248;242m              Note that NO_POSIX_ARGZERO has no effect unless FUNCTION_ARGZERO  was  al‐[0m
+[38;2;248;248;242m              ready enabled upon entry to the function or script.[0m
+
+[38;2;248;248;242m       POSIX_BUILTINS <K> <S>[0m
+[38;2;248;248;242m              When  this  option is set the command builtin can be used to execute shell[0m
+[38;2;248;248;242m              builtin commands.  Parameter assignments specified before shell  functions[0m
+[38;2;248;248;242m              and  special builtins are kept after the command completes unless the spe‐[0m
+[38;2;248;248;242m              cial builtin is prefixed with the command builtin.  Special  builtins  are[0m
+[38;2;248;248;242m              .,  :, break, continue, declare, eval, exit, export, integer, local, read‐[0m
+[38;2;248;248;242m              only, return, set, shift, source, times, trap and unset.[0m
+
+[38;2;248;248;242m              In addition, various error conditions associated with the  above  builtins[0m
+[38;2;248;248;242m              or  exec cause a non-interactive shell to exit and an interactive shell to[0m
+[38;2;248;248;242m              return to its top-level processing.[0m
+
+[38;2;248;248;242m              Furthermore, functions and shell builtins are not executed after  an  exec[0m
+[38;2;248;248;242m              prefix;  the  command  to be executed must be an external command found in[0m
+[38;2;248;248;242m              the path.[0m
+
+[38;2;248;248;242m              Furthermore, the getopts builtin behaves in a POSIX-compatible fashion  in[0m
+[38;2;248;248;242m              that  the  associated  variable OPTIND is not made local to functions, and[0m
+[38;2;248;248;242m              its value is calculated differently to match other shells.[0m
+
+[38;2;248;248;242m              Moreover, the warning and special exit code from [[ -o non_existent_option[0m
+[38;2;248;248;242m              ]] are suppressed.[0m
+
+[38;2;248;248;242m       POSIX_IDENTIFIERS <K> <S>[0m
+[38;2;248;248;242m              When this option is set, only the ASCII characters a to z, A to Z, 0 to  9[0m
+[38;2;248;248;242m              and _ may be used in identifiers (names of shell parameters and modules).[0m
+
+[38;2;248;248;242m              In  addition, setting this option limits the effect of parameter substitu‐[0m
+[38;2;248;248;242m              tion with no braces, so that the expression $# is treated as the parameter[0m
+[38;2;248;248;242m              $# even if followed by a valid parameter name.  When it is unset, zsh  al‐[0m
+[38;2;248;248;242m              lows  expressions of the form $#name to refer to the length of $name, even[0m
+[38;2;248;248;242m              for special variables, for example in expressions such as $#- and $#*.[0m
+
+[38;2;248;248;242m              Another difference is that with the option  set  assignment  to  an  unset[0m
+[38;2;248;248;242m              variable  in  arithmetic  context  causes  the variable to be created as a[0m
+[38;2;248;248;242m              scalar rather than a numeric type.  So after `unset t; (( t = 3 ))'. with‐[0m
+[38;2;248;248;242m              out POSIX_IDENTIFIERS set t has integer type, while with  it  set  it  has[0m
+[38;2;248;248;242m              scalar type.[0m
+
+[38;2;248;248;242m              When  the option is unset and multibyte character support is enabled (i.e.[0m
+[38;2;248;248;242m              it is compiled in and the option MULTIBYTE is set), then additionally  any[0m
+[38;2;248;248;242m              alphanumeric  characters in the local character set may be used in identi‐[0m
+[38;2;248;248;242m              fiers.  Note that scripts and functions written with this feature are  not[0m
+[38;2;248;248;242m              portable,  and  also  that  both  options must be set before the script or[0m
+[38;2;248;248;242m              function is parsed; setting them during execution is not sufficient as the[0m
+[38;2;248;248;242m              syntax variable=value has already been parsed as a command rather than  an[0m
+[38;2;248;248;242m              assignment.[0m
+
+[38;2;248;248;242m              If  multibyte character support is not compiled into the shell this option[0m
+[38;2;248;248;242m              is ignored; all octets with the top bit set may be  used  in  identifiers.[0m
+[38;2;248;248;242m              This is non-standard but is the traditional zsh behaviour.[0m
+
+[38;2;248;248;242m       POSIX_STRINGS <K> <S>[0m
+[38;2;248;248;242m              This  option  affects processing of quoted strings.  Currently it only af‐[0m
+[38;2;248;248;242m              fects the behaviour of null characters, i.e. character 0 in  the  portable[0m
+[38;2;248;248;242m              character set corresponding to US ASCII.[0m
+
+[38;2;248;248;242m              When  this  option  is not set, null characters embedded within strings of[0m
+[38;2;248;248;242m              the form $'...' are treated as ordinary characters. The entire  string  is[0m
+[38;2;248;248;242m              maintained  within the shell and output to files where necessary, although[0m
+[38;2;248;248;242m              owing to restrictions of the library interface the string is truncated  at[0m
+[38;2;248;248;242m              the  null  character in file names, environment variables, or in arguments[0m
+[38;2;248;248;242m              to external programs.[0m
+
+[38;2;248;248;242m              When this option is set, the $'...' expression is truncated  at  the  null[0m
+[38;2;248;248;242m              character.  Note that remaining parts of the same string beyond the termi‐[0m
+[38;2;248;248;242m              nation of the quotes are not truncated.[0m
+
+[38;2;248;248;242m              For  example,  the command line argument a$'b\0c'd is treated with the op‐[0m
+[38;2;248;248;242m              tion off as the characters a, b, null, c, d, and with the option on as the[0m
+[38;2;248;248;242m              characters a, b, d.[0m
+
+[38;2;248;248;242m       POSIX_TRAPS <K> <S>[0m
+[38;2;248;248;242m              When this option is set, the usual zsh behaviour of  executing  traps  for[0m
+[38;2;248;248;242m              EXIT on exit from shell functions is suppressed.  In that case, manipulat‐[0m
+[38;2;248;248;242m              ing  EXIT  traps  always alters the global trap for exiting the shell; the[0m
+[38;2;248;248;242m              LOCAL_TRAPS option is ignored for the EXIT trap.[0m
+
+[38;2;248;248;242m              Also, a return statement executed in a trap with no argument  passes  back[0m
+[38;2;248;248;242m              from  the  function  the value from the surrounding context, not from code[0m
+[38;2;248;248;242m              executed within the trap.[0m
+
+[38;2;248;248;242m              Furthermore, if a trap is set to be ignored, this state  persists  when  a[0m
+[38;2;248;248;242m              subshell  is  entered.  Without the option, the trap would be reset to its[0m
+[38;2;248;248;242m              default state at this point.[0m
+
+[38;2;248;248;242m       SH_FILE_EXPANSION <K> <S>[0m
+[38;2;248;248;242m              Perform filename expansion (e.g., ~ expansion) before parameter expansion,[0m
+[38;2;248;248;242m              command substitution, arithmetic expansion and brace expansion.   If  this[0m
+[38;2;248;248;242m              option  is  unset,  it  is performed after brace expansion, so things like[0m
+[38;2;248;248;242m              `~$USERNAME' and `~{pfalstad,rc}' will work.[0m
+
+[38;2;248;248;242m       SH_NULLCMD <K> <S>[0m
+[38;2;248;248;242m              Do not use the values of NULLCMD and READNULLCMD when doing  redirections,[0m
+[38;2;248;248;242m              use `:' instead (see the section `Redirection').[0m
+
+[38;2;248;248;242m       SH_OPTION_LETTERS <K> <S>[0m
+[38;2;248;248;242m              If  this  option is set the shell tries to interpret single letter options[0m
+[38;2;248;248;242m              (which are used with set and setopt) like ksh does.  This also affects the[0m
+[38;2;248;248;242m              value of the - special parameter.[0m
+
+[38;2;248;248;242m       SH_WORD_SPLIT (-y) <K> <S>[0m
+[38;2;248;248;242m              Causes field splitting to be performed on unquoted  parameter  expansions.[0m
+[38;2;248;248;242m              Note  that  this  option has nothing to do with word splitting.  (See zsh‐[0m
+[38;2;248;248;242m              expn(1).)[0m
+
+[38;2;248;248;242m       TRAPS_ASYNC[0m
+[38;2;248;248;242m              While waiting for a program to exit, handle signals and run traps  immedi‐[0m
+[38;2;248;248;242m              ately.   Otherwise the trap is run after a child process has exited.  Note[0m
+[38;2;248;248;242m              this does not affect the point at which traps are run for any  case  other[0m
+[38;2;248;248;242m              than when the shell is waiting for a child process.[0m
+
+[38;2;248;248;242m   Shell State[0m
+[38;2;248;248;242m       INTERACTIVE (-i, ksh: -i)[0m
+[38;2;248;248;242m              This  is  an interactive shell.  This option is set upon initialisation if[0m
+[38;2;248;248;242m              the standard input is a tty and commands are being read from standard  in‐[0m
+[38;2;248;248;242m              put.   (See the discussion of SHIN_STDIN.)  This heuristic may be overrid‐[0m
+[38;2;248;248;242m              den by specifying a state for this option on the command line.  The  value[0m
+[38;2;248;248;242m              of this option can only be changed via flags supplied at invocation of the[0m
+[38;2;248;248;242m              shell.  It cannot be changed once zsh is running.[0m
+
+[38;2;248;248;242m       LOGIN (-l, ksh: -l)[0m
+[38;2;248;248;242m              This  is  a  login shell.  If this option is not explicitly set, the shell[0m
+[38;2;248;248;242m              becomes a login shell if the first character of the argv[0] passed to  the[0m
+[38;2;248;248;242m              shell is a `-'.[0m
+
+[38;2;248;248;242m       PRIVILEGED (-p, ksh: -p)[0m
+[38;2;248;248;242m              Turn  on  privileged mode. Typically this is used when script is to be run[0m
+[38;2;248;248;242m              with elevated privileges. This should be done as follows directly with the[0m
+[38;2;248;248;242m              -p option to zsh so that it takes effect during startup.[0m
+
+[38;2;248;248;242m                     #!/bin/zsh -p[0m
+
+[38;2;248;248;242m              The option is enabled automatically  on  startup  if  the  effective  user[0m
+[38;2;248;248;242m              (group) ID is not equal to the real user (group) ID. In this case, turning[0m
+[38;2;248;248;242m              the  option  off  causes the effective user and group IDs to be set to the[0m
+[38;2;248;248;242m              real user and group IDs. Be aware that if that fails the shell may be run‐[0m
+[38;2;248;248;242m              ning with different IDs than was intended so a  script  should  check  for[0m
+[38;2;248;248;242m              failure and act accordingly, for example:[0m
+
+[38;2;248;248;242m                     unsetopt privileged || exit[0m
+
+[38;2;248;248;242m              The PRIVILEGED option disables sourcing user startup files.  If zsh is in‐[0m
+[38;2;248;248;242m              voked  as `sh' or `ksh' with this option set, /etc/suid_profile is sourced[0m
+[38;2;248;248;242m              (after /etc/profile on interactive shells). Sourcing  ~/.profile  is  dis‐[0m
+[38;2;248;248;242m              abled  and the contents of the ENV variable is ignored. This option cannot[0m
+[38;2;248;248;242m              be changed using the -m option of setopt and unsetopt, and changing it in‐[0m
+[38;2;248;248;242m              side a function always changes it globally regardless of the LOCAL_OPTIONS[0m
+[38;2;248;248;242m              option.[0m
+
+[38;2;248;248;242m       RESTRICTED (-r)[0m
+[38;2;248;248;242m              Enables restricted mode.  This option cannot be  changed  using  unsetopt,[0m
+[38;2;248;248;242m              and  setting it inside a function always changes it globally regardless of[0m
+[38;2;248;248;242m              the LOCAL_OPTIONS option.  See the section `Restricted Shell'.[0m
+
+[38;2;248;248;242m       SHIN_STDIN (-s, ksh: -s)[0m
+[38;2;248;248;242m              Commands are being read from the standard input.  Commands are  read  from[0m
+[38;2;248;248;242m              standard  input if no command is specified with -c and no file of commands[0m
+[38;2;248;248;242m              is specified.  If SHIN_STDIN is set explicitly on the  command  line,  any[0m
+[38;2;248;248;242m              argument  that  would  otherwise have been taken as a file to run will in‐[0m
+[38;2;248;248;242m              stead be treated as a normal positional parameter.  Note that  setting  or[0m
+[38;2;248;248;242m              unsetting  this option on the command line does not necessarily affect the[0m
+[38;2;248;248;242m              state the option will have while the shell is running - that is purely  an[0m
+[38;2;248;248;242m              indicator of whether or not commands are actually being read from standard[0m
+[38;2;248;248;242m              input.  The value of this option can only be changed via flags supplied at[0m
+[38;2;248;248;242m              invocation of the shell.  It cannot be changed once zsh is running.[0m
+
+[38;2;248;248;242m       SINGLE_COMMAND (-t, ksh: -t)[0m
+[38;2;248;248;242m              If  the shell is reading from standard input, it exits after a single com‐[0m
+[38;2;248;248;242m              mand has been executed.  This also makes the shell non-interactive, unless[0m
+[38;2;248;248;242m              the INTERACTIVE option is explicitly set on the command line.   The  value[0m
+[38;2;248;248;242m              of this option can only be changed via flags supplied at invocation of the[0m
+[38;2;248;248;242m              shell.  It cannot be changed once zsh is running.[0m
+
+[38;2;248;248;242m   Zle[0m
+[38;2;248;248;242m       BEEP (+B) <D>[0m
+[38;2;248;248;242m              Beep on error in ZLE.[0m
+
+[38;2;248;248;242m       COMBINING_CHARS[0m
+[38;2;248;248;242m              Assume that the terminal displays combining characters correctly.  Specif‐[0m
+[38;2;248;248;242m              ically,  if  a  base  alphanumeric  character  is  followed by one or more[0m
+[38;2;248;248;242m              zero-width punctuation characters, assume that the  zero-width  characters[0m
+[38;2;248;248;242m              will  be  displayed as modifications to the base character within the same[0m
+[38;2;248;248;242m              width.  Not all terminals  handle  this.   If  this  option  is  not  set,[0m
+[38;2;248;248;242m              zero-width characters are displayed separately with special mark-up.[0m
+
+[38;2;248;248;242m              If  this  option  is set, the pattern test [[:WORD:]] matches a zero-width[0m
+[38;2;248;248;242m              punctuation character on the assumption that it will be used as part of  a[0m
+[38;2;248;248;242m              word  in combination with a word character.  Otherwise the base shell does[0m
+[38;2;248;248;242m              not handle combining characters specially.[0m
+
+[38;2;248;248;242m       EMACS  If ZLE is loaded, turning on this option  has  the  equivalent  effect  of[0m
+[38;2;248;248;242m              `bindkey -e'.  In addition, the VI option is unset.  Turning it off has no[0m
+[38;2;248;248;242m              effect.   The  option  setting  is  not  guaranteed to reflect the current[0m
+[38;2;248;248;242m              keymap.  This option is provided for compatibility; bindkey is the  recom‐[0m
+[38;2;248;248;242m              mended interface.[0m
+
+[38;2;248;248;242m       OVERSTRIKE[0m
+[38;2;248;248;242m              Start up the line editor in overstrike mode.[0m
+
+[38;2;248;248;242m       SINGLE_LINE_ZLE (-M) <K>[0m
+[38;2;248;248;242m              Use single-line command line editing instead of multi-line.[0m
+
+[38;2;248;248;242m              Note that although this is on by default in ksh emulation it only provides[0m
+[38;2;248;248;242m              superficial  compatibility with the ksh line editor and reduces the effec‐[0m
+[38;2;248;248;242m              tiveness of the zsh line editor.  As it has no  effect  on  shell  syntax,[0m
+[38;2;248;248;242m              many users may wish to disable this option when using ksh emulation inter‐[0m
+[38;2;248;248;242m              actively.[0m
+
+[38;2;248;248;242m       VI     If  ZLE  is  loaded,  turning  on this option has the equivalent effect of[0m
+[38;2;248;248;242m              `bindkey -v'.  In addition, the EMACS option is unset.  Turning it off has[0m
+[38;2;248;248;242m              no effect.  The option setting is not guaranteed to  reflect  the  current[0m
+[38;2;248;248;242m              keymap.   This option is provided for compatibility; bindkey is the recom‐[0m
+[38;2;248;248;242m              mended interface.[0m
+
+[38;2;248;248;242m       ZLE (-Z)[0m
+[38;2;248;248;242m              Use the zsh line editor.  Set by default in interactive  shells  connected[0m
+[38;2;248;248;242m              to a terminal.[0m
+
+[38;2;248;248;242mOPTION ALIASES[0m
+[38;2;248;248;242m       Some  options  have  alternative names.  These aliases are never used for output,[0m
+[38;2;248;248;242m       but can be used just like normal option names  when  specifying  options  to  the[0m
+[38;2;248;248;242m       shell.[0m
+
+[38;2;248;248;242m       BRACE_EXPAND[0m
+[38;2;248;248;242m              NO_IGNORE_BRACES (ksh and bash compatibility)[0m
+
+[38;2;248;248;242m       DOT_GLOB[0m
+[38;2;248;248;242m              GLOB_DOTS (bash compatibility)[0m
+
+[38;2;248;248;242m       HASH_ALL[0m
+[38;2;248;248;242m              HASH_CMDS (bash compatibility)[0m
+
+[38;2;248;248;242m       HIST_APPEND[0m
+[38;2;248;248;242m              APPEND_HISTORY (bash compatibility)[0m
+
+[38;2;248;248;242m       HIST_EXPAND[0m
+[38;2;248;248;242m              BANG_HIST (bash compatibility)[0m
+
+[38;2;248;248;242m       LOG    NO_HIST_NO_FUNCTIONS (ksh compatibility)[0m
+
+[38;2;248;248;242m       MAIL_WARN[0m
+[38;2;248;248;242m              MAIL_WARNING (bash compatibility)[0m
+
+[38;2;248;248;242m       ONE_CMD[0m
+[38;2;248;248;242m              SINGLE_COMMAND (bash compatibility)[0m
+
+[38;2;248;248;242m       PHYSICAL[0m
+[38;2;248;248;242m              CHASE_LINKS (ksh and bash compatibility)[0m
+
+[38;2;248;248;242m       PROMPT_VARS[0m
+[38;2;248;248;242m              PROMPT_SUBST (bash compatibility)[0m
+
+[38;2;248;248;242m       STDIN  SHIN_STDIN (ksh compatibility)[0m
+
+[38;2;248;248;242m       TRACK_ALL[0m
+[38;2;248;248;242m              HASH_CMDS (ksh compatibility)[0m
+
+[38;2;248;248;242mSINGLE LETTER OPTIONS[0m
+[38;2;248;248;242m   Default set[0m
+[38;2;248;248;242m       -0     CORRECT[0m
+[38;2;248;248;242m       -1     PRINT_EXIT_VALUE[0m
+[38;2;248;248;242m       -2     NO_BAD_PATTERN[0m
+[38;2;248;248;242m       -3     NO_NOMATCH[0m
+[38;2;248;248;242m       -4     GLOB_DOTS[0m
+[38;2;248;248;242m       -5     NOTIFY[0m
+[38;2;248;248;242m       -6     BG_NICE[0m
+[38;2;248;248;242m       -7     IGNORE_EOF[0m
+[38;2;248;248;242m       -8     MARK_DIRS[0m
+[38;2;248;248;242m       -9     AUTO_LIST[0m
+[38;2;248;248;242m       -B     NO_BEEP[0m
+[38;2;248;248;242m       -C     NO_CLOBBER[0m
+[38;2;248;248;242m       -D     PUSHD_TO_HOME[0m
+[38;2;248;248;242m       -E     PUSHD_SILENT[0m
+[38;2;248;248;242m       -F     NO_GLOB[0m
+[38;2;248;248;242m       -G     NULL_GLOB[0m
+[38;2;248;248;242m       -H     RM_STAR_SILENT[0m
+[38;2;248;248;242m       -I     IGNORE_BRACES[0m
+[38;2;248;248;242m       -J     AUTO_CD[0m
+[38;2;248;248;242m       -K     NO_BANG_HIST[0m
+[38;2;248;248;242m       -L     SUN_KEYBOARD_HACK[0m
+[38;2;248;248;242m       -M     SINGLE_LINE_ZLE[0m
+[38;2;248;248;242m       -N     AUTO_PUSHD[0m
+[38;2;248;248;242m       -O     CORRECT_ALL[0m
+[38;2;248;248;242m       -P     RC_EXPAND_PARAM[0m
+[38;2;248;248;242m       -Q     PATH_DIRS[0m
+[38;2;248;248;242m       -R     LONG_LIST_JOBS[0m
+[38;2;248;248;242m       -S     REC_EXACT[0m
+[38;2;248;248;242m       -T     CDABLE_VARS[0m
+[38;2;248;248;242m       -U     MAIL_WARNING[0m
+[38;2;248;248;242m       -V     NO_PROMPT_CR[0m
+[38;2;248;248;242m       -W     AUTO_RESUME[0m
+[38;2;248;248;242m       -X     LIST_TYPES[0m
+[38;2;248;248;242m       -Y     MENU_COMPLETE[0m
+[38;2;248;248;242m       -Z     ZLE[0m
+[38;2;248;248;242m       -a     ALL_EXPORT[0m
+[38;2;248;248;242m       -e     ERR_EXIT[0m
+[38;2;248;248;242m       -f     NO_RCS[0m
+[38;2;248;248;242m       -g     HIST_IGNORE_SPACE[0m
+[38;2;248;248;242m       -h     HIST_IGNORE_DUPS[0m
+[38;2;248;248;242m       -i     INTERACTIVE[0m
+[38;2;248;248;242m       -k     INTERACTIVE_COMMENTS[0m
+[38;2;248;248;242m       -l     LOGIN[0m
+[38;2;248;248;242m       -m     MONITOR[0m
+[38;2;248;248;242m       -n     NO_EXEC[0m
+[38;2;248;248;242m       -p     PRIVILEGED[0m
+[38;2;248;248;242m       -r     RESTRICTED[0m
+[38;2;248;248;242m       -s     SHIN_STDIN[0m
+[38;2;248;248;242m       -t     SINGLE_COMMAND[0m
+[38;2;248;248;242m       -u     NO_UNSET[0m
+[38;2;248;248;242m       -v     VERBOSE[0m
+[38;2;248;248;242m       -w     CHASE_LINKS[0m
+[38;2;248;248;242m       -x     XTRACE[0m
+[38;2;248;248;242m       -y     SH_WORD_SPLIT[0m
+
+[38;2;248;248;242m   sh/ksh emulation set[0m
+[38;2;248;248;242m       -C     NO_CLOBBER[0m
+[38;2;248;248;242m       -T     TRAPS_ASYNC[0m
+[38;2;248;248;242m       -X     MARK_DIRS[0m
+[38;2;248;248;242m       -a     ALL_EXPORT[0m
+[38;2;248;248;242m       -b     NOTIFY[0m
+[38;2;248;248;242m       -e     ERR_EXIT[0m
+[38;2;248;248;242m       -f     NO_GLOB[0m
+[38;2;248;248;242m       -i     INTERACTIVE[0m
+[38;2;248;248;242m       -l     LOGIN[0m
+[38;2;248;248;242m       -m     MONITOR[0m
+[38;2;248;248;242m       -n     NO_EXEC[0m
+[38;2;248;248;242m       -p     PRIVILEGED[0m
+[38;2;248;248;242m       -r     RESTRICTED[0m
+[38;2;248;248;242m       -s     SHIN_STDIN[0m
+[38;2;248;248;242m       -t     SINGLE_COMMAND[0m
+[38;2;248;248;242m       -u     NO_UNSET[0m
+[38;2;248;248;242m       -v     VERBOSE[0m
+[38;2;248;248;242m       -x     XTRACE[0m
+
+[38;2;248;248;242m   Also note[0m
+[38;2;248;248;242m       -A     Used by set for setting arrays[0m
+[38;2;248;248;242m       -b     Used on the command line to specify end of option processing[0m
+[38;2;248;248;242m       -c     Used on the command line to specify a single command[0m
+[38;2;248;248;242m       -m     Used by setopt for pattern-matching option setting[0m
+[38;2;248;248;242m       -o     Used in all places to allow use of long option names[0m
+[38;2;248;248;242m       -s     Used by set to sort positional parameters[0m
+
+[38;2;248;248;242mzsh 5.9                               May 14, 2022                         ZSHOPTIONS(1)[0m

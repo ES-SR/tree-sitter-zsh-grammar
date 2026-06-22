@@ -1,0 +1,91 @@
+ALIASING
+     Every eligible word in the shell input is checked to see if there is an
+     alias defined for it.  If so, it is replaced by the text of the alias if
+     it is in command position (if it could be the first word of a simple
+     command), or if the alias is global.  If the replacement text ends with a
+     space, the next word in the shell input is always eligible for purposes of
+     alias expansion.
+
+     It is an error for the function name, word, in the sh-compatible function
+     definition syntax ‘word () ...' to be a word that resulted from alias
+     expansion, unless the ALIAS_FUNC_DEF option is set.
+
+     An alias is defined using the alias builtin; global aliases may be defined
+     using the -g option to that builtin.
+
+     A word is defined as:
+
+     •      Any plain string or glob pattern
+
+     •      Any quoted string, using any quoting method (note that the quotes
+            must be part of the alias definition for this to be eligible)
+
+     •      Any parameter reference or command substitution
+
+     •      Any series of the foregoing, concatenated without whitespace or
+            other tokens between them
+
+     •      Any reserved word (case, do, else, etc.)
+
+     •      With global aliasing, any command separator, any redirection
+            operator, and ‘(' or ‘)' when not part of a glob pattern
+
+     Alias expansion is done on the shell input before any other expansion
+     except history expansion.  Therefore, if an alias is defined for the word
+     foo, alias expansion may be avoided by quoting part of the word, e.g.
+     \foo.  Any form of quoting works, although there is nothing to prevent an
+     alias being defined for the quoted form such as \foo as well.
+
+     In particular, note that quoting must be used when using unalias to remove
+     global aliases:
+
+            % alias -g foo=bar
+            % unalias foo
+            unalias: no such hash table element: bar
+            % unalias \foo
+            %
+
+     When POSIX_ALIASES is set, only plain unquoted strings are eligible for
+     aliasing.  The alias builtin does not reject ineligible aliases, but they
+     are not expanded.
+
+     For use with completion, which would remove an initial backslash followed
+     by a character that isn't special, it may be more convenient to quote the
+     word by starting with a single quote, i.e. 'foo; completion will
+     automatically add the trailing single quote.
+
+   Alias difficulties
+     Although aliases can be used in ways that bend normal shell syntax, not
+     every string of non-white-space characters can be used as an alias.
+
+     Any set of characters not listed as a word above is not a word, hence no
+     attempt is made to expand it as an alias, no matter how it is defined
+     (i.e. via the builtin or the special parameter aliases described in the
+     section THE ZSH/PARAMETER MODULE in zshmodules(1)).  However, as noted in
+     the case of POSIX_ALIASES above, the shell does not attempt to deduce
+     whether the string corresponds to a word at the time the alias is created.
+
+     For example, an expression containing an = at the start of a command line
+     is an assignment and cannot be expanded as an alias; a lone = is not an
+     assignment but can only be set as an alias using the parameter, as
+     otherwise the = is taken part of the syntax of the builtin command.
+
+     It is not presently possible to alias the ‘((' token that introduces
+     arithmetic expressions, because until a full statement has been parsed, it
+     cannot be distinguished from two consecutive ‘(' tokens introducing nested
+     subshells.  Also, if a separator such as && is aliased, \&& turns into the
+     two tokens \& and &, each of which may have been aliased separately.
+     Similarly for \<<, \>|, etc.
+
+     There is a commonly encountered problem with aliases illustrated by the
+     following code:
+
+            alias echobar='echo bar'; echobar
+
+     This prints a message that the command echobar could not be found.  This
+     happens because aliases are expanded when the code is read in; the entire
+     line is read in one go, so that when echobar is executed it is too late to
+     expand the newly defined alias.  This is often a problem in shell scripts,
+     functions, and code executed with ‘source' or ‘.'.  Consequently, use of
+     functions rather than aliases is recommended in non-interactive code.
+

@@ -1,0 +1,55 @@
+DESCRIPTION
+     A parameter has a name, a value, and a number of attributes.  A name may
+     be any sequence of alphanumeric characters and underscores, or the single
+     characters ‘*', ‘@', ‘#', ‘?', ‘-', ‘$', or ‘!'.  A parameter whose name
+     begins with an alphanumeric or underscore is also referred to as a
+     variable.
+
+     The attributes of a parameter determine the type of its value, often
+     referred to as the parameter type or variable type, and also control other
+     processing that may be applied to the value when it is referenced.  The
+     value type may be a scalar (a string, an integer, or a floating point
+     number), an array (indexed numerically), or an associative array (an
+     unordered set of name-value pairs, indexed by name, also referred to as a
+     hash).
+
+     Named scalar parameters may have the exported, -x, attribute, to copy them
+     into the process environment, which is then passed from the shell to any
+     new processes that it starts.  Exported parameters are called environment
+     variables. The shell also imports environment variables at startup time
+     and automatically marks the corresponding parameters as exported.  Some
+     environment variables are not imported for reasons of security or because
+     they would interfere with the correct operation of other shell features.
+
+     Parameters may also be special, that is, they have a predetermined meaning
+     to the shell.  Special parameters cannot have their type changed or their
+     readonly attribute turned off, and if a special parameter is unset, then
+     later recreated, the special properties will be retained.
+
+     To declare the type of a parameter, or to assign a string or numeric value
+     to a scalar parameter, use the typeset builtin.
+
+     The value of a scalar parameter may also be assigned by writing:
+
+            name=value
+
+     In scalar assignment, value is expanded as a single string, in which the
+     elements of arrays are joined together; filename expansion is not
+     performed unless the option GLOB_ASSIGN is set.
+
+     When the integer attribute, -i, or a floating point attribute, -E or -F,
+     is set for name, the value is subject to arithmetic evaluation.
+     Furthermore, by replacing ‘=' with ‘+=', a parameter can be incremented or
+     appended to.  See the section ‘Array Parameters' and Arithmetic Evaluation
+     (in zshmisc(1)) for additional forms of assignment.
+
+     Note that assignment may implicitly change the attributes of a parameter.
+     For example, assigning a number to a variable in arithmetic evaluation may
+     change its type to integer or float, and with GLOB_ASSIGN assigning a
+     pattern to a variable may change its type to an array.
+
+     To reference the value of a parameter, write ‘$name' or ‘${name}'.  See
+     Parameter Expansion in zshexpn(1) for complete details.  That section also
+     explains the effect of the difference between scalar and array assignment
+     on parameter expansion.
+

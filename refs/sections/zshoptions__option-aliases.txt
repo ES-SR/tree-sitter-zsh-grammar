@@ -1,0 +1,39 @@
+OPTION ALIASES
+     Some options have alternative names.  These aliases are never used for
+     output, but can be used just like normal option names when specifying
+     options to the shell.
+
+     BRACE_EXPAND
+            NO_IGNORE_BRACES (ksh and bash compatibility)
+
+     DOT_GLOB
+            GLOB_DOTS (bash compatibility)
+
+     HASH_ALL
+            HASH_CMDS (bash compatibility)
+
+     HIST_APPEND
+            APPEND_HISTORY (bash compatibility)
+
+     HIST_EXPAND
+            BANG_HIST (bash compatibility)
+
+     LOG    NO_HIST_NO_FUNCTIONS (ksh compatibility)
+
+     MAIL_WARN
+            MAIL_WARNING (bash compatibility)
+
+     ONE_CMD
+            SINGLE_COMMAND (bash compatibility)
+
+     PHYSICAL
+            CHASE_LINKS (ksh and bash compatibility)
+
+     PROMPT_VARS
+            PROMPT_SUBST (bash compatibility)
+
+     STDIN  SHIN_STDIN (ksh compatibility)
+
+     TRACK_ALL
+            HASH_CMDS (ksh compatibility)
+

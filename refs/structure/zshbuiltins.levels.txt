@@ -1,0 +1,2305 @@
+1 0 ZSHBUILTINS(1)              General Commands Manual              ZSHBUILTINS(1)
+1 0 NAME
+2 5 zshbuiltins - zsh built-in commands
+1 0 SHELL BUILTIN COMMANDS
+2 5 Some shell builtin commands take options as described in individual
+2 5 entries; these are often referred to in the list below as ‘flags' to avoid
+2 5 confusion with shell options, which may also have an effect on the
+2 5 behaviour of builtin commands.  In this introductory section, ‘option'
+2 5 always has the meaning of an option to a command that should be familiar
+2 5 to most command line users.
+2 5 Typically, options are single letters preceded by a hyphen (-).  Options
+2 5 that take an argument accept it either immediately following the option
+2 5 letter or after white space, for example ‘print -C3 {1..9}' or ‘print -C 3
+2 5 {1..9}' are equivalent.  Arguments to options are not the same as
+2 5 arguments to the command; the documentation indicates which is which.
+2 5 Options that do not take an argument may be combined in a single word, for
+2 5 example ‘print -rca -- *' and ‘print -r -c -a -- *' are equivalent.
+2 5 Some shell builtin commands also take options that begin with ‘+' instead
+2 5 of ‘-'.  The list below makes clear which commands these are.
+2 5 Options (together with their individual arguments, if any) must appear in
+2 5 a group before any non-option arguments; once the first non-option
+2 5 argument has been found, option processing is terminated.
+2 5 All builtin commands other than ‘echo' and precommand modifiers, even
+2 5 those that have no options, can be given the argument ‘--' to terminate
+2 5 option processing.  This indicates that the following words are non-option
+2 5 arguments, but is otherwise ignored.  This is useful in cases where
+2 5 arguments to the command may begin with ‘-'.  For historical reasons, most
+2 5 builtin commands (including ‘echo') also recognize a single ‘-' in a
+2 5 separate word for this purpose; note that this is less standard and use of
+2 5 ‘--' is recommended.
+2 5 - simple command
+6 12 See the section ‘Precommand Modifiers' in zshmisc(1).
+2 5 . file [ arg ... ]
+6 12 Read commands from file and execute them in the current shell
+6 12 environment.
+6 12 If file does not contain a slash, or if PATH_DIRS is set, the shell
+6 12 looks in the components of $path to find the directory containing
+6 12 file.  Files in the current directory are not read unless ‘.'
+6 12 appears somewhere in $path.  If a file named ‘file.zwc' is found,
+6 12 is newer than file, and is the compiled form (created with the
+6 12 zcompile builtin) of file, then commands are read from that file
+6 12 instead of file.
+6 12 If any arguments arg are given, they become the positional
+6 12 parameters; the old positional parameters are restored when the
+6 12 file is done executing.  However, if no arguments are given, the
+6 12 positional parameters remain those of the calling context, and no
+6 12 restoring is done.
+6 12 If file was not found the return status is 127; if file was found
+6 12 but contained a syntax error the return status is 126; else the
+6 12 return status is the exit status of the last command executed.
+2 5 : [ arg ... ]
+6 12 This command does nothing, although normal argument expansions is
+6 12 performed which may have effects on shell parameters.  A zero exit
+6 12 status is returned.
+2 5 alias [ {+|-}gmrsL ] [ name[=value] ... ]
+6 12 For each name with a corresponding value, define an alias with that
+6 12 value.  A trailing space in value causes the next word to be
+6 12 checked for alias expansion.  If the -g flag is present, define a
+6 12 global alias; global aliases are expanded even if they do not occur
+6 12 in command position:
+8 19 % perldoc --help 2>&1 | grep 'built-in functions'
+10 23 -f   Search Perl built-in functions
+8 19 % alias -g HG='--help 2>&1 | grep'
+8 19 % perldoc HG 'built-in functions'
+10 23 -f   Search Perl built-in functions
+6 12 If the -s flag is present, define a suffix alias: if the command
+6 12 word on a command line is in the form ‘text.name', where text is
+6 12 any non-empty string, it is replaced by the text ‘value text.name'.
+6 12 Note that name is treated as a literal string, not a pattern.  A
+6 12 trailing space in value is not special in this case.  For example,
+8 19 alias -s ps='gv --'
+6 12 will cause the command ‘*.ps' to be expanded to ‘gv -- *.ps'.  As
+6 12 alias expansion is carried out earlier than globbing, the ‘*.ps'
+6 12 will then be expanded.  Suffix aliases constitute a different name
+6 12 space from other aliases (so in the above example it is still
+6 12 possible to create an alias for the command ps) and the two sets
+6 12 are never listed together.
+6 12 For each name with no value, print the value of name, if any.  With
+6 12 no arguments, print all currently defined aliases other than suffix
+6 12 aliases.  If the -m flag is given the arguments are taken as
+6 12 patterns (they should be quoted to preserve them from being
+6 12 interpreted as glob patterns), and the aliases matching these
+6 12 patterns are printed.  When printing aliases and one of the -g, -r
+6 12 or -s flags is present, restrict the printing to global, regular or
+6 12 suffix aliases, respectively; a regular alias is one which is
+6 12 neither a global nor a suffix alias.   Using ‘+' instead of ‘-', or
+6 12 ending the option list with a single ‘+', prevents the values of
+6 12 the aliases from being printed.
+6 12 If the -L flag is present, then print each alias in a manner
+6 12 suitable for putting in a startup script.  The exit status is
+6 12 nonzero if a name (with no value) is given for which no alias has
+6 12 been defined.
+6 12 For more on aliases, include common problems, see the section
+6 12 ALIASING in zshmisc(1).
+2 5 autoload [ {+|-}RTUXdkmrtWz ] [ -w ] [ name ... ]
+6 12 See the section ‘Autoloading Functions' in zshmisc(1) for full
+6 12 details.  The fpath parameter will be searched to find the function
+6 12 definition when the function is first referenced.
+6 12 If name consists of an absolute path, the function is defined to
+6 12 load from the file given (searching as usual for dump files in the
+6 12 given location).  The name of the function is the basename
+6 12 (non-directory part) of the file.  It is normally an error if the
+6 12 function is not found in the given location; however, if the option
+6 12 -d is given, searching for the function defaults to $fpath.  If a
+6 12 function is loaded by absolute path, any functions loaded from it
+6 12 that are marked for autoload without an absolute path have the load
+6 12 path of the parent function temporarily prepended to $fpath.
+6 12 If the option -r or -R is given, the function is searched for
+6 12 immediately and the location is recorded internally for use when
+6 12 the function is executed; a relative path is expanded using the
+6 12 value of $PWD.  This protects against a change to $fpath after the
+6 12 call to autoload.  With -r, if the function is not found, it is
+6 12 silently left unresolved until execution; with -R, an error message
+6 12 is printed and command processing aborted immediately the search
+6 12 fails, i.e. at the autoload command rather than at function
+6 12 execution..
+6 12 The flag -X may be used only inside a shell function.  It causes
+6 12 the calling function to be marked for autoloading and then
+6 12 immediately loaded and executed, with the current array of
+6 12 positional parameters as arguments.  This replaces the previous
+6 12 definition of the function.  If no function definition is found, an
+6 12 error is printed and the function remains undefined and marked for
+6 12 autoloading.  If an argument is given, it is used as a directory
+6 12 (i.e. it does not include the name of the function) in which the
+6 12 function is to be found; this may be combined with the -d option to
+6 12 allow the function search to default to $fpath if it is not in the
+6 12 given location.
+6 12 The flag +X attempts to load each name as an autoloaded function,
+6 12 but does not execute it.  The exit status is zero (success) if the
+6 12 function was not previously defined and a definition for it was
+6 12 found.  This does not replace any existing definition of the
+6 12 function.  The exit status is nonzero (failure) if the function was
+6 12 already defined or when no definition was found.  In the latter
+6 12 case the function remains undefined and marked for autoloading.  If
+6 12 ksh-style autoloading is enabled, the function created will contain
+6 12 the contents of the file plus a call to the function itself
+6 12 appended to it, thus giving normal ksh autoloading behaviour on the
+6 12 first call to the function.  If the -m flag is also given each name
+6 12 is treated as a pattern and all functions already marked for
+6 12 autoload that match the pattern are loaded.
+6 12 With the -t flag, turn on execution tracing; with -T, turn on
+6 12 execution tracing only for the current function, turning it off on
+6 12 entry to any called functions that do not also have tracing
+6 12 enabled.
+6 12 With the -U flag, alias expansion is suppressed when the function
+6 12 is loaded.
+6 12 With the -w flag, the names are taken as names of files compiled
+6 12 with the zcompile builtin, and all functions defined in them are
+6 12 marked for autoloading.
+6 12 The flags -z and -k mark the function to be autoloaded using the
+6 12 zsh or ksh style, as if the option KSH_AUTOLOAD were unset or were
+6 12 set, respectively.  The flags override the setting of the option at
+6 12 the time the function is loaded.
+6 12 Note that the autoload command makes no attempt to ensure the shell
+6 12 options set during the loading or execution of the file have any
+6 12 particular value.  For this, the emulate command can be used:
+8 19 emulate zsh -c 'autoload -Uz func'
+6 12 arranges that when func is loaded the shell is in native zsh
+6 12 emulation, and this emulation is also applied when func is run.
+6 12 Some of the functions of autoload are also provided by functions -u
+6 12 or functions -U, but autoload is a more comprehensive interface.
+2 5 bg [ job ... ]
+2 5 job ... &
+6 12 Put each specified job in the background, or the current job if
+6 12 none is specified.
+2 5 bindkey
+6 12 See the section ‘Zle Builtins' in zshzle(1).
+2 5 break [ n ]
+6 12 Exit from an enclosing for, while, until, select or repeat loop. If
+6 12 an arithmetic expression n is specified, then break n levels
+6 12 instead of just one.
+2 5 builtin name [ args ... ]
+6 12 Executes the builtin name, with the given args.
+2 5 bye    Same as exit.
+2 5 cap    See the section ‘The zsh/cap Module' in zshmodules(1).
+2 5 cd [ -qsLP ] [ arg ]
+2 5 cd [ -qsLP ] old new
+2 5 cd [ -qsLP ] {+|-}n
+6 12 Change the current directory.  In the first form, change the
+6 12 current directory to arg, or to the value of $HOME if arg is not
+6 12 specified.  If arg is ‘-', change to the previous directory.
+6 12 Otherwise, if arg begins with a slash, attempt to change to the
+6 12 directory given by arg.
+6 12 If arg does not begin with a slash, the behaviour depends on
+6 12 whether the current directory ‘.' occurs in the list of directories
+6 12 contained in the shell parameter cdpath.  If it does not, first
+6 12 attempt to change to the directory arg under the current directory,
+6 12 and if that fails but cdpath is set and contains at least one
+6 12 element attempt to change to the directory arg under each component
+6 12 of cdpath in turn until successful.  If ‘.' occurs in cdpath, then
+6 12 cdpath is searched strictly in order so that ‘.' is only tried at
+6 12 the appropriate point.
+6 12 The order of testing cdpath is modified if the option POSIX_CD is
+6 12 set, as described in the documentation for the option.
+6 12 If no directory is found, the option CDABLE_VARS is set, and a
+6 12 parameter named arg exists whose value begins with a slash, treat
+6 12 its value as the directory.  In that case, the parameter is added
+6 12 to the named directory hash table.
+6 12 The second form of cd substitutes the string new for the string old
+6 12 in the name of the current directory, and tries to change to this
+6 12 new directory.
+6 12 The third form of cd extracts an entry from the directory stack,
+6 12 and changes to that directory.  An argument of the form ‘+n'
+6 12 identifies a stack entry by counting from the left of the list
+6 12 shown by the dirs command, starting with zero.  An argument of the
+6 12 form ‘-n' counts from the right.  If the PUSHD_MINUS option is set,
+6 12 the meanings of ‘+' and ‘-' in this context are swapped.  If the
+6 12 POSIX_CD option is set, this form of cd is not recognised and will
+6 12 be interpreted as the first form.
+6 12 If the -q (quiet) option is specified, the hook function chpwd and
+6 12 the functions in the array chpwd_functions are not called.  This is
+6 12 useful for calls to cd that do not change the environment seen by
+6 12 an interactive user.
+6 12 If the -s option is specified, cd refuses to change the current
+6 12 directory if the given pathname contains symlinks.  If the -P
+6 12 option is given or the CHASE_LINKS option is set, symbolic links
+6 12 are resolved to their true values.  If the -L option is given
+6 12 symbolic links are retained in the directory (and not resolved)
+6 12 regardless of the state of the CHASE_LINKS option.
+2 5 chdir  Same as cd.
+2 5 clone  See the section ‘The zsh/clone Module' in zshmodules(1).
+2 5 command [ -pvV ] simple command
+6 12 The simple command argument is taken as an external command instead
+6 12 of a function or builtin and is executed. If the POSIX_BUILTINS
+6 12 option is set, builtins will also be executed but certain special
+6 12 properties of them are suppressed. The -p flag causes a default
+6 12 path to be searched instead of that in $path. With the -v flag,
+6 12 command is similar to whence and with -V, it is equivalent to
+6 12 whence -v.
+6 12 See also the section ‘Precommand Modifiers' in zshmisc(1).
+2 5 comparguments
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 compcall
+6 12 See the section ‘The zsh/compctl Module' in zshmodules(1).
+2 5 compctl
+6 12 See the section ‘The zsh/compctl Module' in zshmodules(1).
+2 5 compdescribe
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 compfiles
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 compgroups
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 compquote
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 comptags
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 comptry
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 compvalues
+6 12 See the section ‘The zsh/computil Module' in zshmodules(1).
+2 5 continue [ n ]
+6 12 Resume the next iteration of the enclosing for, while, until,
+6 12 select or repeat loop. If an arithmetic expression n is specified,
+6 12 break out of n-1 loops and resume at the nth enclosing loop.
+2 5 declare
+6 12 Same as typeset.
+2 5 dirs [ -c ] [ arg ... ]
+2 5 dirs [ -lpv ]
+6 12 With no arguments, print the contents of the directory stack.
+6 12 Directories are added to this stack with the pushd command, and
+6 12 removed with the cd or popd commands.  If arguments are specified,
+6 12 load them onto the directory stack, replacing anything that was
+6 12 there, and push the current directory onto the stack.
+6 12 -c     clear the directory stack.
+6 12 -l     print directory names in full instead of using of using ~
+8 19 expressions (see Dynamic and Static named directories in
+8 19 zshexpn(1)).
+6 12 -p     print directory entries one per line.
+6 12 -v     number the directories in the stack when printing.
+2 5 disable [ -afmprs ] name ...
+6 12 Temporarily disable the named hash table elements or patterns.  The
+6 12 default is to disable builtin commands.  This allows you to use an
+6 12 external command with the same name as a builtin command.  The -a
+6 12 option causes disable to act on regular or global aliases.  The -s
+6 12 option causes disable to act on suffix aliases.  The -f option
+6 12 causes disable to act on shell functions.  The -r options causes
+6 12 disable to act on reserved words.  Without arguments all disabled
+6 12 hash table elements from the corresponding hash table are printed.
+6 12 With the -m flag the arguments are taken as patterns (which should
+6 12 be quoted to prevent them from undergoing filename expansion), and
+6 12 all hash table elements from the corresponding hash table matching
+6 12 these patterns are disabled.  Disabled objects can be enabled with
+6 12 the enable command.
+6 12 With the option -p, name ... refer to elements of the shell's
+6 12 pattern syntax as described in the section ‘Filename Generation'.
+6 12 Certain elements can be disabled separately, as given below.
+6 12 Note that patterns not allowed by the current settings for the
+6 12 options EXTENDED_GLOB, KSH_GLOB and SH_GLOB are never enabled,
+6 12 regardless of the setting here.  For example, if EXTENDED_GLOB is
+6 12 not active, the pattern ^ is ineffective even if ‘disable -p "^"'
+6 12 has not been issued.  The list below indicates any option settings
+6 12 that restrict the use of the pattern.  It should be noted that
+6 12 setting SH_GLOB has a wider effect than merely disabling patterns
+6 12 as certain expressions, in particular those involving parentheses,
+6 12 are parsed differently.
+6 12 The following patterns may be disabled; all the strings need
+6 12 quoting on the command line to prevent them from being interpreted
+6 12 immediately as patterns and the patterns are shown below in single
+6 12 quotes as a reminder.
+6 12 '?'    The pattern character ? wherever it occurs, including when
+8 19 preceding a parenthesis with KSH_GLOB.
+6 12 '*'    The pattern character * wherever it occurs, including
+8 19 recursive globbing and when preceding a parenthesis with
+8 19 KSH_GLOB.
+6 12 '['    Character classes.
+6 12 '<' (NO_SH_GLOB)
+8 19 Numeric ranges.
+6 12 '|' (NO_SH_GLOB)
+8 19 Alternation in grouped patterns, case statements, or
+8 19 KSH_GLOB parenthesised expressions.
+6 12 '(' (NO_SH_GLOB)
+8 19 Grouping using single parentheses.  Disabling this does not
+8 19 disable the use of parentheses for KSH_GLOB where they are
+8 19 introduced by a special character, nor for glob qualifiers
+8 19 (use ‘setopt NO_BARE_GLOB_QUAL' to disable glob qualifiers
+8 19 that use parentheses only).
+6 12 '~' (EXTENDED_GLOB)
+8 19 Exclusion in the form A~B.
+6 12 '^' (EXTENDED_GLOB)
+8 19 Exclusion in the form A^B.
+6 12 '#' (EXTENDED_GLOB)
+8 19 The pattern character # wherever it occurs, both for
+8 19 repetition of a previous pattern and for indicating globbing
+8 19 flags.
+6 12 '?(' (KSH_GLOB)
+8 19 The grouping form ?(...).  Note this is also disabled if '?'
+8 19 is disabled.
+6 12 '*(' (KSH_GLOB)
+8 19 The grouping form *(...).  Note this is also disabled if '*'
+8 19 is disabled.
+6 12 '+(' (KSH_GLOB)
+8 19 The grouping form +(...).
+6 12 '!(' (KSH_GLOB)
+8 19 The grouping form !(...).
+6 12 '@(' (KSH_GLOB)
+8 19 The grouping form @(...).
+2 5 disown [ job ... ]
+2 5 job ... &|
+2 5 job ... &!
+6 12 Remove the specified jobs from the job table; the shell will no
+6 12 longer report their status, and will not complain if you try to
+6 12 exit an interactive shell with them running or stopped.  If no job
+6 12 is specified, disown the current job.
+6 12 If the jobs are currently stopped and the AUTO_CONTINUE option is
+6 12 not set, a warning is printed containing information about how to
+6 12 make them running after they have been disowned.  If one of the
+6 12 latter two forms is used, the jobs will automatically be made
+6 12 running, independent of the setting of the AUTO_CONTINUE option.
+2 5 echo [ -neE ] [ arg ... ]
+6 12 Write each arg on the standard output, with a space separating each
+6 12 one.  If the -n flag is not present, print a newline at the end.
+6 12 echo recognizes the following escape sequences:
+6 12 \a     bell character
+6 12 \b     backspace
+6 12 \c     suppress subsequent characters and final newline
+6 12 \e     escape
+6 12 \f     form feed
+6 12 \n     linefeed (newline)
+6 12 \r     carriage return
+6 12 \t     horizontal tab
+6 12 \v     vertical tab
+6 12 \\     backslash
+6 12 \0NNN  character code in octal
+6 12 \xNN   character code in hexadecimal
+6 12 \uNNNN
+8 19 unicode character code in hexadecimal
+6 12 \UNNNNNNNN
+8 19 unicode character code in hexadecimal
+6 12 The -E flag, or the BSD_ECHO option, can be used to disable these
+6 12 escape sequences.  In the latter case, -e flag can be used to
+6 12 enable them.
+6 12 Note that for standards compliance a double dash does not terminate
+6 12 option processing; instead, it is printed directly.  However, a
+6 12 single dash does terminate option processing, so the first dash,
+6 12 possibly following options, is not printed, but everything
+6 12 following it is printed as an argument.  The single dash behaviour
+6 12 is different from other shells.  For a more portable way of
+6 12 printing text, see printf, and for a more controllable way of
+6 12 printing text within zsh, see print.
+2 5 echotc
+6 12 See the section ‘The zsh/termcap Module' in zshmodules(1).
+2 5 echoti
+6 12 See the section ‘The zsh/terminfo Module' in zshmodules(1).
+2 5 emulate [ -lLR ] [ {zsh|sh|ksh|csh} [ flags ... ] ]
+6 12 Without any argument print current emulation mode.
+6 12 With single argument set up zsh options to emulate the specified
+6 12 shell as much as possible.  csh will never be fully emulated.  If
+6 12 the argument is not one of the shells listed above, zsh will be
+6 12 used as a default; more precisely, the tests performed on the
+6 12 argument are the same as those used to determine the emulation at
+6 12 startup based on the shell name, see the section COMPATIBILITY in
+6 12 zsh(1) .  In addition to setting shell options, the command also
+6 12 restores the pristine state of pattern enables, as if all patterns
+6 12 had been enabled using enable -p.
+6 12 If the emulate command occurs inside a function that has been
+6 12 marked for execution tracing with functions -t then the xtrace
+6 12 option will be turned on regardless of emulation mode or other
+6 12 options.  Note that code executed inside the function by the .,
+6 12 source, or eval commands is not considered to be running directly
+6 12 from the function, hence does not provoke this behaviour.
+6 12 If the -R switch is given, all settable options are reset to their
+6 12 default value corresponding to the specified emulation mode, except
+6 12 for certain options describing the interactive environment;
+6 12 otherwise, only those options likely to cause portability problems
+6 12 in scripts and functions are altered.  If the -L switch is given,
+6 12 the options LOCAL_OPTIONS, LOCAL_PATTERNS and LOCAL_TRAPS will be
+6 12 set as well, causing the effects of the emulate command and any
+6 12 setopt, disable -p or enable -p, and trap commands to be local to
+6 12 the immediately surrounding shell function, if any; normally these
+6 12 options are turned off in all emulation modes except ksh. The -L
+6 12 switch is mutually exclusive with the use of -c in flags.
+6 12 If there is a single argument and the -l switch is given, the
+6 12 options that would be set or unset (the latter indicated with the
+6 12 prefix ‘no') are listed.  -l can be combined with -L or -R and the
+6 12 list will be modified in the appropriate way.  Note the list does
+6 12 not depend on the current setting of options, i.e. it includes all
+6 12 options that may in principle change, not just those that would
+6 12 actually change.
+6 12 The flags may be any of the invocation-time flags described in the
+6 12 section INVOCATION in zsh(1), except that ‘-o EMACS' and ‘-o VI'
+6 12 may not be used.  Flags such as ‘+r'/‘+o RESTRICTED' may be
+6 12 prohibited in some circumstances.
+6 12 If -c arg appears in flags, arg is evaluated while the requested
+6 12 emulation is temporarily in effect.  In this case the emulation
+6 12 mode and all options are restored to their previous values before
+6 12 emulate returns.  The -R switch may precede the name of the shell
+6 12 to emulate; note this has a meaning distinct from including -R in
+6 12 flags.
+6 12 Use of -c enables ‘sticky' emulation mode for functions defined
+6 12 within the evaluated expression:  the emulation mode is associated
+6 12 thereafter with the function so that whenever the function is
+6 12 executed the emulation (respecting the -R switch, if present) and
+6 12 all options are set (and pattern disables cleared) before entry to
+6 12 the function, and the state is restored after exit.  If the
+6 12 function is called when the sticky emulation is already in effect,
+6 12 either within an ‘emulate shell -c' expression or within another
+6 12 function with the same sticky emulation, entry and exit from the
+6 12 function do not cause options to be altered (except due to standard
+6 12 processing such as the LOCAL_OPTIONS option).  This also applies to
+6 12 functions marked for autoload within the sticky emulation; the
+6 12 appropriate set of options will be applied at the point the
+6 12 function is loaded as well as when it is run.
+6 12 For example:
+8 19 emulate sh -c 'fni() { setopt cshnullglob; }
+8 19 fno() { fni; }'
+8 19 fno
+6 12 The two functions fni and fno are defined with sticky sh emulation.
+6 12 fno is then executed, causing options associated with emulations to
+6 12 be set to their values in sh.  fno then calls fni; because fni is
+6 12 also marked for sticky sh emulation, no option changes take place
+6 12 on entry to or exit from it.  Hence the option cshnullglob, turned
+6 12 off by sh emulation, will be turned on within fni and remain on
+6 12 return to fno.  On exit from fno, the emulation mode and all
+6 12 options will be restored to the state they were in before entry to
+6 12 the temporary emulation.
+6 12 The documentation above is typically sufficient for the intended
+6 12 purpose of executing code designed for other shells in a suitable
+6 12 environment.  More detailed rules follow.
+6 12 1.     The sticky emulation environment provided by ‘emulate shell
+8 19 -c' is identical to that provided by entry to a function
+8 19 marked for sticky emulation as a consequence of being
+8 19 defined in such an environment.  Hence, for example, the
+8 19 sticky emulation is inherited by subfunctions defined within
+8 19 functions with sticky emulation.
+6 12 2.     No change of options takes place on entry to or exit from
+8 19 functions that are not marked for sticky emulation, other
+8 19 than those that would normally take place, even if those
+8 19 functions are called within sticky emulation.
+6 12 3.     No special handling is provided for functions marked for
+8 19 autoload nor for functions present in wordcode created by
+8 19 the zcompile command.
+6 12 4.     The presence or absence of the -R switch to emulate
+8 19 corresponds to different sticky emulation modes, so for
+8 19 example ‘emulate sh -c', ‘emulate -R sh -c' and ‘emulate csh
+8 19 -c' are treated as three distinct sticky emulations.
+6 12 5.     Difference in shell options supplied in addition to the
+8 19 basic emulation also mean the sticky emulations are
+8 19 different, so for example ‘emulate zsh -c' and ‘emulate zsh
+8 19 -o cbases -c' are treated as distinct sticky emulations.
+2 5 enable [ -afmprs ] name ...
+6 12 Enable the named hash table elements, presumably disabled earlier
+6 12 with disable.  The default is to enable builtin commands.  The -a
+6 12 option causes enable to act on regular or global aliases.  The -s
+6 12 option causes enable to act on suffix aliases.  The -f option
+6 12 causes enable to act on shell functions.  The -r option causes
+6 12 enable to act on reserved words.  Without arguments all enabled
+6 12 hash table elements from the corresponding hash table are printed.
+6 12 With the -m flag the arguments are taken as patterns (should be
+6 12 quoted) and all hash table elements from the corresponding hash
+6 12 table matching these patterns are enabled.  Enabled objects can be
+6 12 disabled with the disable builtin command.
+6 12 enable -p reenables patterns disabled with disable -p.  Note that
+6 12 it does not override globbing options; for example, ‘enable -p "~"'
+6 12 does not cause the pattern character ~ to be active unless the
+6 12 EXTENDED_GLOB option is also set.  To enable all possible patterns
+6 12 (so that they may be individually disabled with disable -p), use
+6 12 ‘setopt EXTENDED_GLOB KSH_GLOB NO_SH_GLOB'.
+2 5 eval [ arg ... ]
+6 12 Read the arguments as input to the shell and execute the resulting
+6 12 command(s) in the current shell process.  The return status is the
+6 12 same as if the commands had been executed directly by the shell; if
+6 12 there are no args or they contain no commands (i.e. are an empty
+6 12 string or whitespace) the return status is zero.
+2 5 exec [ -cl ] [ -a argv0 ] [ command [ arg ... ] ]
+6 12 Replace the current shell with command rather than forking.  If
+6 12 command is a shell builtin command or a shell function, the shell
+6 12 executes it, and exits when the command is complete.
+6 12 With -c clear the environment; with -l prepend - to the argv[0]
+6 12 string of the command executed (to simulate a login shell); with -a
+6 12 argv0 set the argv[0] string of the command executed.  See the
+6 12 section ‘Precommand Modifiers' in zshmisc(1).
+6 12 If the option POSIX_BUILTINS is set, command is never interpreted
+6 12 as a shell builtin command or shell function.  This means further
+6 12 precommand modifiers such as builtin and noglob are also not
+6 12 interpreted within the shell.  Hence command is always found by
+6 12 searching the command path.
+6 12 If command is omitted but any redirections are specified, then the
+6 12 redirections will take effect in the current shell.
+2 5 exit [ n ]
+6 12 Exit the shell with the exit status specified by an arithmetic
+6 12 expression n; if none is specified, use the exit status from the
+6 12 last command executed.  An EOF condition will also cause the shell
+6 12 to exit, unless the IGNORE_EOF option is set.
+6 12 See notes at the end of the section JOBS in zshmisc(1) for some
+6 12 possibly unexpected interactions of the exit command with jobs.
+2 5 export [ name[=value] ... ]
+6 12 The specified names are marked for automatic export to the
+6 12 environment of subsequently executed commands.  Equivalent to
+6 12 typeset -gx.  If a parameter specified does not already exist, it
+6 12 is created in the global scope.
+2 5 false [ arg ... ]
+6 12 Do nothing and return an exit status of 1.
+2 5 fc [ -e ename ] [ -s ] [ -LI ] [ -m match ] [ old=new ... ] [ first [ last
+2 5 ] ]
+2 5 fc -l [ -LI ] [ -nrdfEiD ] [ -t timefmt ] [ -m match ]
+5 11 [ old=new ... ] [ first [ last ] ]
+2 5 fc -p [ -a ] [ filename [ histsize [ savehistsize ] ] ]
+2 5 fc -P
+2 5 fc -ARWI [ filename ]
+6 12 The fc command controls the interactive history mechanism.  Note
+6 12 that reading and writing of history options is only performed if
+6 12 the shell is interactive.  Usually this is detected automatically,
+6 12 but it can be forced by setting the interactive option when
+6 12 starting the shell.
+6 12 The first two forms of this command select a range of events from
+6 12 first to last from the history list.  The arguments first and last
+6 12 may be specified as a number or as a string.  A negative number is
+6 12 used as an offset to the current history event number.  A string
+6 12 specifies the most recent event beginning with the given string.
+6 12 All substitutions old=new, if any, are then performed on the text
+6 12 of the events.
+6 12 The range of events selected by numbers can be narrowed further by
+6 12 the following flags.
+6 12 -I     restricts to only internal events (not from $HISTFILE)
+6 12 -L     restricts to only local events (not from other shells, see
+8 19 SHARE_HISTORY in zshoptions(1) -- note that $HISTFILE is
+8 19 considered local when read at startup)
+6 12 -m     takes the first argument as a pattern (which should be
+8 19 quoted) and only the history events matching this pattern
+8 19 are considered
+6 12 If first is not specified, it will be set to -1 (the most recent
+6 12 event), or to -16 if the -l flag is given.  If last is not
+6 12 specified, it will be set to first, or to -1 if the -l flag is
+6 12 given.  However, if the current event has added entries to the
+6 12 history with ‘print -s' or ‘fc -R', then the default last for -l
+6 12 includes all new history entries since the current event began.
+6 12 When the -l flag is given, the resulting events are listed on
+6 12 standard output.  Otherwise the editor program specified by -e
+6 12 ename is invoked on a file containing these history events.  If -e
+6 12 is not given, the value of the parameter FCEDIT is used; if that is
+6 12 not set the value of the parameter EDITOR is used; if that is not
+6 12 set a builtin default, usually ‘vi' is used.  If ename is ‘-', no
+6 12 editor is invoked.  When editing is complete, the edited command is
+6 12 executed.
+6 12 The flag ‘-s' is equivalent to ‘-e -'.  The flag -r reverses the
+6 12 order of the events and the flag -n suppresses event numbers when
+6 12 listing.
+6 12 Also when listing,
+6 12 -d     prints timestamps for each event
+6 12 -f     prints full time-date stamps in the US ‘MM/DD/YY hh:mm'
+8 19 format
+6 12 -E     prints full time-date stamps in the European ‘dd.mm.yyyy
+8 19 hh:mm' format
+6 12 -i     prints full time-date stamps in ISO8601 ‘yyyy-mm-dd hh:mm'
+8 19 format
+6 12 -t fmt
+8 19 prints time and date stamps in the given format; fmt is
+8 19 formatted with the strftime function with the zsh extensions
+8 19 described for the %D{string} prompt format in the section
+8 19 EXPANSION OF PROMPT SEQUENCES in zshmisc(1).  The resulting
+8 19 formatted string must be no more than 256 characters or will
+8 19 not be printed
+6 12 -D     prints elapsed times; may be combined with one of the
+8 19 options above
+6 12 ‘fc -p' pushes the current history list onto a stack and switches
+6 12 to a new history list.  If the -a option is also specified, this
+6 12 history list will be automatically popped when the current function
+6 12 scope is exited, which is a much better solution than creating a
+6 12 trap function to call ‘fc -P' manually.  If no arguments are
+6 12 specified, the history list is left empty, $HISTFILE is unset, and
+6 12 $HISTSIZE & $SAVEHIST are set to their default values.  If one
+6 12 argument is given, $HISTFILE is set to that filename, $HISTSIZE &
+6 12 $SAVEHIST are left unchanged, and the history file is read in (if
+6 12 it exists) to initialize the new list.  If a second argument is
+6 12 specified, $HISTSIZE & $SAVEHIST are instead set to the single
+6 12 specified numeric value.  Finally, if a third argument is
+6 12 specified, $SAVEHIST is set to a separate value from $HISTSIZE.
+6 12 You are free to change these environment values for the new history
+6 12 list however you desire in order to manipulate the new history
+6 12 list.
+6 12 ‘fc -P' pops the history list back to an older list saved by ‘fc
+6 12 -p'.  The current list is saved to its $HISTFILE before it is
+6 12 destroyed (assuming that $HISTFILE and $SAVEHIST are set
+6 12 appropriately, of course).  The values of $HISTFILE, $HISTSIZE, and
+6 12 $SAVEHIST are restored to the values they had when ‘fc -p' was
+6 12 called.  Note that this restoration can conflict with making these
+6 12 variables "local", so your best bet is to avoid local declarations
+6 12 for these variables in functions that use ‘fc -p'.  The one other
+6 12 guaranteed-safe combination is declaring these variables to be
+6 12 local at the top of your function and using the automatic option
+6 12 (-a) with ‘fc -p'.  Finally, note that it is legal to manually pop
+6 12 a push marked for automatic popping if you need to do so before the
+6 12 function exits.
+6 12 ‘fc -R' reads the history from the given file, ‘fc -W' writes the
+6 12 history out to the given file, and ‘fc -A' appends the history out
+6 12 to the given file.  If no filename is specified, the $HISTFILE is
+6 12 assumed.  If the -I option is added to -R, only those events that
+6 12 are not already contained within the internal history list are
+6 12 added.  If the -I option is added to -A or -W, only those events
+6 12 that are new since last incremental append/write to the history
+6 12 file are appended/written.  In any case, the created file will have
+6 12 no more than $SAVEHIST entries.
+2 5 fg [ job ... ]
+2 5 job ...
+6 12 Bring each specified job in turn to the foreground.  If no job is
+6 12 specified, resume the current job.
+2 5 float [ {+|-}Hghlprtux ] [ {+|-}EFLRZ [ n ] ] [ name[=value] ... ]
+6 12 Equivalent to typeset -E, except that options irrelevant to
+6 12 floating point numbers are not permitted.
+2 5 functions [ {+|-}UkmtTuWz ] [ -x num ] [ name ... ]
+2 5 functions -c oldfn newfn
+2 5 functions -M [-s] mathfn [ min [ max [ shellfn ] ] ]
+2 5 functions -M [ -m pattern ... ]
+2 5 functions +M [ -m ] mathfn ...
+6 12 Equivalent to typeset -f, with the exception of the -c, -x, -M and
+6 12 -W options.  For functions -u and functions -U, see autoload, which
+6 12 provides additional options.  For functions -t and functions -T,
+6 12 see typeset -f.
+6 12 The -x option indicates that any functions output will have each
+6 12 leading tab for indentation, added by the shell to show syntactic
+6 12 structure, expanded to the given number num of spaces.  num can
+6 12 also be 0 to suppress all indentation.
+6 12 The -W option turns on the option WARN_NESTED_VAR for the named
+6 12 function or functions only.  The option is turned off at the start
+6 12 of nested functions (apart from anonoymous functions) unless the
+6 12 called function also has the -W attribute.
+6 12 The -c option causes oldfn to be copied to newfn.  The copy is
+6 12 efficiently handled internally by reference counting.  If oldfn was
+6 12 marked for autoload it is first loaded and if this fails the copy
+6 12 fails.  Either function may subsequently be redefined without
+6 12 affecting the other.  A typical idiom is that oldfn is the name of
+6 12 a library shell function which is then redefined to call newfn,
+6 12 thereby installing a modified version of the function.
+6 12 The -M and +M flags
+6 12 Use of the -M option may not be combined with any of the options
+6 12 handled by typeset -f.
+6 12 functions -M mathfn defines mathfn as the name of a mathematical
+6 12 function recognised in all forms of arithmetical expressions; see
+6 12 the section ‘Arithmetic Evaluation' in zshmisc(1).  By default
+6 12 mathfn may take any number of comma-separated arguments.  If min is
+6 12 given, it must have exactly min args; if min and max are both
+6 12 given, it must have at least min and at most max args.  max may be
+6 12 -1 to indicate that there is no upper limit.
+6 12 By default the function is implemented by a shell function of the
+6 12 same name; if shellfn is specified it gives the name of the
+6 12 corresponding shell function while mathfn remains the name used in
+6 12 arithmetical expressions.  The name of the function in $0 is mathfn
+6 12 (not shellfn as would usually be the case), provided the option
+6 12 FUNCTION_ARGZERO is in effect.  The positional parameters in the
+6 12 shell function correspond to the arguments of the mathematical
+6 12 function call.
+6 12 The result of the last arithmetical expression evaluated inside the
+6 12 shell function gives the result of the mathematical function.  This
+6 12 is not limited to arithmetic substitutions of the form $((...)),
+6 12 but also includes arithmetical expressions evaluated in any other
+6 12 way, including by the let builtin, by ((...)) statements, and even
+6 12 by the return builtin and by array subscripts.  Therefore, care
+6 12 must be taken not to use syntactical constructs that perform
+6 12 arithmetic evaluation after evaluating what is to be the result of
+6 12 the function.  For example:
+8 19 # WRONG
+8 19 zmath_cube() {
+9 21 (( $1 * $1 * $1 ))
+9 21 return 0
+8 19 }
+8 19 functions -M cube 1 1 zmath_cube
+8 19 print $(( cube(3) ))
+6 12 This will print ‘0' because of the return.
+6 12 Commenting the return out would lead to a different problem: the
+6 12 ((...)) statement would become the last statement in the function,
+6 12 so the return status ($?) of the function would be non-zero
+6 12 (indicating failure) whenever the arithmetic result of the function
+6 12 would happen to be zero (numerically):
+8 19 # WRONG
+8 19 zmath_cube() {
+9 21 (( $1 * $1 * $1 ))
+8 19 }
+8 19 functions -M cube 1 1 zmath_cube
+8 19 print $(( cube(0) ))
+6 12 Instead, the true builtin can be used:
+8 19 # RIGHT
+8 19 zmath_cube() {
+9 21 (( $1 * $1 * $1 ))
+9 21 true
+8 19 }
+8 19 functions -M cube 1 1 zmath_cube
+8 19 print $(( cube(3) ))
+6 12 If the additional option -s is given to functions -M, the argument
+6 12 to the function is a single string: anything between the opening
+6 12 and matching closing parenthesis is passed to the function as a
+6 12 single argument, even if it includes commas or white space.  The
+6 12 minimum and maximum argument specifiers must therefore be 1 if
+6 12 given.  An empty argument list is passed as a zero-length string.
+6 12 Thus, the following string function takes a single argument,
+6 12 including the commas, and prints 11:
+8 19 stringfn() { (( $#1 )); true }
+8 19 functions -Ms stringfn
+8 19 print $(( stringfn(foo,bar,rod) ))
+6 12 functions -M with no arguments lists all such user-defined
+6 12 functions in the same form as a definition.  With the additional
+6 12 option -m and a list of arguments, all functions whose mathfn
+6 12 matches one of the pattern arguments are listed.
+6 12 function +M removes the list of mathematical functions; with the
+6 12 additional option -m the arguments are treated as patterns and all
+6 12 functions whose mathfn matches the pattern are removed.  Note that
+6 12 the shell function implementing the behaviour is not removed
+6 12 (regardless of whether its name coincides with mathfn).
+2 5 getcap
+6 12 See the section ‘The zsh/cap Module' in zshmodules(1).
+2 5 getln [ -AclneE ] name ...
+6 12 Read the top value from the buffer stack and put it in the shell
+6 12 parameter name.  Equivalent to read -zr.
+2 5 getopts optstring name [ arg ... ]
+6 12 Checks the args for legal options.  If the args are omitted, use
+6 12 the positional parameters.  A valid option argument begins with a
+6 12 ‘+' or a ‘-'.  An argument not beginning with a ‘+' or a ‘-', or
+6 12 the argument ‘--', ends the options.  Note that a single ‘-' is not
+6 12 considered a valid option argument.  optstring contains the letters
+6 12 that getopts recognizes.  If a letter is followed by a ‘:', that
+6 12 option requires an argument.  The options can be separated from the
+6 12 argument by blanks.
+6 12 Each time it is invoked, getopts places the option letter it finds
+6 12 in the shell parameter name, prepended with a ‘+' when arg begins
+6 12 with a ‘+'.  The index of the next arg is stored in OPTIND.  The
+6 12 option argument, if any, is stored in OPTARG.
+6 12 The first option to be examined may be changed by explicitly
+6 12 assigning to OPTIND.  OPTIND has an initial value of 1, and is
+6 12 normally set to 1 upon entry to a shell function and restored upon
+6 12 exit.  (The POSIX_BUILTINS option disables this, and also changes
+6 12 the way the value is calculated to match other shells.)  OPTARG is
+6 12 not reset and retains its value from the most recent call to
+6 12 getopts.  If either of OPTIND or OPTARG is explicitly unset, it
+6 12 remains unset, and the index or option argument is not stored.  The
+6 12 option itself is still stored in name in this case.
+6 12 A leading ‘:' in optstring causes getopts to store the letter of
+6 12 any invalid option in OPTARG, and to set name to ‘?' for an unknown
+6 12 option and to ‘:' when a required argument is missing.  Otherwise,
+6 12 getopts sets name to ‘?' and prints an error message when an option
+6 12 is invalid.  The exit status is nonzero when there are no more
+6 12 options.
+2 5 hash [ -Ldfmrv ] [ name[=value] ] ...
+6 12 hash can be used to directly modify the contents of the command
+6 12 hash table, and the named directory hash table.  Normally one would
+6 12 modify these tables by modifying one's PATH (for the command hash
+6 12 table) or by creating appropriate shell parameters (for the named
+6 12 directory hash table).  The choice of hash table to work on is
+6 12 determined by the -d option; without the option the command hash
+6 12 table is used, and with the option the named directory hash table
+6 12 is used.
+6 12 A command name starting with a / or with a relative path starting
+6 12 with ./ or ../ is never executed by lookup in the command hash
+6 12 table, and these can only be added to the table by explicit use of
+6 12 the hash command.  Such a command is always found by direct look up
+6 12 in the file system.
+6 12 Given no arguments, and neither the -r or -f options, the selected
+6 12 hash table will be listed in full.
+6 12 The -r option causes the selected hash table to be emptied.  It
+6 12 will be subsequently rebuilt in the normal fashion.  The -f option
+6 12 causes the selected hash table to be fully rebuilt immediately.
+6 12 For the command hash table this hashes all (and only) the absolute
+6 12 directories in the PATH, and for the named directory hash table
+6 12 this adds all users' home directories.  These two options cannot be
+6 12 used with any arguments.  Both options remove any explicitly-added
+6 12 elements.
+6 12 The -m option causes the arguments to be taken as patterns (which
+6 12 should be quoted) and the elements of the hash table matching those
+6 12 patterns are printed.  This is the only way to display a limited
+6 12 selection of hash table elements.
+6 12 For each name with a corresponding value, put ‘name' in the
+6 12 selected hash table, associating it with the pathname ‘value'.  In
+6 12 the command hash table, this means that whenever ‘name' is used as
+6 12 a command argument, the shell will try to execute the file given by
+6 12 ‘value'.  In the named directory hash table, this means that
+6 12 ‘value' may be referred to as ‘~name'.
+6 12 For each name with no corresponding value, attempt to add name to
+6 12 the hash table, checking what the appropriate value is in the
+6 12 normal manner for that hash table.  If an appropriate value can't
+6 12 be found, then the hash table will be unchanged.
+6 12 The -v option causes hash table entries to be listed as they are
+6 12 added by explicit specification.  If has no effect if used with -f.
+6 12 If the -L flag is present, then each hash table entry is printed in
+6 12 the form of a call to hash.
+2 5 history
+6 12 Same as fc -l.
+2 5 integer [ {+|-}Hghlprtux ] [ {+|-}LRZi [ n ] ] [ name[=value] ... ]
+6 12 Equivalent to typeset -i, except that options irrelevant to
+6 12 integers are not permitted.
+2 5 jobs [ -dlprs ] [ job ... ]
+2 5 jobs -Z string
+6 12 Lists information about each given job, or all jobs if job is
+6 12 omitted.  The -l flag lists process IDs, and the -p flag lists
+6 12 process groups.  If the -r flag is specified only running jobs will
+6 12 be listed and if the -s flag is given only stopped jobs are shown.
+6 12 If the -d flag is given, the directory from which the job was
+6 12 started (which may not be the current directory of the job) will
+6 12 also be shown.
+6 12 The -Z option replaces the shell's argument and environment space
+6 12 with the given string, truncated if necessary to fit.  This will
+6 12 normally be visible in ps (ps(1)) listings.  This feature is
+6 12 typically used by daemons, to indicate their state.
+6 12 Full job control is only available in the top-level interactive
+6 12 shell, not in commands run in the left hand side of pipelines or
+6 12 within the (...) construct.  However, a snapshot of the job state
+6 12 at that point is taken, so it is still possible to use the jobs
+6 12 builtin, or any parameter providing job information.  This gives
+6 12 information about the state of jobs at the point the subshell was
+6 12 created.  If background processes are created within the subshell,
+6 12 then instead information about those processes is provided.
+6 12 For example,
+8 19 sleep 10 &    # Job in background
+8 19 (             # Shell forks
+8 19 jobs          # Shows information about "sleep 10 &"
+8 19 sleep 5 &     # Process in background (no job control)
+8 19 jobs          # Shows information about "sleep 5 &"
+8 19 )
+2 5 kill [ -s signal_name | -n signal_number | -sig ] [ -q value ] job ...
+2 5 kill -l [ sig ... ]
+2 5 kill -L
+6 12 Sends either SIGTERM or the specified signal to the given jobs or
+6 12 processes.  Signals are given by number or by names, with or
+6 12 without the ‘SIG' prefix.  If the signal being sent is not ‘KILL'
+6 12 or ‘CONT', then the job will be sent a ‘CONT' signal if it is
+6 12 stopped.  The argument job can be the process ID of a job not in
+6 12 the job list.  In the second form, kill -l, if sig is not specified
+6 12 the signal names are listed.  Otherwise, for each sig that is a
+6 12 name, the corresponding signal number is listed.  For each sig that
+6 12 is a signal number or a number representing the exit status of a
+6 12 process which was terminated or stopped by a signal the name of the
+6 12 signal is printed.  The final form with -L lists each signal name
+6 12 with its corresponding number.
+6 12 On some systems, alternative signal names are allowed for a few
+6 12 signals.  Typical examples are SIGCHLD and SIGCLD or SIGPOLL and
+6 12 SIGIO, assuming they correspond to the same signal number.  kill -l
+6 12 will only list the preferred form, however kill -l alt will show if
+6 12 the alternative form corresponds to a signal number.  For example,
+6 12 under Linux kill -l IO and kill -l POLL both output 29, hence kill
+6 12 -IO and kill -POLL have the same effect.
+6 12 Many systems will allow process IDs to be negative to kill a
+6 12 process group or zero to kill the current process group.
+6 12 The -q option allows an integer value to be sent with the signal on
+6 12 systems that support sigqueue().
+2 5 let arg ...
+6 12 Evaluate each arg as an arithmetic expression.  See the section
+6 12 ‘Arithmetic Evaluation' in zshmisc(1) for a description of
+6 12 arithmetic expressions.  The exit status is 0 if the value of the
+6 12 last expression is nonzero, 1 if it is zero, and 2 if an error
+6 12 occurred.
+2 5 limit [ -hs ] [ resource [ limit ] ] ...
+6 12 Set or display resource limits.  Unless the -s flag is given, the
+6 12 limit applies only the children of the shell.  If -s is given
+6 12 without other arguments, the resource limits of the current shell
+6 12 is set to the previously set resource limits of the children.
+6 12 If limit is not specified, print the current limit placed on
+6 12 resource, otherwise set the limit to the specified value.  If the
+6 12 -h flag is given, use hard limits instead of soft limits.  If no
+6 12 resource is given, print all limits.
+6 12 When looping over multiple resources, the shell will abort
+6 12 immediately if it detects a badly formed argument.  However, if it
+6 12 fails to set a limit for some other reason it will continue trying
+6 12 to set the remaining limits.
+6 12 resource can be one of:
+6 12 addressspace
+8 19 Maximum amount of address space used.
+6 12 aiomemorylocked
+8 19 Maximum amount of memory locked in RAM for AIO operations.
+6 12 aiooperations
+8 19 Maximum number of AIO operations.
+6 12 cachedthreads
+8 19 Maximum number of cached threads.
+6 12 coredumpsize
+8 19 Maximum size of a core dump.
+6 12 cputime
+8 19 Maximum CPU seconds per process.
+6 12 datasize
+8 19 Maximum data size (including stack) for each process.
+6 12 descriptors
+8 19 Maximum value for a file descriptor.
+6 12 filesize
+8 19 Largest single file allowed.
+6 12 kqueues
+8 19 Maximum number of kqueues allocated.
+6 12 maxproc
+8 19 Maximum number of processes.
+6 12 maxpthreads
+8 19 Maximum number of threads per process.
+6 12 memorylocked
+8 19 Maximum amount of memory locked in RAM.
+6 12 memoryuse
+8 19 Maximum resident set size.
+6 12 msgqueue
+8 19 Maximum number of bytes in POSIX message queues.
+6 12 posixlocks
+8 19 Maximum number of POSIX locks per user.
+6 12 pseudoterminals
+8 19 Maximum number of pseudo-terminals.
+6 12 resident
+8 19 Maximum resident set size.
+6 12 sigpending
+8 19 Maximum number of pending signals.
+6 12 sockbufsize
+8 19 Maximum size of all socket buffers.
+6 12 stacksize
+8 19 Maximum stack size for each process.
+6 12 swapsize
+8 19 Maximum amount of swap used.
+6 12 vmemorysize
+8 19 Maximum amount of virtual memory.
+6 12 Which of these resource limits are available depends on the system.
+6 12 resource can be abbreviated to any unambiguous prefix.  It can also
+6 12 be an integer, which corresponds to the integer defined for the
+6 12 resource by the operating system.
+6 12 If argument corresponds to a number which is out of the range of
+6 12 the resources configured into the shell, the shell will try to read
+6 12 or write the limit anyway, and will report an error if this fails.
+6 12 As the shell does not store such resources internally, an attempt
+6 12 to set the limit will fail unless the -s option is present.
+6 12 limit is a number, with an optional scaling factor, as follows:
+6 12 nh     hours
+6 12 nk     kilobytes (default)
+6 12 nm     megabytes or minutes
+6 12 ng     gigabytes
+6 12 [mm:]ss
+8 19 minutes and seconds
+6 12 The limit command is not made available by default when the shell
+6 12 starts in a mode emulating another shell.  It can be made available
+6 12 with the command ‘zmodload -F zsh/rlimits b:limit'.
+2 5 local [ {+|-}AHUahlprtux ] [ {+|-}EFLRZi [ n ] ] [ name[=value] ... ]
+6 12 Same as typeset, except that the options -g, and -f are not
+6 12 permitted.  In this case the -x option does not force the use of
+6 12 -g, i.e. exported variables will be local to functions.
+2 5 logout [ n ]
+6 12 Same as exit, except that it only works in a login shell.
+2 5 noglob simple command
+6 12 See the section ‘Precommand Modifiers' in zshmisc(1).
+2 5 popd [ -q ] [ {+|-}n ]
+6 12 Remove an entry from the directory stack, and perform a cd to the
+6 12 new top directory.  With no argument, the current top entry is
+6 12 removed.  An argument of the form ‘+n' identifies a stack entry by
+6 12 counting from the left of the list shown by the dirs command,
+6 12 starting with zero.  An argument of the form -n counts from the
+6 12 right.  If the PUSHD_MINUS option is set, the meanings of ‘+' and
+6 12 ‘-' in this context are swapped.
+6 12 If the -q (quiet) option is specified, the hook function chpwd and
+6 12 the functions in the array $chpwd_functions are not called, and the
+6 12 new directory stack is not printed.  This is useful for calls to
+6 12 popd that do not change the environment seen by an interactive
+6 12 user.
+2 5 print [ -abcDilmnNoOpPrsSz ] [ -u n ] [ -f format ] [ -C cols ]
+5 11 [ -v name ] [ -xX tabstop ] [ -R [ -en ]] [ arg ... ]
+6 12 With the ‘-f' option the arguments are printed as described by
+6 12 printf.  With no flags or with the flag ‘-', the arguments are
+6 12 printed on the standard output as described by echo, with the
+6 12 following differences: the escape sequence ‘\M-x' (or ‘\Mx')
+6 12 metafies the character x (sets the highest bit), ‘\C-x' (or ‘\Cx')
+6 12 produces a control character (‘\C-@' and ‘\C-?' give the characters
+6 12 NULL and delete), a character code in octal is represented by
+6 12 ‘\NNN' (instead of ‘\0NNN'), and ‘\E' is a synonym for ‘\e'.
+6 12 Finally, if not in an escape sequence, ‘\' escapes the following
+6 12 character and is not printed.
+6 12 -a     Print arguments with the column incrementing first.  Only
+8 19 useful with the -c and -C options.
+6 12 -b     Recognize all the escape sequences defined for the bindkey
+8 19 command, see the section ‘Zle Builtins' in zshzle(1).
+6 12 -c     Print the arguments in columns.  Unless -a is also given,
+8 19 arguments are printed with the row incrementing first.
+6 12 -C cols
+8 19 Print the arguments in cols columns.  Unless -a is also
+8 19 given, arguments are printed with the row incrementing
+8 19 first.
+6 12 -D     Treat the arguments as paths, replacing directory prefixes
+8 19 with ~ expressions corresponding to directory names, as
+8 19 appropriate.
+6 12 -i     If given together with -o or -O, sorting is performed
+8 19 case-independently.
+6 12 -l     Print the arguments separated by newlines instead of spaces.
+8 19 Note: if the list of arguments is empty, print -l will still
+8 19 output one empty line. To print a possibly-empty list of
+8 19 arguments one per line, use print -C1, as in ‘print -rC1 --
+8 19 "$list[@]"'.
+6 12 -m     Take the first argument as a pattern (should be quoted), and
+8 19 remove it from the argument list together with subsequent
+8 19 arguments that do not match this pattern.
+6 12 -n     Do not add a newline to the output.
+6 12 -N     Print the arguments separated and terminated by nulls.
+8 19 Again, print -rNC1 -- "$list[@]" is a canonical way to print
+8 19 an arbitrary list as null-delimited records.
+6 12 -o     Print the arguments sorted in ascending order.
+6 12 -O     Print the arguments sorted in descending order.
+6 12 -p     Print the arguments to the input of the coprocess.
+6 12 -P     Perform prompt expansion (see EXPANSION OF PROMPT SEQUENCES
+8 19 in zshmisc(1)).  In combination with ‘-f', prompt escape
+8 19 sequences are parsed only within interpolated arguments, not
+8 19 within the format string.
+6 12 -r     Ignore the escape conventions of echo.
+6 12 -R     Emulate the BSD echo command, which does not process escape
+8 19 sequences unless the -e flag is given.  The -n flag
+8 19 suppresses the trailing newline.  Only the -e and -n flags
+8 19 are recognized after -R; all other arguments and options are
+8 19 printed.
+6 12 -s     Place the results in the history list instead of on the
+8 19 standard output.  Each argument to the print command is
+8 19 treated as a single word in the history, regardless of its
+8 19 content.
+6 12 -S     Place the results in the history list instead of on the
+8 19 standard output.  In this case only a single argument is
+8 19 allowed; it will be split into words as if it were a full
+8 19 shell command line.  The effect is similar to reading the
+8 19 line from a history file with the HIST_LEX_WORDS option
+8 19 active.
+6 12 -u n   Print the arguments to file descriptor n.
+6 12 -v name
+8 19 Store the printed arguments as the value of the parameter
+8 19 name.
+6 12 -x tab-stop
+8 19 Expand leading tabs on each line of output in the printed
+8 19 string assuming a tab stop every tab-stop characters.  This
+8 19 is appropriate for formatting code that may be indented with
+8 19 tabs.  Note that leading tabs of any argument to print, not
+8 19 just the first, are expanded, even if print is using spaces
+8 19 to separate arguments (the column count is maintained across
+8 19 arguments but may be incorrect on output owing to previous
+8 19 unexpanded tabs).
+8 19 The start of the output of each print command is assumed to
+8 19 be aligned with a tab stop.  Widths of multibyte characters
+8 19 are handled if the option MULTIBYTE is in effect.  This
+8 19 option is ignored if other formatting options are in effect,
+8 19 namely column alignment or printf style, or if output is to
+8 19 a special location such as shell history or the command line
+8 19 editor.
+6 12 -X tab-stop
+8 19 This is similar to -x, except that all tabs in the printed
+8 19 string are expanded.  This is appropriate if tabs in the
+8 19 arguments are being used to produce a table format.
+6 12 -z     Push the arguments onto the editing buffer stack, separated
+8 19 by spaces.
+6 12 If any of ‘-m', ‘-o' or ‘-O' are used in combination with ‘-f' and
+6 12 there are no arguments (after the removal process in the case of
+6 12 ‘-m') then nothing is printed.
+2 5 printf [ -v name ] format [ arg ... ]
+6 12 Print the arguments according to the format specification.
+6 12 Formatting rules are the same as used in C. The same escape
+6 12 sequences as for echo are recognised in the format. All C
+6 12 conversion specifications ending in one of csdiouxXeEfgGn are
+6 12 handled. In addition to this, ‘%b' can be used instead of ‘%s' to
+6 12 cause escape sequences in the argument to be recognised and ‘%q'
+6 12 can be used to quote the argument in such a way that allows it to
+6 12 be reused as shell input. With the numeric format specifiers, if
+6 12 the corresponding argument starts with a quote character, the
+6 12 numeric value of the following character is used as the number to
+6 12 print; otherwise the argument is evaluated as an arithmetic
+6 12 expression. See the section ‘Arithmetic Evaluation' in zshmisc(1)
+6 12 for a description of arithmetic expressions. With ‘%n', the
+6 12 corresponding argument is taken as an identifier which is created
+6 12 as an integer parameter.
+6 12 Normally, conversion specifications are applied to each argument in
+6 12 order but they can explicitly specify the nth argument is to be
+6 12 used by replacing ‘%' by ‘%n$' and ‘*' by ‘*n$'.  It is recommended
+6 12 that you do not mix references of this explicit style with the
+6 12 normal style and the handling of such mixed styles may be subject
+6 12 to future change.
+6 12 If arguments remain unused after formatting, the format string is
+6 12 reused until all arguments have been consumed. With the print
+6 12 builtin, this can be suppressed by using the -r option. If more
+6 12 arguments are required by the format than have been specified, the
+6 12 behaviour is as if zero or an empty string had been specified as
+6 12 the argument.
+6 12 The -v option causes the output to be stored as the value of the
+6 12 parameter name, instead of printed. If name is an array and the
+6 12 format string is reused when consuming arguments then one array
+6 12 element will be used for each use of the format string.
+2 5 pushd [ -qsLP ] [ arg ]
+2 5 pushd [ -qsLP ] old new
+2 5 pushd [ -qsLP ] {+|-}n
+6 12 Change the current directory, and push the old current directory
+6 12 onto the directory stack.  In the first form, change the current
+6 12 directory to arg.  If arg is not specified, change to the second
+6 12 directory on the stack (that is, exchange the top two entries), or
+6 12 change to $HOME if the PUSHD_TO_HOME option is set or if there is
+6 12 only one entry on the stack.  Otherwise, arg is interpreted as it
+6 12 would be by cd.  The meaning of old and new in the second form is
+6 12 also the same as for cd.
+6 12 The third form of pushd changes directory by rotating the directory
+6 12 list.  An argument of the form ‘+n' identifies a stack entry by
+6 12 counting from the left of the list shown by the dirs command,
+6 12 starting with zero.  An argument of the form ‘-n' counts from the
+6 12 right.  If the PUSHD_MINUS option is set, the meanings of ‘+' and
+6 12 ‘-' in this context are swapped.
+6 12 If the -q (quiet) option is specified, the hook function chpwd and
+6 12 the functions in the array $chpwd_functions are not called, and the
+6 12 new directory stack is not printed.  This is useful for calls to
+6 12 pushd that do not change the environment seen by an interactive
+6 12 user.
+6 12 If the option -q is not specified and the shell option PUSHD_SILENT
+6 12 is not set, the directory stack will be printed after a pushd is
+6 12 performed.
+6 12 The options -s, -L and -P have the same meanings as for the cd
+6 12 builtin.
+2 5 pushln [ arg ... ]
+6 12 Equivalent to print -nz.
+2 5 pwd [ -rLP ]
+6 12 Print the absolute pathname of the current working directory.  If
+6 12 the -r or the -P flag is specified, or the CHASE_LINKS option is
+6 12 set and the -L flag is not given, the printed path will not contain
+6 12 symbolic links.
+2 5 r      Same as fc -e -.
+2 5 read [ -rszpqAclneE ] [ -t [ num ] ] [ -k [ num ] ] [ -d delim ]
+4 10 [ -u n ] [ [name][?prompt] ] [ name ...  ]
+6 12 Read one line and break it into fields using the characters in $IFS
+6 12 as separators, except as noted below.  The first field is assigned
+6 12 to the first name, the second field to the second name, etc., with
+6 12 leftover fields assigned to the last name.  If name is omitted then
+6 12 REPLY is used for scalars and reply for arrays.
+6 12 -r     Raw mode: a ‘\' at the end of a line does not signify line
+8 19 continuation and backslashes in the line don't quote the
+8 19 following character and are not removed.
+6 12 -s     Don't echo back characters if reading from the terminal.
+6 12 -q     Read only one character from the terminal and set name to
+8 19 ‘y' if this character was ‘y' or ‘Y' and to ‘n' otherwise.
+8 19 With this flag set the return status is zero only if the
+8 19 character was ‘y' or ‘Y'.  This option may be used with a
+8 19 timeout (see -t); if the read times out, or encounters end
+8 19 of file, status 2 is returned.  Input is read from the
+8 19 terminal unless one of -u or -p is present.  This option may
+8 19 also be used within zle widgets.
+6 12 -k [ num ]
+8 19 Read only one (or num) characters.  All are assigned to the
+8 19 first name, without word splitting.  This flag is ignored
+8 19 when -q is present.  Input is read from the terminal unless
+8 19 one of -u or -p is present.  This option may also be used
+8 19 within zle widgets.
+8 19 Note that despite the mnemonic ‘key' this option does read
+8 19 full characters, which may consist of multiple bytes if the
+8 19 option MULTIBYTE is set.
+6 12 -z     Read one entry from the editor buffer stack and assign it to
+8 19 the first name, without word splitting.  Text is pushed onto
+8 19 the stack with ‘print -z' or with push-line from the line
+8 19 editor (see zshzle(1)).  This flag is ignored when the -k or
+8 19 -q flags are present.
+6 12 -e
+6 12 -E     The input read is printed (echoed) to the standard output.
+8 19 If the -e flag is used, no input is assigned to the
+8 19 parameters.
+6 12 -A     The first name is taken as the name of an array and all
+8 19 words are assigned to it.
+6 12 -c
+6 12 -l     These flags are allowed only if called inside a function
+8 19 used for completion (specified with the -K flag to compctl).
+8 19 If the -c flag is given, the words of the current command
+8 19 are read. If the -l flag is given, the whole line is
+8 19 assigned as a scalar.  If both flags are present, -l is used
+8 19 and -c is ignored.
+6 12 -n     Together with -c, the number of the word the cursor is on is
+8 19 read.  With -l, the index of the character the cursor is on
+8 19 is read.  Note that the command name is word number 1, not
+8 19 word 0, and that when the cursor is at the end of the line,
+8 19 its character index is the length of the line plus one.
+6 12 -u n   Input is read from file descriptor n.
+6 12 -p     Input is read from the coprocess.
+6 12 -d delim
+8 19 Input is terminated by the first character of delim instead
+8 19 of by newline.
+6 12 -t [ num ]
+8 19 Test if input is available before attempting to read.  If
+8 19 num is present, it must begin with a digit and will be
+8 19 evaluated to give a number of seconds, which may be a
+8 19 floating point number; in this case the read times out if
+8 19 input is not available within this time.  If num is not
+8 19 present, it is taken to be zero, so that read returns
+8 19 immediately if no input is available.  If no input is
+8 19 available, return status 1 and do not set any variables.
+8 19 This option is not available when reading from the editor
+8 19 buffer with -z, when called from within completion with -c
+8 19 or -l, with -q which clears the input queue before reading,
+8 19 or within zle where other mechanisms should be used to test
+8 19 for input.
+8 19 Note that read does not attempt to alter the input
+8 19 processing mode.  The default mode is canonical input, in
+8 19 which an entire line is read at a time, so usually ‘read -t'
+8 19 will not read anything until an entire line has been typed.
+8 19 However, when reading from the terminal with -k input is
+8 19 processed one key at a time; in this case, only availability
+8 19 of the first character is tested, so that e.g. ‘read -t -k
+8 19 2' can still block on the second character.  Use two
+8 19 instances of ‘read -t -k' if this is not what is wanted.
+6 12 If the first argument contains a ‘?', the remainder of this word is
+6 12 used as a prompt on standard error when the shell is interactive.
+6 12 The value (exit status) of read is 1 when an end-of-file is
+6 12 encountered, or when -c or -l is present and the command is not
+6 12 called from a compctl function, or as described for -q.  Otherwise
+6 12 the value is 0.
+6 12 The behavior of some combinations of the -k, -p, -q, -u and -z
+6 12 flags is undefined.  Presently -q cancels all the others, -p
+6 12 cancels -u, -k cancels -z, and otherwise -z cancels both -p and -u.
+6 12 The -c or -l flags cancel any and all of -kpquz.
+2 5 readonly
+6 12 Same as typeset -r.  With the POSIX_BUILTINS option set, same as
+6 12 typeset -gr.
+2 5 rehash
+6 12 Same as hash -r.
+2 5 return [ n ]
+6 12 Causes a shell function or ‘.' script to return to the invoking
+6 12 script with the return status specified by an arithmetic expression
+6 12 n.  For example, the following prints ‘42':
+8 19 () { integer foo=40; return "foo + 2" }
+8 19 echo $?
+6 12 If n is omitted, the return status is that of the last command
+6 12 executed.
+6 12 If return was executed from a trap in a TRAPNAL function, the
+6 12 effect is different for zero and non-zero return status.  With zero
+6 12 status (or after an implicit return at the end of the trap), the
+6 12 shell will return to whatever it was previously processing; with a
+6 12 non-zero status, the shell will behave as interrupted except that
+6 12 the return status of the trap is retained.  Note that the numeric
+6 12 value of the signal which caused the trap is passed as the first
+6 12 argument, so the statement ‘return "128+$1"' will return the same
+6 12 status as if the signal had not been trapped.
+2 5 sched  See the section ‘The zsh/sched Module' in zshmodules(1).
+2 5 set [ {+|-}options | {+|-}o [ option_name ] ] ... [ {+|-}A [ name ] ]
+3 9 [ arg ... ]
+6 12 Set the options for the shell and/or set the positional parameters,
+6 12 or declare and set an array.  If the -s option is given, it causes
+6 12 the specified arguments to be sorted before assigning them to the
+6 12 positional parameters (or to the array name if -A is used).  With
+6 12 +s sort arguments in descending order.  For the meaning of the
+6 12 other flags, see zshoptions(1).  Flags may be specified by name
+6 12 using the -o option. If no option name is supplied with -o, the
+6 12 current option states are printed:  see the description of setopt
+6 12 below for more information on the format.  With +o they are printed
+6 12 in a form that can be used as input to the shell.
+6 12 If the -A flag is specified, name is set to an array containing the
+6 12 given args; if no name is specified, all arrays are printed
+6 12 together with their values.
+6 12 If +A is used and name is an array, the given arguments will
+6 12 replace the initial elements of that array; if no name is
+6 12 specified, all arrays are printed without their values.
+6 12 The behaviour of arguments after -A name or +A name depends on
+6 12 whether the option KSH_ARRAYS is set.  If it is not set, all
+6 12 arguments following name are treated as values for the array,
+6 12 regardless of their form.  If the option is set, normal option
+6 12 processing continues at that point; only regular arguments are
+6 12 treated as values for the array.  This means that
+8 19 set -A array -x -- foo
+6 12 sets array to ‘-x -- foo' if KSH_ARRAYS is not set, but sets the
+6 12 array to foo and turns on the option ‘-x' if it is set.
+6 12 If the -A flag is not present, but there are arguments beyond the
+6 12 options, the positional parameters are set.  If the option list (if
+6 12 any) is terminated by ‘--', and there are no further arguments, the
+6 12 positional parameters will be unset.
+6 12 If no arguments and no ‘--' are given, then the names and values of
+6 12 all parameters are printed on the standard output.  If the only
+6 12 argument is ‘+', the names of all parameters are printed.
+6 12 For historical reasons, ‘set -' is treated as ‘set +xv' and ‘set -
+6 12 args' as ‘set +xv -- args' when in any other emulation mode than
+6 12 zsh's native mode.
+2 5 setcap
+6 12 See the section ‘The zsh/cap Module' in zshmodules(1).
+2 5 setopt [ {+|-}options | {+|-}o option_name ] [ -m ] [ name ... ]
+6 12 Set the options for the shell.  All options specified either with
+6 12 flags or by name are set.
+6 12 If no arguments are supplied, the names of all options currently
+6 12 set are printed.  The form is chosen so as to minimize the
+6 12 differences from the default options for the current emulation (the
+6 12 default emulation being native zsh, shown as <Z> in zshoptions(1)).
+6 12 Options that are on by default for the emulation are shown with the
+6 12 prefix no only if they are off, while other options are shown
+6 12 without the prefix no and only if they are on.  In addition to
+6 12 options changed from the default state by the user, any options
+6 12 activated automatically by the shell (for example, SHIN_STDIN or
+6 12 INTERACTIVE) will be shown in the list.  The format is further
+6 12 modified by the option KSH_OPTION_PRINT, however the rationale for
+6 12 choosing options with or without the no prefix remains the same in
+6 12 this case.
+6 12 If the -m flag is given the arguments are taken as patterns (which
+6 12 should be quoted to protect them from filename expansion), and all
+6 12 options with names matching these patterns are set.
+6 12 Note that a bad option name does not cause execution of subsequent
+6 12 shell code to be aborted; this is behaviour is different from that
+6 12 of ‘set -o'.  This is because set is regarded as a special builtin
+6 12 by the POSIX standard, but setopt is not.
+2 5 shift [ -p ] [ n ] [ name ... ]
+6 12 The positional parameters ${n+1} ... are renamed to $1 ..., where n
+6 12 is an arithmetic expression that defaults to 1.  If any names are
+6 12 given then the arrays with these names are shifted instead of the
+6 12 positional parameters.
+6 12 If the option -p is given arguments are instead removed (popped)
+6 12 from the end rather than the start of the array.
+2 5 source file [ arg ... ]
+6 12 Same as ‘.', except that the current directory is always searched
+6 12 and is always searched first, before directories in $path.
+2 5 stat   See the section ‘The zsh/stat Module' in zshmodules(1).
+2 5 suspend [ -f ]
+6 12 Suspend the execution of the shell (send it a SIGTSTP) until it
+6 12 receives a SIGCONT.  Unless the -f option is given, this will
+6 12 refuse to suspend a login shell.
+2 5 test [ arg ... ]
+2 5 [ [ arg ... ] ]
+6 12 Like the system version of test.  Added for compatibility; use
+6 12 conditional expressions instead (see the section ‘Conditional
+6 12 Expressions').  The main differences between the conditional
+6 12 expression syntax and the test and [ builtins are:  these commands
+6 12 are not handled syntactically, so for example an empty variable
+6 12 expansion may cause an argument to be omitted; syntax errors cause
+6 12 status 2 to be returned instead of a shell error; and arithmetic
+6 12 operators expect integer arguments rather than arithmetic
+6 12 expressions.
+6 12 The command attempts to implement POSIX and its extensions where
+6 12 these are specified.  Unfortunately there are intrinsic ambiguities
+6 12 in the syntax; in particular there is no distinction between test
+6 12 operators and strings that resemble them.  The standard attempts to
+6 12 resolve these for small numbers of arguments (up to four); for five
+6 12 or more arguments compatibility cannot be relied on.  Users are
+6 12 urged wherever possible to use the ‘[[' test syntax which does not
+6 12 have these ambiguities.
+2 5 times  Print the accumulated user and system times for the shell and for
+6 12 processes run from the shell.
+2 5 trap [ arg ] [ sig ... ]
+6 12 arg is a series of commands (usually quoted to protect it from
+6 12 immediate evaluation by the shell) to be read and executed when the
+6 12 shell receives any of the signals specified by one or more sig
+6 12 args.  Each sig can be given as a number, or as the name of a
+6 12 signal either with or without the string SIG in front (e.g. 1, HUP,
+6 12 and SIGHUP are all the same signal).
+6 12 If arg is ‘-', then the specified signals are reset to their
+6 12 defaults, or, if no sig args are present, all traps are reset.
+6 12 If arg is an empty string, then the specified signals are ignored
+6 12 by the shell (and by the commands it invokes).
+6 12 If arg is omitted but one or more sig args are provided (i.e.  the
+6 12 first argument is a valid signal number or name), the effect is the
+6 12 same as if arg had been specified as ‘-'.
+6 12 The trap command with no arguments prints a list of commands
+6 12 associated with each signal.
+6 12 If sig is ZERR then arg will be executed after each command with a
+6 12 nonzero exit status.  ERR is an alias for ZERR on systems that have
+6 12 no SIGERR signal (this is the usual case).
+6 12 If sig is DEBUG then arg will be executed before each command if
+6 12 the option DEBUG_BEFORE_CMD is set (as it is by default), else
+6 12 after each command.  Here, a ‘command' is what is described as a
+6 12 ‘sublist' in the shell grammar, see the section SIMPLE COMMANDS &
+6 12 PIPELINES in zshmisc(1).  If DEBUG_BEFORE_CMD is set various
+6 12 additional features are available.  First, it is possible to skip
+6 12 the next command by setting the option ERR_EXIT; see the
+6 12 description of the ERR_EXIT option in zshoptions(1).  Also, the
+6 12 shell parameter ZSH_DEBUG_CMD is set to the string corresponding to
+6 12 the command to be executed following the trap.  Note that this
+6 12 string is reconstructed from the internal format and may not be
+6 12 formatted the same way as the original text.  The parameter is
+6 12 unset after the trap is executed.
+6 12 If sig is 0 or EXIT and the trap statement is executed inside the
+6 12 body of a function, then the command arg is executed after the
+6 12 function completes.  The value of $? at the start of execution is
+6 12 the exit status of the shell or the return status of the function
+6 12 exiting.  If sig is 0 or EXIT and the trap statement is not
+6 12 executed inside the body of a function, then the command arg is
+6 12 executed when the shell terminates; the trap runs before any
+6 12 zshexit hook functions.
+6 12 ZERR, DEBUG, and EXIT traps are not executed inside other traps.
+6 12 ZERR and DEBUG traps are kept within subshells, while other traps
+6 12 are reset.
+6 12 Note that traps defined with the trap builtin are slightly
+6 12 different from those defined as ‘TRAPNAL () { ... }', as the latter
+6 12 have their own function environment (line numbers, local variables,
+6 12 etc.) while the former use the environment of the command in which
+6 12 they were called.  For example,
+8 19 trap 'print $LINENO' DEBUG
+6 12 will print the line number of a command executed after it has run,
+6 12 while
+8 19 TRAPDEBUG() { print $LINENO; }
+6 12 will always print the number zero.
+6 12 Alternative signal names are allowed as described under kill above.
+6 12 Defining a trap under either name causes any trap under an
+6 12 alternative name to be removed.  However, it is recommended that
+6 12 for consistency users stick exclusively to one name or another.
+2 5 true [ arg ... ]
+6 12 Do nothing and return an exit status of 0.
+2 5 ttyctl [ -fu ]
+6 12 The -f option freezes the tty (i.e. terminal or terminal emulator),
+6 12 and -u unfreezes it.  When the tty is frozen, no changes made to
+6 12 the tty settings by external programs will be honored by the shell,
+6 12 except for changes in the size of the screen; the shell will simply
+6 12 reset the settings to their previous values as soon as each command
+6 12 exits or is suspended.  Thus, stty and similar programs have no
+6 12 effect when the tty is frozen.  Freezing the tty does not cause the
+6 12 current state to be remembered: instead, it causes future changes
+6 12 to the state to be blocked.
+6 12 Without options it reports whether the terminal is frozen or not.
+6 12 Note that, regardless of whether the tty is frozen or not, the
+6 12 shell needs to change the settings when the line editor starts, so
+6 12 unfreezing the tty does not guarantee settings made on the command
+6 12 line are preserved.  Strings of commands run between editing the
+6 12 command line will see a consistent tty state.  See also the shell
+6 12 variable STTY for a means of initialising the tty before running
+6 12 external commands and/or freezing the tty around a single command.
+2 5 type [ -wfpamsS ] name ...
+6 12 Equivalent to whence -v.
+2 5 typeset [ {+|-}AHUaghlmrtux ] [ {+|-}EFLRZip [ n ] ]
+7 13 [ + ] [ name[=value] ... ]
+2 5 typeset -T [ {+|-}Uglrux ] [ {+|-}LRZp [ n ] ]
+7 13 [ + | SCALAR[=value] array[=(value ...)] [ sep ] ]
+2 5 typeset -f [ {+|-}TUkmtuz ] [ + ] [ name ... ]
+6 12 Set or display attributes and values for shell parameters.
+6 12 Except as noted below for control flags that change the behavior, a
+6 12 parameter is created for each name that does not already refer to
+6 12 one.  When inside a function, a new parameter is created for every
+6 12 name (even those that already exist), and is unset again when the
+6 12 function completes.  See ‘Local Parameters' in zshparam(1).  The
+6 12 same rules apply to special shell parameters, which retain their
+6 12 special attributes when made local.
+6 12 For each name=value assignment, the parameter name is set to value.
+6 12 If the assignment is omitted and name does not refer to an existing
+6 12 parameter, a new parameter is initialized to empty string, zero, or
+6 12 empty array (as appropriate), unless the shell option
+6 12 TYPESET_TO_UNSET is set.  When that option is set, the parameter
+6 12 attributes are recorded but the parameter remains unset.
+6 12 If the shell option TYPESET_SILENT is not set, for each remaining
+6 12 name that refers to a parameter that is already set, the name and
+6 12 value of the parameter are printed in the form of an assignment.
+6 12 Nothing is printed for newly-created parameters, or when any
+6 12 attribute flags listed below are given along with the name.  Using
+6 12 ‘+' instead of minus to introduce an attribute turns it off.
+6 12 If no name is present, the names and values of all parameters are
+6 12 printed.  In this case the attribute flags restrict the display to
+6 12 only those parameters that have the specified attributes, and using
+6 12 ‘+' rather than ‘-' to introduce the flag suppresses printing of
+6 12 the values of parameters when there is no parameter name.
+6 12 All forms of the command handle scalar assignment.  Array
+6 12 assignment is possible if any of the reserved words declare,
+6 12 export, float, integer, local, readonly or typeset is matched when
+6 12 the line is parsed (N.B. not when it is executed).  In this case
+6 12 the arguments are parsed as assignments, except that the ‘+='
+6 12 syntax and the GLOB_ASSIGN option are not supported, and scalar
+6 12 values after = are not split further into words, even if expanded
+6 12 (regardless of the setting of the KSH_TYPESET option; this option
+6 12 is obsolete).
+6 12 Examples of the differences between command and reserved word
+6 12 parsing:
+8 19 # Reserved word parsing
+8 19 typeset svar=$(echo one word) avar=(several words)
+6 12 The above creates a scalar parameter svar and an array parameter
+6 12 avar as if the assignments had been
+8 19 svar="one word"
+8 19 avar=(several words)
+6 12 On the other hand:
+8 19 # Normal builtin interface
+8 19 builtin typeset svar=$(echo two words)
+6 12 The builtin keyword causes the above to use the standard builtin
+6 12 interface to typeset in which argument parsing is performed in the
+6 12 same way as for other commands.  This example creates a scalar svar
+6 12 containing the value two and another scalar parameter words with no
+6 12 value.  An array value in this case would either cause an error or
+6 12 be treated as an obscure set of glob qualifiers.
+6 12 Arbitrary arguments are allowed if they take the form of
+6 12 assignments after command line expansion; however, these only
+6 12 perform scalar assignment:
+8 19 var='svar=val'
+8 19 typeset $var
+6 12 The above sets the scalar parameter svar to the value val.
+6 12 Parentheses around the value within var would not cause array
+6 12 assignment as they will be treated as ordinary characters when $var
+6 12 is substituted.  Any non-trivial expansion in the name part of the
+6 12 assignment causes the argument to be treated in this fashion:
+8 19 typeset {var1,var2,var3}=name
+6 12 The above syntax is valid, and has the expected effect of setting
+6 12 the three parameters to the same value, but the command line is
+6 12 parsed as a set of three normal command line arguments to typeset
+6 12 after expansion.  Hence it is not possible to assign to multiple
+6 12 arrays by this means.
+6 12 Note that each interface to any of the commands may be disabled
+6 12 separately.  For example, ‘disable -r typeset' disables the
+6 12 reserved word interface to typeset, exposing the builtin interface,
+6 12 while ‘disable typeset' disables the builtin.  Note that disabling
+6 12 the reserved word interface for typeset may cause problems with the
+6 12 output of ‘typeset -p', which assumes the reserved word interface
+6 12 is available in order to restore array and associative array
+6 12 values.
+6 12 Unlike parameter assignment statements, typeset's exit status on an
+6 12 assignment that involves a command substitution does not reflect
+6 12 the exit status of the command substitution.  Therefore, to test
+6 12 for an error in a command substitution, separate the declaration of
+6 12 the parameter from its initialization:
+8 19 # WRONG
+8 19 typeset var1=$(exit 1) || echo "Trouble with var1"
+8 19 # RIGHT
+8 19 typeset var1 && var1=$(exit 1) || echo "Trouble with var1"
+6 12 To initialize a parameter param to a command output and mark it
+6 12 readonly, use typeset -r param or readonly param after the
+6 12 parameter assignment statement.
+6 12 If no attribute flags are given, and either no name arguments are
+6 12 present or the flag +m is used, then each parameter name printed is
+6 12 preceded by a list of the attributes of that parameter (array,
+6 12 association, exported, float, integer, readonly, or undefined for
+6 12 autoloaded parameters not yet loaded).  If +m is used with
+6 12 attribute flags, and all those flags are introduced with +, the
+6 12 matching parameter names are printed but their values are not.
+6 12 The following control flags change the behavior of typeset:
+6 12 +      If ‘+' appears by itself in a separate word as the last
+8 19 option, then the names of all parameters (functions with -f)
+8 19 are printed, but the values (function bodies) are not.  If
+8 19 name arguments appear, both those names and their values are
+8 19 printed in the form of assignments.  It is an error for any
+8 19 other options to follow ‘+', but the effect of ‘+' is as if
+8 19 all attribute flags which precede it were given with a ‘+'
+8 19 prefix.  For example, ‘typeset -U +' is equivalent to
+8 19 ‘typeset +U' and displays the names of all arrays having the
+8 19 uniqueness attribute, whereas ‘typeset -f -U +' displays the
+8 19 names of all autoloadable functions.  If + is the only
+8 19 option, then type information (array, readonly, etc.) is
+8 19 also printed for each parameter, in the same manner as
+8 19 ‘typeset +m "*"'.
+6 12 -g     The -g (global) means that any resulting parameter will not
+8 19 be restricted to local scope.  Note that this does not
+8 19 necessarily mean that the parameter will be global, as the
+8 19 flag will apply to any existing parameter (even if unset)
+8 19 from an enclosing function.  This flag does not affect the
+8 19 parameter after creation, hence it has no effect when
+8 19 listing existing parameters, nor does the flag +g have any
+8 19 effect except in combination with -m (see below).
+6 12 -m     If the -m flag is given the name arguments are taken as
+8 19 patterns (use quoting to prevent these from being
+8 19 interpreted as file patterns).  With no attribute flags, all
+8 19 parameters (or functions with the -f flag) with matching
+8 19 names are printed (the shell option TYPESET_SILENT is not
+8 19 used in this case).
+8 19 If the +g flag is combined with -m, a new local parameter is
+8 19 created for every matching parameter that is not already
+8 19 local.  Otherwise -m applies all other flags or assignments
+8 19 to the existing parameters.
+8 19 Except when assignments are made with name=value, using +m
+8 19 forces the matching parameters and their attributes to be
+8 19 printed, even inside a function.  Note that -m is ignored if
+8 19 no patterns are given, so ‘typeset -m' displays attributes
+8 19 but ‘typeset -a +m' does not.  Ordinary scalar string
+8 19 parameters have no attributes, so for those +m prints only
+8 19 the names.
+6 12 -p [ n ]
+8 19 If the -p option is given, parameters and values are printed
+8 19 in the form of a typeset command with an assignment,
+8 19 regardless of other flags and options.  Note that the -H
+8 19 flag on parameters is respected; no value will be shown for
+8 19 these parameters.
+8 19 -p may be followed by an optional integer argument.
+8 19 Currently only the value 1 is supported.  In this case
+8 19 arrays and associative arrays are printed with newlines
+8 19 between indented elements for readability.
+6 12 -T [ scalar[=value] array[=(value ...)] [ sep ] ]
+8 19 This flag has a different meaning when used with -f; see
+8 19 below.  Otherwise the -T option requires zero, two, or three
+8 19 arguments to be present.  With no arguments, the list of
+8 19 parameters created in this fashion is shown.  With two or
+8 19 three arguments, the first two are the name of a scalar and
+8 19 of an array parameter (in that order) that will be tied
+8 19 together in the manner of $PATH and $path.  The optional
+8 19 third argument is a single-character separator which will be
+8 19 used to join the elements of the array to form the scalar;
+8 19 if absent, a colon is used, as with $PATH.  Only the first
+8 19 character of the separator is significant; any remaining
+8 19 characters are ignored.  Multibyte characters are not yet
+8 19 supported.
+8 19 Only one of the scalar and array parameters may be assigned
+8 19 an initial value (the restrictions on assignment forms
+8 19 described above also apply).
+8 19 Both the scalar and the array may be manipulated as normal.
+8 19 If one is unset, the other will automatically be unset too.
+8 19 There is no way of untying the variables without unsetting
+8 19 them, nor of converting the type of one of them with another
+8 19 typeset command; +T does not work, assigning an array to
+8 19 scalar is an error, and assigning a scalar to array sets it
+8 19 to be a single-element array.
+8 19 Note that both ‘typeset -xT ...'  and ‘export -T ...' work,
+8 19 but only the scalar will be marked for export.  Setting the
+8 19 value using the scalar version causes a split on all
+8 19 separators (which cannot be quoted).  It is possible to
+8 19 apply -T to two previously tied variables but with a
+8 19 different separator character, in which case the variables
+8 19 remain joined as before but the separator is changed.
+8 19 When an existing scalar is tied to a new array, the value of
+8 19 the scalar is preserved but no attribute other than export
+8 19 will be preserved.
+6 12 Attribute flags that transform the final value (-L, -R, -Z, -l, -u)
+6 12 are only applied to the expanded value at the point of a parameter
+6 12 expansion expression using ‘$'.  They are not applied when a
+6 12 parameter is retrieved internally by the shell for any purpose.
+6 12 The following attribute flags may be specified:
+6 12 -A     The names refer to associative array parameters; see ‘Array
+8 19 Parameters' in zshparam(1).
+6 12 -L [ n ]
+8 19 Left justify and remove leading blanks from the value when
+8 19 the parameter is expanded.  If n is nonzero, it defines the
+8 19 width of the field.  If n is zero, the width is determined
+8 19 by the width of the value of the first assignment.  In the
+8 19 case of numeric parameters, the length of the complete value
+8 19 assigned to the parameter is used to determine the width,
+8 19 not the value that would be output.
+8 19 The width is the count of characters, which may be multibyte
+8 19 characters if the MULTIBYTE option is in effect.  Note that
+8 19 the screen width of the character is not taken into account;
+8 19 if this is required, use padding with parameter expansion
+8 19 flags ${(ml...)...} as described in ‘Parameter Expansion
+8 19 Flags' in zshexpn(1).
+8 19 When the parameter is expanded, it is filled on the right
+8 19 with blanks or truncated if necessary to fit the field.
+8 19 Note truncation can lead to unexpected results with numeric
+8 19 parameters.  Leading zeros are removed if the -Z flag is
+8 19 also set.
+6 12 -R [ n ]
+8 19 Similar to -L, except that right justification is used; when
+8 19 the parameter is expanded, the field is left filled with
+8 19 blanks or truncated from the end.  May not be combined with
+8 19 the -Z flag.
+6 12 -U     For arrays (but not for associative arrays), keep only the
+8 19 first occurrence of each duplicated value.  This may also be
+8 19 set for tied parameters (see -T) or colon-separated special
+8 19 parameters like PATH or FIGNORE, etc.  Note the flag takes
+8 19 effect on assignment, and the type of the variable being
+8 19 assigned to is determinative; for variables with shared
+8 19 values it is therefore recommended to set the flag for all
+8 19 interfaces, e.g. ‘typeset -U PATH path'.
+8 19 This flag has a different meaning when used with -f; see
+8 19 below.
+6 12 -Z [ n ]
+8 19 Specially handled if set along with the -L flag.  Otherwise,
+8 19 similar to -R, except that leading zeros are used for
+8 19 padding instead of blanks if the first non-blank character
+8 19 is a digit.  Numeric parameters are specially handled: they
+8 19 are always eligible for padding with zeroes, and the zeroes
+8 19 are inserted at an appropriate place in the output.
+6 12 -a     The names refer to array parameters.  An array parameter may
+8 19 be created this way, but it may be assigned to in the
+8 19 typeset statement only if the reserved word form of typeset
+8 19 is enabled (as it is by default).  When displaying, both
+8 19 normal and associative arrays are shown.
+6 12 -f     The names refer to functions rather than parameters.  No
+8 19 assignments can be made, and the only other valid flags are
+8 19 -t, -T, -k, -u, -U and -z.  The flag -t turns on execution
+8 19 tracing for this function; the flag -T does the same, but
+8 19 turns off tracing for any named (not anonymous) function
+8 19 called from the present one, unless that function also has
+8 19 the -t or -T flag.  The -u and -U flags cause the function
+8 19 to be marked for autoloading; -U also causes alias expansion
+8 19 to be suppressed when the function is loaded.  See the
+8 19 description of the ‘autoload' builtin for details.
+8 19 Note that the builtin functions provides the same basic
+8 19 capabilities as typeset -f but gives access to a few extra
+8 19 options; autoload gives further additional options for the
+8 19 case typeset -fu and typeset -fU.
+6 12 -h     Hide: only useful for special parameters (those marked ‘<S>'
+8 19 in the table in zshparam(1)), and for local parameters with
+8 19 the same name as a special parameter, though harmless for
+8 19 others.  A special parameter with this attribute will not
+8 19 retain its special effect when made local.  Thus after
+8 19 ‘typeset -h PATH', a function containing ‘typeset PATH' will
+8 19 create an ordinary local parameter without the usual
+8 19 behaviour of PATH.  Alternatively, the local parameter may
+8 19 itself be given this attribute; hence inside a function
+8 19 ‘typeset -h PATH' creates an ordinary local parameter and
+8 19 the special PATH parameter is not altered in any way.  It is
+8 19 also possible to create a local parameter using ‘typeset +h
+8 19 special', where the local copy of special will retain its
+8 19 special properties regardless of having the -h attribute.
+8 19 Global special parameters loaded from shell modules
+8 19 (currently those in zsh/mapfile and zsh/parameter) are
+8 19 automatically given the -h attribute to avoid name clashes.
+6 12 -H     Hide value: specifies that typeset will not display the
+8 19 value of the parameter when listing parameters; the display
+8 19 for such parameters is always as if the ‘+' flag had been
+8 19 given.  Use of the parameter is in other respects normal,
+8 19 and the option does not apply if the parameter is specified
+8 19 by name, or by pattern with the -m option.  This is on by
+8 19 default for the parameters in the zsh/parameter and
+8 19 zsh/mapfile modules.  Note, however, that unlike the -h flag
+8 19 this is also useful for non-special parameters.
+6 12 -i [ n ]
+8 19 Use an internal integer representation.  If n is nonzero it
+8 19 defines the output arithmetic base, otherwise it is
+8 19 determined by the first assignment.  Bases from 2 to 36
+8 19 inclusive are allowed.
+6 12 -E [ n ]
+8 19 Use an internal double-precision floating point
+8 19 representation.  On output the variable will be converted to
+8 19 scientific notation.  If n is nonzero it defines the number
+8 19 of significant figures to display; the default is ten.
+6 12 -F [ n ]
+8 19 Use an internal double-precision floating point
+8 19 representation.  On output the variable will be converted to
+8 19 fixed-point decimal notation.  If n is nonzero it defines
+8 19 the number of digits to display after the decimal point; the
+8 19 default is ten.
+6 12 -l     Convert the result to lower case whenever the parameter is
+8 19 expanded.  The value is not converted when assigned.
+6 12 -r     The given names are marked readonly.  Note that if name is a
+8 19 special parameter, the readonly attribute can be turned on,
+8 19 but cannot then be turned off.
+8 19 If the POSIX_BUILTINS option is set, the readonly attribute
+8 19 is more restrictive: unset variables can be marked readonly
+8 19 and cannot then be set; furthermore, the readonly attribute
+8 19 cannot be removed from any variable.
+8 19 It is still possible to change other attributes of the
+8 19 variable though, some of which like -U or -Z would affect
+8 19 the value. More generally, the readonly attribute should not
+8 19 be relied on as a security mechanism.
+8 19 Note that in zsh (like in pdksh but unlike most other
+8 19 shells) it is still possible to create a local variable of
+8 19 the same name as this is considered a different variable
+8 19 (though this variable, too, can be marked readonly). Special
+8 19 variables that have been made readonly retain their value
+8 19 and readonly attribute when made local.
+6 12 -t     Tags the named parameters.  Tags have no special meaning to
+8 19 the shell.  This flag has a different meaning when used with
+8 19 -f; see above.
+6 12 -u     Convert the result to upper case whenever the parameter is
+8 19 expanded.  The value is not converted when assigned.  This
+8 19 flag has a different meaning when used with -f; see above.
+6 12 -x     Mark for automatic export to the environment of subsequently
+8 19 executed commands.  If the option GLOBAL_EXPORT is set, this
+8 19 implies the option -g, unless +g is also explicitly given;
+8 19 in other words the parameter is not made local to the
+8 19 enclosing function.  This is for compatibility with previous
+8 19 versions of zsh.
+2 5 ulimit [ -HSa ] [ { -bcdfiklmnpqrsTtvwx | -N resource } [ limit ] ... ]
+6 12 Set or display resource limits of the shell and the processes
+6 12 started by the shell.  The value of limit can be a number in the
+6 12 unit specified below or one of the values ‘unlimited', which
+6 12 removes the limit on the resource, or ‘hard', which uses the
+6 12 current value of the hard limit on the resource.
+6 12 By default, only soft limits are manipulated. If the -H flag is
+6 12 given use hard limits instead of soft limits.  If the -S flag is
+6 12 given together with the -H flag set both hard and soft limits.
+6 12 If no options are used, the file size limit (-f) is assumed.
+6 12 If limit is omitted the current value of the specified resources
+6 12 are printed.  When more than one resource value is printed, the
+6 12 limit name and unit is printed before each value.
+6 12 When looping over multiple resources, the shell will abort
+6 12 immediately if it detects a badly formed argument.  However, if it
+6 12 fails to set a limit for some other reason it will continue trying
+6 12 to set the remaining limits.
+6 12 Not all the following resources are supported on all systems.
+6 12 Running ulimit -a will show which are supported.
+6 12 -a     Lists all of the current resource limits.
+6 12 -b     Socket buffer size in bytes (N.B. not kilobytes)
+6 12 -c     512-byte blocks on the size of core dumps.
+6 12 -d     Kilobytes on the size of the data segment.
+6 12 -f     512-byte blocks on the size of files written.
+6 12 -i     The number of pending signals.
+6 12 -k     The number of kqueues allocated.
+6 12 -l     Kilobytes on the size of locked-in memory.
+6 12 -m     Kilobytes on the size of physical memory.
+6 12 -n     open file descriptors.
+6 12 -p     The number of pseudo-terminals.
+6 12 -q     Bytes in POSIX message queues.
+6 12 -r     Maximum real time priority.  On some systems where this is
+8 19 not available, such as NetBSD, this has the same effect as
+8 19 -T for compatibility with sh.
+6 12 -s     Kilobytes on the size of the stack.
+6 12 -T     The number of simultaneous threads available to the user.
+6 12 -t     CPU seconds to be used.
+6 12 -u     The number of processes available to the user.
+6 12 -v     Kilobytes on the size of virtual memory.  On some systems
+8 19 this refers to the limit called ‘address space'.
+6 12 -w     Kilobytes on the size of swapped out memory.
+6 12 -x     The number of locks on files.
+6 12 A resource may also be specified by integer in the form ‘-N
+6 12 resource', where resource corresponds to the integer defined for
+6 12 the resource by the operating system.  This may be used to set the
+6 12 limits for resources known to the shell which do not correspond to
+6 12 option letters.  Such limits will be shown by number in the output
+6 12 of ‘ulimit -a'.
+6 12 The number may alternatively be out of the range of limits compiled
+6 12 into the shell.  The shell will try to read or write the limit
+6 12 anyway, and will report an error if this fails.
+2 5 umask [ -S ] [ mask ]
+6 12 The umask is set to mask.  mask can be either an octal number or a
+6 12 symbolic value as described in the chmod(1) man page.  If mask is
+6 12 omitted, the current value is printed.  The -S option causes the
+6 12 mask to be printed as a symbolic value.  Otherwise, the mask is
+6 12 printed as an octal number.  Note that in the symbolic form the
+6 12 permissions you specify are those which are to be allowed (not
+6 12 denied) to the users specified.
+2 5 unalias [ -ams ] name ...
+6 12 Removes aliases.  This command works the same as unhash -a, except
+6 12 that the -a option removes all regular or global aliases, or with
+6 12 -s all suffix aliases: in this case no name arguments may appear.
+6 12 The options -m (remove by pattern) and -s without -a (remove listed
+6 12 suffix aliases) behave as for unhash -a.  Note that the meaning of
+6 12 -a is different between unalias and unhash.
+2 5 unfunction
+6 12 Same as unhash -f.
+2 5 unhash [ -adfms ] name ...
+6 12 Remove the element named name from an internal hash table.  The
+6 12 default is remove elements from the command hash table.  The -a
+6 12 option causes unhash to remove regular or global aliases; note when
+6 12 removing a global aliases that the argument must be quoted to
+6 12 prevent it from being expanded before being passed to the command.
+6 12 The -s option causes unhash to remove suffix aliases.  The -f
+6 12 option causes unhash to remove shell functions.  The -d options
+6 12 causes unhash to remove named directories.  If the -m flag is given
+6 12 the arguments are taken as patterns (should be quoted) and all
+6 12 elements of the corresponding hash table with matching names will
+6 12 be removed.
+2 5 unlimit [ -hs ] resource ...
+6 12 The resource limit for each resource is set to the hard limit.  If
+6 12 the -h flag is given and the shell has appropriate privileges, the
+6 12 hard resource limit for each resource is removed.  The resources of
+6 12 the shell process are only changed if the -s flag is given.
+6 12 The unlimit command is not made available by default when the shell
+6 12 starts in a mode emulating another shell.  It can be made available
+6 12 with the command ‘zmodload -F zsh/rlimits b:unlimit'.
+2 5 unset [ -fmv ] name ...
+6 12 Each named parameter is unset.  Local parameters remain local even
+6 12 if unset; they appear unset within scope, but the previous value
+6 12 will still reappear when the scope ends.
+6 12 Individual elements of associative array parameters may be unset by
+6 12 using subscript syntax on name, which should be quoted (or the
+6 12 entire command prefixed with noglob) to protect the subscript from
+6 12 filename generation.
+6 12 If the -m flag is specified the arguments are taken as patterns
+6 12 (should be quoted) and all parameters with matching names are
+6 12 unset.  Note that this cannot be used when unsetting associative
+6 12 array elements, as the subscript will be treated as part of the
+6 12 pattern.
+6 12 The -v flag specifies that name refers to parameters. This is the
+6 12 default behaviour.
+6 12 unset -f is equivalent to unfunction.
+2 5 unsetopt [ {+|-}options | {+|-}o option_name ] [ name ... ]
+6 12 Unset the options for the shell.  All options specified either with
+6 12 flags or by name are unset.  If no arguments are supplied, the
+6 12 names of all options currently unset are printed.  If the -m flag
+6 12 is given the arguments are taken as patterns (which should be
+6 12 quoted to preserve them from being interpreted as glob patterns),
+6 12 and all options with names matching these patterns are unset.
+2 5 vared  See the section ‘Zle Builtins' in zshzle(1).
+2 5 wait [ job ... ]
+6 12 Wait for the specified jobs or processes.  If job is not given then
+6 12 all currently active child processes are waited for.  Each job can
+6 12 be either a job specification or the process ID of a job in the job
+6 12 table.  The exit status from this command is that of the job waited
+6 12 for.  If job represents an unknown job or process ID, a warning is
+6 12 printed (unless the POSIX_BUILTINS option is set) and the exit
+6 12 status is 127.
+6 12 It is possible to wait for recent processes (specified by process
+6 12 ID, not by job) that were running in the background even if the
+6 12 process has exited.  Typically the process ID will be recorded by
+6 12 capturing the value of the variable $! immediately after the
+6 12 process has been started.  There is a limit on the number of
+6 12 process IDs remembered by the shell; this is given by the value of
+6 12 the system configuration parameter CHILD_MAX.  When this limit is
+6 12 reached, older process IDs are discarded, least recently started
+6 12 processes first.
+6 12 Note there is no protection against the process ID wrapping, i.e.
+6 12 if the wait is not executed soon enough there is a chance the
+6 12 process waited for is the wrong one.  A conflict implies both
+6 12 process IDs have been generated by the shell, as other processes
+6 12 are not recorded, and that the user is potentially interested in
+6 12 both, so this problem is intrinsic to process IDs.
+2 5 whence [ -vcwfpamsS ] [ -x num ] name ...
+6 12 For each name, indicate how it would be interpreted if used as a
+6 12 command name.
+6 12 If name is not an alias, built-in command, external command, shell
+6 12 function, hashed command, or a reserved word, the exit status shall
+6 12 be non-zero, and -- if -v, -c, or -w was passed -- a message will
+6 12 be written to standard output.  (This is different from other
+6 12 shells that write that message to standard error.)
+6 12 whence is most useful when name is only the last path component of
+6 12 a command, i.e. does not include a ‘/'; in particular, pattern
+6 12 matching only succeeds if just the non-directory component of the
+6 12 command is passed.
+6 12 -v     Produce a more verbose report.
+6 12 -c     Print the results in a csh-like format.  This takes
+8 19 precedence over -v.
+6 12 -w     For each name, print ‘name: word' where word is one of
+8 19 alias, builtin, command, function, hashed, reserved or none,
+8 19 according as name corresponds to an alias, a built-in
+8 19 command, an external command, a shell function, a command
+8 19 defined with the hash builtin, a reserved word, or is not
+8 19 recognised.  This takes precedence over -v and -c.
+6 12 -f     Causes the contents of a shell function to be displayed,
+8 19 which would otherwise not happen unless the -c flag were
+8 19 used.
+6 12 -p     Do a path search for name even if it is an alias, reserved
+8 19 word, shell function or builtin.
+6 12 -a     Do a search for all occurrences of name throughout the
+8 19 command path.  Normally only the first occurrence is
+8 19 printed.  When combined with -m, only names appearing in the
+8 19 command hash table are searched, but all occurrences of
+8 19 those names are printed.
+6 12 -m     The arguments are taken as patterns (pattern characters
+8 19 should be quoted), and the information is displayed for each
+8 19 entry in the command hash table matching one of these
+8 19 patterns.  The hash table is first refilled, in case of
+8 19 changes to PATH.
+6 12 -s     If a pathname contains symlinks, print the symlink-free
+8 19 pathname as well.
+6 12 -S     As -s, but if the pathname had to be resolved by following
+8 19 multiple symlinks, the intermediate steps are printed, too.
+8 19 The symlink resolved at each step might be anywhere in the
+8 19 path.
+6 12 -x num
+8 19 Expand tabs when outputting shell functions using the -c
+8 19 option.  This has the same effect as the -x option to the
+8 19 functions builtin.
+2 5 where [ -wpmsS ] [ -x num ] name ...
+6 12 Equivalent to whence -ca.
+2 5 which [ -wpamsS ] [ -x num ] name ...
+6 12 Equivalent to whence -c.
+2 5 zcompile [ -U ] [ -z | -k ] [ -R | -M ] file [ name ... ]
+2 5 zcompile -ca [ -m ] [ -R | -M ] file [ name ... ]
+2 5 zcompile -t file [ name ... ]
+6 12 This builtin command can be used to compile functions or scripts,
+6 12 storing the compiled form in a file, and to examine files
+6 12 containing the compiled form.  This allows faster autoloading of
+6 12 functions and sourcing of scripts by avoiding parsing of the text
+6 12 when the files are read.
+6 12 The first form (without the -c, -a or -t options) creates a
+6 12 compiled file.  If only the file argument is given, the output file
+6 12 has the name ‘file.zwc' and will be placed in the same directory as
+6 12 the file.  The shell will load the compiled file instead of the
+6 12 normal function file when the function is autoloaded; see the
+6 12 section ‘Autoloading Functions' in zshmisc(1) for a description of
+6 12 how autoloaded functions are searched.  The extension .zwc stands
+6 12 for ‘zsh word code'.
+6 12 If there is at least one name argument, all the named files are
+6 12 compiled into the output file given as the first argument.  If file
+6 12 does not end in .zwc, this extension is automatically appended.
+6 12 Files containing multiple compiled functions are called ‘digest'
+6 12 files, and are intended to be used as elements of the FPATH/fpath
+6 12 special array.
+6 12 The second form, with the -c or -a options, writes the compiled
+6 12 definitions for all the named functions into file.  For -c, the
+6 12 names must be functions currently defined in the shell, not those
+6 12 marked for autoloading.  Undefined functions that are marked for
+6 12 autoloading may be written by using the -a option, in which case
+6 12 the fpath is searched and the contents of the definition files for
+6 12 those functions, if found, are compiled into file.  If both -c and
+6 12 -a are given, names of both defined functions and functions marked
+6 12 for autoloading may be given.  In either case, the functions in
+6 12 files written with the -c or -a option will be autoloaded as if the
+6 12 KSH_AUTOLOAD option were unset.
+6 12 The reason for handling loaded and not-yet-loaded functions with
+6 12 different options is that some definition files for autoloading
+6 12 define multiple functions, including the function with the same
+6 12 name as the file, and, at the end, call that function.  In such
+6 12 cases the output of ‘zcompile -c' does not include the additional
+6 12 functions defined in the file, and any other initialization code in
+6 12 the file is lost.  Using ‘zcompile -a' captures all this extra
+6 12 information.
+6 12 If the -m option is combined with -c or -a, the names are used as
+6 12 patterns and all functions whose names match one of these patterns
+6 12 will be written. If no name is given, the definitions of all
+6 12 functions currently defined or marked as autoloaded will be
+6 12 written.
+6 12 Note the second form cannot be used for compiling functions that
+6 12 include redirections as part of the definition rather than within
+6 12 the body of the function; for example
+8 19 fn1() { { ... } >~/logfile }
+6 12 can be compiled but
+8 19 fn1() { ... } >~/logfile
+6 12 cannot.  It is possible to use the first form of zcompile to
+6 12 compile autoloadable functions that include the full function
+6 12 definition instead of just the body of the function.
+6 12 The third form, with the -t option, examines an existing compiled
+6 12 file.  Without further arguments, the names of the original files
+6 12 compiled into it are listed.  The first line of output shows the
+6 12 version of the shell which compiled the file and how the file will
+6 12 be used (i.e. by reading it directly or by mapping it into memory).
+6 12 With arguments, nothing is output and the return status is set to
+6 12 zero if definitions for all names were found in the compiled file,
+6 12 and non-zero if the definition for at least one name was not found.
+6 12 Other options:
+6 12 -U     Aliases are not expanded when compiling the named files.
+6 12 -R     When the compiled file is read, its contents are copied into
+8 19 the shell's memory, rather than memory-mapped (see -M).
+8 19 This happens automatically on systems that do not support
+8 19 memory mapping.
+8 19 When compiling scripts instead of autoloadable functions, it
+8 19 is often desirable to use this option; otherwise the whole
+8 19 file, including the code to define functions which have
+8 19 already been defined, will remain mapped, consequently
+8 19 wasting memory.
+6 12 -M     The compiled file is mapped into the shell's memory when
+8 19 read. This is done in such a way that multiple instances of
+8 19 the shell running on the same host will share this mapped
+8 19 file.  If neither -R nor -M is given, the zcompile builtin
+8 19 decides what to do based on the size of the compiled file.
+6 12 -k
+6 12 -z     These options are used when the compiled file contains
+8 19 functions which are to be autoloaded. If -z is given, the
+8 19 function will be autoloaded as if the KSH_AUTOLOAD option is
+8 19 not set, even if it is set at the time the compiled file is
+8 19 read, while if the -k is given, the function will be loaded
+8 19 as if KSH_AUTOLOAD is set.  These options also take
+8 19 precedence over any -k or -z options specified to the
+8 19 autoload builtin. If neither of these options is given, the
+8 19 function will be loaded as determined by the setting of the
+8 19 KSH_AUTOLOAD option at the time the compiled file is read.
+8 19 These options may also appear as many times as necessary
+8 19 between the listed names to specify the loading style of all
+8 19 following functions, up to the next -k or -z.
+8 19 The created file always contains two versions of the
+8 19 compiled format, one for big-endian machines and one for
+8 19 small-endian machines.  The upshot of this is that the
+8 19 compiled file is machine independent and if it is read or
+8 19 mapped, only one half of the file is actually used (and
+8 19 mapped).
+2 5 zformat
+6 12 See the section ‘The zsh/zutil Module' in zshmodules(1).
+2 5 zftp   See the section ‘The zsh/zftp Module' in zshmodules(1).
+2 5 zle    See the section ‘Zle Builtins' in zshzle(1).
+2 5 zmodload [ -dL ] [ -s ] [ ... ]
+2 5 zmodload -F [ -alLme -P param ] module [ [+-]feature ... ]
+2 5 zmodload -e [ -A ] [ ... ]
+2 5 zmodload [ -a [ -bcpf [ -I ] ] ] [ -iL ] ...
+2 5 zmodload -u [ -abcdpf [ -I ] ] [ -iL ] ...
+2 5 zmodload -A [ -L ] [ modalias[=module] ... ]
+2 5 zmodload -R modalias ...
+6 12 Performs operations relating to zsh's loadable modules.  Loading of
+6 12 modules while the shell is running (‘dynamical loading') is not
+6 12 available on all operating systems, or on all installations on a
+6 12 particular operating system, although the zmodload command itself
+6 12 is always available and can be used to manipulate modules built
+6 12 into versions of the shell executable without dynamical loading.
+6 12 Without arguments the names of all currently loaded binary modules
+6 12 are printed.  The -L option causes this list to be in the form of a
+6 12 series of zmodload commands.  Forms with arguments are:
+6 12 zmodload [ -is ] name ...
+6 12 zmodload -u [ -i ] name ...
+8 19 In the simplest case, zmodload loads a binary module.  The
+8 19 module must be in a file with a name consisting of the
+8 19 specified name followed by a standard suffix, usually ‘.so'
+8 19 (‘.sl' on HPUX).  If the module to be loaded is already
+8 19 loaded the duplicate module is ignored.  If zmodload detects
+8 19 an inconsistency, such as an invalid module name or circular
+8 19 dependency list, the current code block is aborted.  If it
+8 19 is available, the module is loaded if necessary, while if it
+8 19 is not available, non-zero status is silently returned.  The
+8 19 option -i is accepted for compatibility but has no effect.
+8 19 The named module is searched for in the same way a command
+8 19 is, using $module_path instead of $path.  However, the path
+8 19 search is performed even when the module name contains a
+8 19 ‘/', which it usually does.  There is no way to prevent the
+8 19 path search.
+8 19 If the module supports features (see below), zmodload tries
+8 19 to enable all features when loading a module.  If the module
+8 19 was successfully loaded but not all features could be
+8 19 enabled, zmodload returns status 2.
+8 19 If the option -s is given, no error is printed if the module
+8 19 was not available (though other errors indicating a problem
+8 19 with the module are printed).  The return status indicates
+8 19 if the module was loaded.  This is appropriate if the caller
+8 19 considers the module optional.
+8 19 With -u, zmodload unloads modules.  The same name must be
+8 19 given that was given when the module was loaded, but it is
+8 19 not necessary for the module to exist in the file system.
+8 19 The -i option suppresses the error if the module is already
+8 19 unloaded (or was never loaded).
+8 19 Each module has a boot and a cleanup function.  The module
+8 19 will not be loaded if its boot function fails.  Similarly a
+8 19 module can only be unloaded if its cleanup function runs
+8 19 successfully.
+6 12 zmodload -F [ -almLe -P param ] module [ [+-]feature ... ]
+8 19 zmodload -F allows more selective control over the features
+8 19 provided by modules.  With no options apart from -F, the
+8 19 module named module is loaded, if it was not already loaded,
+8 19 and the list of features is set to the required state.  If
+8 19 no features are specified, the module is loaded, if it was
+8 19 not already loaded, but the state of features is unchanged.
+8 19 Each feature may be preceded by a + to turn the feature on,
+8 19 or - to turn it off; the + is assumed if neither character
+8 19 is present.  Any feature not explicitly mentioned is left in
+8 19 its current state; if the module was not previously loaded
+8 19 this means any such features will remain disabled.  The
+8 19 return status is zero if all features were set, 1 if the
+8 19 module failed to load, and 2 if some features could not be
+8 19 set (for example, a parameter couldn't be added because
+8 19 there was a different parameter of the same name) but the
+8 19 module was loaded.
+8 19 The standard features are builtins, conditions, parameters
+8 19 and math functions; these are indicated by the prefix ‘b:',
+8 19 ‘c:' (‘C:' for an infix condition), ‘p:' and ‘f:',
+8 19 respectively, followed by the name that the corresponding
+8 19 feature would have in the shell.  For example, ‘b:strftime'
+8 19 indicates a builtin named strftime and p:EPOCHSECONDS
+8 19 indicates a parameter named EPOCHSECONDS.  The module may
+8 19 provide other (‘abstract') features of its own as indicated
+8 19 by its documentation; these have no prefix.
+8 19 With -l or -L, features provided by the module are listed.
+8 19 With -l alone, a list of features together with their states
+8 19 is shown, one feature per line.  With -L alone, a zmodload
+8 19 -F command that would cause enabled features of the module
+8 19 to be turned on is shown.  With -lL, a zmodload -F command
+8 19 that would cause all the features to be set to their current
+8 19 state is shown.  If one of these combinations is given with
+8 19 the option -P param then the parameter param is set to an
+8 19 array of features, either features together with their state
+8 19 or (if -L alone is given) enabled features.
+8 19 With the option -L the module name may be omitted; then a
+8 19 list of all enabled features for all modules providing
+8 19 features is printed in the form of zmodload -F commands.  If
+8 19 -l is also given, the state of both enabled and disabled
+8 19 features is output in that form.
+8 19 A set of features may be provided together with -l or -L and
+8 19 a module name; in that case only the state of those features
+8 19 is considered.  Each feature may be preceded by + or - but
+8 19 the character has no effect.  If no set of features is
+8 19 provided, all features are considered.
+8 19 With -e, the command first tests that the module is loaded;
+8 19 if it is not, status 1 is returned.  If the module is
+8 19 loaded, the list of features given as an argument is
+8 19 examined.  Any feature given with no prefix is simply tested
+8 19 to see if the module provides it; any feature given with a
+8 19 prefix + or - is tested to see if is provided and in the
+8 19 given state.  If the tests on all features in the list
+8 19 succeed, status 0 is returned, else status 1.
+8 19 With -m, each entry in the given list of features is taken
+8 19 as a pattern to be matched against the list of features
+8 19 provided by the module.  An initial + or - must be given
+8 19 explicitly.  This may not be combined with the -a option as
+8 19 autoloads must be specified explicitly.
+8 19 With -a, the given list of features is marked for autoload
+8 19 from the specified module, which may not yet be loaded.  An
+8 19 optional + may appear before the feature name.  If the
+8 19 feature is prefixed with -, any existing autoload is
+8 19 removed.  The options -l and -L may be used to list
+8 19 autoloads.  Autoloading is specific to individual features;
+8 19 when the module is loaded only the requested feature is
+8 19 enabled.  Autoload requests are preserved if the module is
+8 19 subsequently unloaded until an explicit ‘zmodload -Fa module
+8 19 -feature' is issued.  It is not an error to request an
+8 19 autoload for a feature of a module that is already loaded.
+8 19 When the module is loaded each autoload is checked against
+8 19 the features actually provided by the module; if the feature
+8 19 is not provided the autoload request is deleted.  A warning
+8 19 message is output; if the module is being loaded to provide
+8 19 a different feature, and that autoload is successful, there
+8 19 is no effect on the status of the current command.  If the
+8 19 module is already loaded at the time when zmodload -Fa is
+8 19 run, an error message is printed and status 1 returned.
+8 19 zmodload -Fa can be used with the -l, -L, -e and -P options
+8 19 for listing and testing the existence of autoloadable
+8 19 features.  In this case -l is ignored if -L is specified.
+8 19 zmodload -FaL with no module name lists autoloads for all
+8 19 modules.
+8 19 Note that only standard features as described above can be
+8 19 autoloaded; other features require the module to be loaded
+8 19 before enabling.
+6 12 zmodload -d [ -L ] [ name ]
+6 12 zmodload -d name dep ...
+6 12 zmodload -ud name [ dep ... ]
+8 19 The -d option can be used to specify module dependencies.
+8 19 The modules named in the second and subsequent arguments
+8 19 will be loaded before the module named in the first
+8 19 argument.
+8 19 With -d and one argument, all dependencies for that module
+8 19 are listed.  With -d and no arguments, all module
+8 19 dependencies are listed.  This listing is by default in a
+8 19 Makefile-like format.  The -L option changes this format to
+8 19 a list of zmodload -d commands.
+8 19 If -d and -u are both used, dependencies are removed.  If
+8 19 only one argument is given, all dependencies for that module
+8 19 are removed.
+6 12 zmodload -ab [ -L ]
+6 12 zmodload -ab [ -i ] name [ builtin ... ]
+6 12 zmodload -ub [ -i ] builtin ...
+8 19 The -ab option defines autoloaded builtins.  It defines the
+8 19 specified builtins.  When any of those builtins is called,
+8 19 the module specified in the first argument is loaded and all
+8 19 its features are enabled (for selective control of features
+8 19 use ‘zmodload -F -a' as described above).  If only the name
+8 19 is given, one builtin is defined, with the same name as the
+8 19 module.  -i suppresses the error if the builtin is already
+8 19 defined or autoloaded, but not if another builtin of the
+8 19 same name is already defined.
+8 19 With -ab and no arguments, all autoloaded builtins are
+8 19 listed, with the module name (if different) shown in
+8 19 parentheses after the builtin name.  The -L option changes
+8 19 this format to a list of zmodload -a commands.
+8 19 If -b is used together with the -u option, it removes
+8 19 builtins previously defined with -ab.  This is only possible
+8 19 if the builtin is not yet loaded.  -i suppresses the error
+8 19 if the builtin is already removed (or never existed).
+8 19 Autoload requests are retained if the module is subsequently
+8 19 unloaded until an explicit ‘zmodload -ub builtin' is issued.
+6 12 zmodload -ac [ -IL ]
+6 12 zmodload -ac [ -iI ] name [ cond ... ]
+6 12 zmodload -uc [ -iI ] cond ...
+8 19 The -ac option is used to define autoloaded condition codes.
+8 19 The cond strings give the names of the conditions defined by
+8 19 the module. The optional -I option is used to define infix
+8 19 condition names. Without this option prefix condition names
+8 19 are defined.
+8 19 If given no condition names, all defined names are listed
+8 19 (as a series of zmodload commands if the -L option is
+8 19 given).
+8 19 The -uc option removes definitions for autoloaded
+8 19 conditions.
+6 12 zmodload -ap [ -L ]
+6 12 zmodload -ap [ -i ] name [ parameter ... ]
+6 12 zmodload -up [ -i ] parameter ...
+8 19 The -p option is like the -b and -c options, but makes
+8 19 zmodload work on autoloaded parameters instead.
+6 12 zmodload -af [ -L ]
+6 12 zmodload -af [ -i ] name [ function ... ]
+6 12 zmodload -uf [ -i ] function ...
+8 19 The -f option is like the -b, -p, and -c options, but makes
+8 19 zmodload work on autoloaded math functions instead.
+6 12 zmodload -a [ -L ]
+6 12 zmodload -a [ -i ] name [ builtin ... ]
+6 12 zmodload -ua [ -i ] builtin ...
+8 19 Equivalent to -ab and -ub.
+6 12 zmodload -e [ -A ] [ string ... ]
+8 19 The -e option without arguments lists all loaded modules; if
+8 19 the -A option is also given, module aliases corresponding to
+8 19 loaded modules are also shown.  If arguments are provided,
+8 19 nothing is printed; the return status is set to zero if all
+8 19 strings given as arguments are names of loaded modules and
+8 19 to one if at least on string is not the name of a loaded
+8 19 module.  This can be used to test for the availability of
+8 19 things implemented by modules.  In this case, any aliases
+8 19 are automatically resolved and the -A flag is not used.
+6 12 zmodload -A [ -L ] [ modalias[=module] ... ]
+8 19 For each argument, if both modalias and module are given,
+8 19 define modalias to be an alias for the module module.  If
+8 19 the module modalias is ever subsequently requested, either
+8 19 via a call to zmodload or implicitly, the shell will attempt
+8 19 to load module instead.  If module is not given, show the
+8 19 definition of modalias.  If no arguments are given, list all
+8 19 defined module aliases.  When listing, if the -L flag was
+8 19 also given, list the definition as a zmodload command to
+8 19 recreate the alias.
+8 19 The existence of aliases for modules is completely
+8 19 independent of whether the name resolved is actually loaded
+8 19 as a module: while the alias exists, loading and unloading
+8 19 the module under any alias has exactly the same effect as
+8 19 using the resolved name, and does not affect the connection
+8 19 between the alias and the resolved name which can be removed
+8 19 either by zmodload -R or by redefining the alias.  Chains of
+8 19 aliases (i.e. where the first resolved name is itself an
+8 19 alias) are valid so long as these are not circular.  As the
+8 19 aliases take the same format as module names, they may
+8 19 include path separators:  in this case, there is no
+8 19 requirement for any part of the path named to exist as the
+8 19 alias will be resolved first.  For example, ‘any/old/alias'
+8 19 is always a valid alias.
+8 19 Dependencies added to aliased modules are actually added to
+8 19 the resolved module; these remain if the alias is removed.
+8 19 It is valid to create an alias whose name is one of the
+8 19 standard shell modules and which resolves to a different
+8 19 module.  However, if a module has dependencies, it will not
+8 19 be possible to use the module name as an alias as the module
+8 19 will already be marked as a loadable module in its own
+8 19 right.
+8 19 Apart from the above, aliases can be used in the zmodload
+8 19 command anywhere module names are required.  However,
+8 19 aliases will not be shown in lists of loaded modules with a
+8 19 bare ‘zmodload'.
+6 12 zmodload -R modalias ...
+8 19 For each modalias argument that was previously defined as a
+8 19 module alias via zmodload -A, delete the alias.  If any was
+8 19 not defined, an error is caused and the remainder of the
+8 19 line is ignored.
+6 12 Note that zsh makes no distinction between modules that were linked
+6 12 into the shell and modules that are loaded dynamically. In both
+6 12 cases this builtin command has to be used to make available the
+6 12 builtins and other things defined by modules (unless the module is
+6 12 autoloaded on these definitions). This is true even for systems
+6 12 that don't support dynamic loading of modules.
+2 5 zparseopts
+6 12 See the section ‘The zsh/zutil Module' in zshmodules(1).
+2 5 zprof  See the section ‘The zsh/zprof Module' in zshmodules(1).
+2 5 zpty   See the section ‘The zsh/zpty Module' in zshmodules(1).
+2 5 zregexparse
+6 12 See the section ‘The zsh/zutil Module' in zshmodules(1).
+2 5 zsocket
+6 12 See the section ‘The zsh/net/socket Module' in zshmodules(1).
+2 5 zstyle
+6 12 See the section ‘The zsh/zutil Module' in zshmodules(1).
+2 5 ztcp   See the section ‘The zsh/net/tcp Module' in zshmodules(1).
+1 0 zsh 5.9.1                         May 31, 2026                   ZSHBUILTINS(1)

@@ -1,0 +1,6 @@
+COMMENTS
+     In non-interactive shells, or in interactive shells with the
+     INTERACTIVE_COMMENTS option set, a word beginning with the third character
+     of the histchars parameter (‘#' by default) causes that word and all the
+     following characters up to a newline to be ignored.
+

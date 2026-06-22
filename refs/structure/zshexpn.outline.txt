@@ -1,0 +1,30 @@
+L1 ZSHEXPN(1)                  General Commands Manual                  ZSHEXPN(1)
+L1 NAME
+L1 DESCRIPTION
+L1 HISTORY EXPANSION
+L2   Overview
+L2   Event Designators
+L2   Word Designators
+L2   Modifiers
+L1 PROCESS SUBSTITUTION
+L1 PARAMETER EXPANSION
+L2   Parameter Expansion Flags
+L2   Rules
+L2   Examples
+L1 COMMAND SUBSTITUTION
+L1 ARITHMETIC EXPANSION
+L1 BRACE EXPANSION
+L1 FILENAME EXPANSION
+L2   Dynamic named directories
+L2   Static named directories
+L2   ‘=' expansion
+L2   Notes
+L1 FILENAME GENERATION
+L2   Glob Operators
+L2   ksh-like Glob Operators
+L2   Precedence
+L2   Globbing Flags
+L2   Approximate Matching
+L2   Recursive Globbing
+L2   Glob Qualifiers
+L1 zsh 5.9.1                         May 31, 2026                       ZSHEXPN(1)

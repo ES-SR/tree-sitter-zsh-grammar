@@ -1,0 +1,22 @@
+L1 ZSHOPTIONS(1)               General Commands Manual               ZSHOPTIONS(1)
+L1 NAME
+L1 SPECIFYING OPTIONS
+L1 DESCRIPTION OF OPTIONS
+L2   Changing Directories
+L2   Completion
+L2   Expansion and Globbing
+L2   History
+L2   Initialisation
+L2   Input/Output
+L2   Job Control
+L2   Prompting
+L2   Scripts and Functions
+L2   Shell Emulation
+L2   Shell State
+L2   Zle
+L1 OPTION ALIASES
+L1 SINGLE LETTER OPTIONS
+L2   Default set
+L2   sh/ksh emulation set
+L2   Also note
+L1 zsh 5.9.1                         May 31, 2026                    ZSHOPTIONS(1)

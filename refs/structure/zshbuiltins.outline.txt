@@ -1,0 +1,171 @@
+L1 ZSHBUILTINS(1)              General Commands Manual              ZSHBUILTINS(1)
+L1 NAME
+L2   zshbuiltins - zsh built-in commands
+L1 SHELL BUILTIN COMMANDS
+L2   Some shell builtin commands take options as described in individual
+L2   entries; these are often referred to in the list below as ‘flags' to avoid
+L2   confusion with shell options, which may also have an effect on the
+L2   behaviour of builtin commands.  In this introductory section, ‘option'
+L2   always has the meaning of an option to a command that should be familiar
+L2   to most command line users.
+L2   Typically, options are single letters preceded by a hyphen (-).  Options
+L2   that take an argument accept it either immediately following the option
+L2   letter or after white space, for example ‘print -C3 {1..9}' or ‘print -C 3
+L2   {1..9}' are equivalent.  Arguments to options are not the same as
+L2   arguments to the command; the documentation indicates which is which.
+L2   Options that do not take an argument may be combined in a single word, for
+L2   example ‘print -rca -- *' and ‘print -r -c -a -- *' are equivalent.
+L2   Some shell builtin commands also take options that begin with ‘+' instead
+L2   of ‘-'.  The list below makes clear which commands these are.
+L2   Options (together with their individual arguments, if any) must appear in
+L2   a group before any non-option arguments; once the first non-option
+L2   argument has been found, option processing is terminated.
+L2   All builtin commands other than ‘echo' and precommand modifiers, even
+L2   those that have no options, can be given the argument ‘--' to terminate
+L2   option processing.  This indicates that the following words are non-option
+L2   arguments, but is otherwise ignored.  This is useful in cases where
+L2   arguments to the command may begin with ‘-'.  For historical reasons, most
+L2   builtin commands (including ‘echo') also recognize a single ‘-' in a
+L2   separate word for this purpose; note that this is less standard and use of
+L2   ‘--' is recommended.
+L2   - simple command
+L2   . file [ arg ... ]
+L2   : [ arg ... ]
+L2   alias [ {+|-}gmrsL ] [ name[=value] ... ]
+L2   autoload [ {+|-}RTUXdkmrtWz ] [ -w ] [ name ... ]
+L2   bg [ job ... ]
+L2   job ... &
+L2   bindkey
+L2   break [ n ]
+L2   builtin name [ args ... ]
+L2   bye    Same as exit.
+L2   cap    See the section ‘The zsh/cap Module' in zshmodules(1).
+L2   cd [ -qsLP ] [ arg ]
+L2   cd [ -qsLP ] old new
+L2   cd [ -qsLP ] {+|-}n
+L2   chdir  Same as cd.
+L2   clone  See the section ‘The zsh/clone Module' in zshmodules(1).
+L2   command [ -pvV ] simple command
+L2   comparguments
+L2   compcall
+L2   compctl
+L2   compdescribe
+L2   compfiles
+L2   compgroups
+L2   compquote
+L2   comptags
+L2   comptry
+L2   compvalues
+L2   continue [ n ]
+L2   declare
+L2   dirs [ -c ] [ arg ... ]
+L2   dirs [ -lpv ]
+L2   disable [ -afmprs ] name ...
+L2   disown [ job ... ]
+L2   job ... &|
+L2   job ... &!
+L2   echo [ -neE ] [ arg ... ]
+L2   echotc
+L2   echoti
+L2   emulate [ -lLR ] [ {zsh|sh|ksh|csh} [ flags ... ] ]
+L2   enable [ -afmprs ] name ...
+L2   eval [ arg ... ]
+L2   exec [ -cl ] [ -a argv0 ] [ command [ arg ... ] ]
+L2   exit [ n ]
+L2   export [ name[=value] ... ]
+L2   false [ arg ... ]
+L2   fc [ -e ename ] [ -s ] [ -LI ] [ -m match ] [ old=new ... ] [ first [ last
+L2   ] ]
+L2   fc -l [ -LI ] [ -nrdfEiD ] [ -t timefmt ] [ -m match ]
+L2   fc -p [ -a ] [ filename [ histsize [ savehistsize ] ] ]
+L2   fc -P
+L2   fc -ARWI [ filename ]
+L2   fg [ job ... ]
+L2   job ...
+L2   float [ {+|-}Hghlprtux ] [ {+|-}EFLRZ [ n ] ] [ name[=value] ... ]
+L2   functions [ {+|-}UkmtTuWz ] [ -x num ] [ name ... ]
+L2   functions -c oldfn newfn
+L2   functions -M [-s] mathfn [ min [ max [ shellfn ] ] ]
+L2   functions -M [ -m pattern ... ]
+L2   functions +M [ -m ] mathfn ...
+L2   getcap
+L2   getln [ -AclneE ] name ...
+L2   getopts optstring name [ arg ... ]
+L2   hash [ -Ldfmrv ] [ name[=value] ] ...
+L2   history
+L2   integer [ {+|-}Hghlprtux ] [ {+|-}LRZi [ n ] ] [ name[=value] ... ]
+L2   jobs [ -dlprs ] [ job ... ]
+L2   jobs -Z string
+L2   kill [ -s signal_name | -n signal_number | -sig ] [ -q value ] job ...
+L2   kill -l [ sig ... ]
+L2   kill -L
+L2   let arg ...
+L2   limit [ -hs ] [ resource [ limit ] ] ...
+L2   local [ {+|-}AHUahlprtux ] [ {+|-}EFLRZi [ n ] ] [ name[=value] ... ]
+L2   logout [ n ]
+L2   noglob simple command
+L2   popd [ -q ] [ {+|-}n ]
+L2   print [ -abcDilmnNoOpPrsSz ] [ -u n ] [ -f format ] [ -C cols ]
+L2   printf [ -v name ] format [ arg ... ]
+L2   pushd [ -qsLP ] [ arg ]
+L2   pushd [ -qsLP ] old new
+L2   pushd [ -qsLP ] {+|-}n
+L2   pushln [ arg ... ]
+L2   pwd [ -rLP ]
+L2   r      Same as fc -e -.
+L2   read [ -rszpqAclneE ] [ -t [ num ] ] [ -k [ num ] ] [ -d delim ]
+L2   readonly
+L2   rehash
+L2   return [ n ]
+L2   sched  See the section ‘The zsh/sched Module' in zshmodules(1).
+L2   set [ {+|-}options | {+|-}o [ option_name ] ] ... [ {+|-}A [ name ] ]
+L2   setcap
+L2   setopt [ {+|-}options | {+|-}o option_name ] [ -m ] [ name ... ]
+L2   shift [ -p ] [ n ] [ name ... ]
+L2   source file [ arg ... ]
+L2   stat   See the section ‘The zsh/stat Module' in zshmodules(1).
+L2   suspend [ -f ]
+L2   test [ arg ... ]
+L2   [ [ arg ... ] ]
+L2   times  Print the accumulated user and system times for the shell and for
+L2   trap [ arg ] [ sig ... ]
+L2   true [ arg ... ]
+L2   ttyctl [ -fu ]
+L2   type [ -wfpamsS ] name ...
+L2   typeset [ {+|-}AHUaghlmrtux ] [ {+|-}EFLRZip [ n ] ]
+L2   typeset -T [ {+|-}Uglrux ] [ {+|-}LRZp [ n ] ]
+L2   typeset -f [ {+|-}TUkmtuz ] [ + ] [ name ... ]
+L2   ulimit [ -HSa ] [ { -bcdfiklmnpqrsTtvwx | -N resource } [ limit ] ... ]
+L2   umask [ -S ] [ mask ]
+L2   unalias [ -ams ] name ...
+L2   unfunction
+L2   unhash [ -adfms ] name ...
+L2   unlimit [ -hs ] resource ...
+L2   unset [ -fmv ] name ...
+L2   unsetopt [ {+|-}options | {+|-}o option_name ] [ name ... ]
+L2   vared  See the section ‘Zle Builtins' in zshzle(1).
+L2   wait [ job ... ]
+L2   whence [ -vcwfpamsS ] [ -x num ] name ...
+L2   where [ -wpmsS ] [ -x num ] name ...
+L2   which [ -wpamsS ] [ -x num ] name ...
+L2   zcompile [ -U ] [ -z | -k ] [ -R | -M ] file [ name ... ]
+L2   zcompile -ca [ -m ] [ -R | -M ] file [ name ... ]
+L2   zcompile -t file [ name ... ]
+L2   zformat
+L2   zftp   See the section ‘The zsh/zftp Module' in zshmodules(1).
+L2   zle    See the section ‘Zle Builtins' in zshzle(1).
+L2   zmodload [ -dL ] [ -s ] [ ... ]
+L2   zmodload -F [ -alLme -P param ] module [ [+-]feature ... ]
+L2   zmodload -e [ -A ] [ ... ]
+L2   zmodload [ -a [ -bcpf [ -I ] ] ] [ -iL ] ...
+L2   zmodload -u [ -abcdpf [ -I ] ] [ -iL ] ...
+L2   zmodload -A [ -L ] [ modalias[=module] ... ]
+L2   zmodload -R modalias ...
+L2   zparseopts
+L2   zprof  See the section ‘The zsh/zprof Module' in zshmodules(1).
+L2   zpty   See the section ‘The zsh/zpty Module' in zshmodules(1).
+L2   zregexparse
+L2   zsocket
+L2   zstyle
+L2   ztcp   See the section ‘The zsh/net/tcp Module' in zshmodules(1).
+L1 zsh 5.9.1                         May 31, 2026                   ZSHBUILTINS(1)

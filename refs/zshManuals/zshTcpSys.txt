@@ -1,0 +1,687 @@
+[38;2;248;248;242mZSHTCPSYS(1)                     General Commands Manual                    ZSHTCPSYS(1)[0m
+
+[38;2;248;248;242mNAME[0m
+[38;2;248;248;242m       zshtcpsys - zsh tcp system[0m
+
+[38;2;248;248;242mDESCRIPTION[0m
+[38;2;248;248;242m       A  module  zsh/net/tcp is provided to provide network I/O over TCP/IP from within[0m
+[38;2;248;248;242m       the shell; see its description in zshmodules(1).  This manual  page  describes  a[0m
+[38;2;248;248;242m       function  suite  based  on the module.  If the module is installed, the functions[0m
+[38;2;248;248;242m       are usually installed at the same time, in which case they will be available  for[0m
+[38;2;248;248;242m       autoloading  in the default function search path.  In addition to the zsh/net/tcp[0m
+[38;2;248;248;242m       module, the zsh/zselect module is used to implement timeouts on read  operations.[0m
+[38;2;248;248;242m       For troubleshooting tips, consult the corresponding advice for the zftp functions[0m
+[38;2;248;248;242m       described in zshzftpsys(1).[0m
+
+[38;2;248;248;242m       There  are  functions corresponding to the basic I/O operations open, close, read[0m
+[38;2;248;248;242m       and send, named tcp_open etc., as well as a function tcp_expect for pattern match[0m
+[38;2;248;248;242m       analysis of data read as input.  The system makes it easy to  receive  data  from[0m
+[38;2;248;248;242m       and  send data to multiple named sessions at once.  In addition, it can be linked[0m
+[38;2;248;248;242m       with the shell's line editor in such a way that input data is automatically shown[0m
+[38;2;248;248;242m       at the terminal.  Other facilities available  including  logging,  filtering  and[0m
+[38;2;248;248;242m       configurable output prompts.[0m
+
+[38;2;248;248;242m       To  use  the  system  where  it is available, it should be enough to `autoload -U[0m
+[38;2;248;248;242m       tcp_open' and run tcp_open as documented below to start a session.  The  tcp_open[0m
+[38;2;248;248;242m       function will autoload the remaining functions.[0m
+
+[38;2;248;248;242mTCP USER FUNCTIONS[0m
+[38;2;248;248;242m   Basic I/O[0m
+[38;2;248;248;242m       tcp_open [ -qz ] host port [ sess ][0m
+[38;2;248;248;242m       tcp_open [ -qz ] [ -s sess | -l sess[,...] ] ...[0m
+[38;2;248;248;242m       tcp_open [ -qz ] [ -a fd | -f fd ] [ sess ][0m
+[38;2;248;248;242m              Open a new session.  In the first and simplest form, open a TCP connection[0m
+[38;2;248;248;242m              to  host  host at port port; numeric and symbolic forms are understood for[0m
+[38;2;248;248;242m              both.[0m
+
+[38;2;248;248;242m              If sess is given, this becomes the name of the session which can  be  used[0m
+[38;2;248;248;242m              to refer to multiple different TCP connections.  If sess is not given, the[0m
+[38;2;248;248;242m              function  will  invent  a numeric name value (note this is not the same as[0m
+[38;2;248;248;242m              the file descriptor to which the session is attached).  It is  recommended[0m
+[38;2;248;248;242m              that  session names not include `funny' characters, where funny characters[0m
+[38;2;248;248;242m              are not well-defined but certainly do not include alphanumerics or  under‐[0m
+[38;2;248;248;242m              scores, and certainly do include whitespace.[0m
+
+[38;2;248;248;242m              In  the  second case, one or more sessions to be opened are given by name.[0m
+[38;2;248;248;242m              A single session name is given after -s and a comma-separated  list  after[0m
+[38;2;248;248;242m              -l; both options may be repeated as many times as necessary.  A failure to[0m
+[38;2;248;248;242m              open  any  session  causes  tcp_open to abort.  The host and port are read[0m
+[38;2;248;248;242m              from the file .ztcp_sessions in the same directory as the user's zsh  ini‐[0m
+[38;2;248;248;242m              tialisation  files,  i.e. usually the home directory, but $ZDOTDIR if that[0m
+[38;2;248;248;242m              is set.  The file consists of lines each giving a  session  name  and  the[0m
+[38;2;248;248;242m              corresponding  host  and  port, in that order (note the session name comes[0m
+[38;2;248;248;242m              first, not last), separated by whitespace.[0m
+
+[38;2;248;248;242m              The third form allows passive and fake TCP connections.  If the option  -a[0m
+[38;2;248;248;242m              is  used, its argument is a file descriptor open for listening for connec‐[0m
+[38;2;248;248;242m              tions.  No function front-end is provided to open such a file  descriptor,[0m
+[38;2;248;248;242m              but  a  call  to  `ztcp  -l port' will create one with the file descriptor[0m
+[38;2;248;248;242m              stored in the parameter $REPLY.  The listening port  can  be  closed  with[0m
+[38;2;248;248;242m              `ztcp  -c  fd'.   A call to `tcp_open -a fd' will block until a remote TCP[0m
+[38;2;248;248;242m              connection is made to port on the local machine.  At this point, a session[0m
+[38;2;248;248;242m              is created in the usual way and is largely indistinguishable from  an  ac‐[0m
+[38;2;248;248;242m              tive connection created with one of the first two forms.[0m
+
+[38;2;248;248;242m              If  the option -f is used, its argument is a file descriptor which is used[0m
+[38;2;248;248;242m              directly as if it were a TCP session.  How well the remainder of  the  TCP[0m
+[38;2;248;248;242m              function  system  copes  with this depends on what actually underlies this[0m
+[38;2;248;248;242m              file descriptor.  A regular file is likely to be unusable; a  FIFO  (pipe)[0m
+[38;2;248;248;242m              of some sort will work better, but note that it is not a good idea for two[0m
+[38;2;248;248;242m              different sessions to attempt to read from the same FIFO at once.[0m
+
+[38;2;248;248;242m              If  the  option -q is given with any of the three forms, tcp_open will not[0m
+[38;2;248;248;242m              print informational messages, although it will in any case  exit  with  an[0m
+[38;2;248;248;242m              appropriate status.[0m
+
+[38;2;248;248;242m              If  the  line  editor  (zle) is in use, which is typically the case if the[0m
+[38;2;248;248;242m              shell is interactive, tcp_open installs a handler inside  zle  which  will[0m
+[38;2;248;248;242m              check for new data at the same time as it checks for keyboard input.  This[0m
+[38;2;248;248;242m              is convenient as the shell consumes no CPU time while waiting; the test is[0m
+[38;2;248;248;242m              performed  by  the  operating  system.  Giving the option -z to any of the[0m
+[38;2;248;248;242m              forms of tcp_open prevents the handler from being installed, so data  must[0m
+[38;2;248;248;242m              be  read  explicitly.   Note, however, this is not necessary for executing[0m
+[38;2;248;248;242m              complete sets of send and read commands from a function, as zle is not ac‐[0m
+[38;2;248;248;242m              tive at this point.  Generally speaking, the handler is only  active  when[0m
+[38;2;248;248;242m              the  shell  is  waiting  for  input  at  a  command prompt or in the vared[0m
+[38;2;248;248;242m              builtin.  The option has no effect if zle is not  active;  `[[  -o  zle]]'[0m
+[38;2;248;248;242m              will test for this.[0m
+
+[38;2;248;248;242m              The  first session to be opened becomes the current session and subsequent[0m
+[38;2;248;248;242m              calls to tcp_open do not change it.  The current session is stored in  the[0m
+[38;2;248;248;242m              parameter  $TCP_SESS;  see below for more detail about the parameters used[0m
+[38;2;248;248;242m              by the system.[0m
+
+[38;2;248;248;242m              The function tcp_on_open, if defined, is called when a session is  opened.[0m
+[38;2;248;248;242m              See the description below.[0m
+
+[38;2;248;248;242m       tcp_close [ -qn ] [ -a | -l sess[,...] | sess ... ][0m
+[38;2;248;248;242m              Close  the named sessions, or the current session if none is given, or all[0m
+[38;2;248;248;242m              open sessions if -a is given.  The options -l and -s are both handled  for[0m
+[38;2;248;248;242m              consistency with tcp_open, although the latter is redundant.[0m
+
+[38;2;248;248;242m              If  the session being closed is the current one, $TCP_SESS is unset, leav‐[0m
+[38;2;248;248;242m              ing no current session, even if there are other sessions still open.[0m
+
+[38;2;248;248;242m              If the session was opened with tcp_open -f, the file descriptor is  closed[0m
+[38;2;248;248;242m              so  long as it is in the range 0 to 9 accessible directly from the command[0m
+[38;2;248;248;242m              line.  If the option -n is given, no attempt will be made  to  close  file[0m
+[38;2;248;248;242m              descriptors in this case.  The -n option is not used for genuine ztcp ses‐[0m
+[38;2;248;248;242m              sion; the file descriptors are always closed with the session.[0m
+
+[38;2;248;248;242m              If the option -q is given, no informational messages will be printed.[0m
+
+[38;2;248;248;242m       tcp_read [ -bdq ] [ -t TO ] [ -T TO ][0m
+[38;2;248;248;242m                [ -a | -u fd[,...] | -l sess[,...] | -s sess ... ][0m
+[38;2;248;248;242m              Perform  a read operation on the current session, or on a list of sessions[0m
+[38;2;248;248;242m              if any are given with -u, -l or -s, or all open sessions if the option  -a[0m
+[38;2;248;248;242m              is  given.   Any  of the -u, -l or -s options may be repeated or mixed to‐[0m
+[38;2;248;248;242m              gether.  The -u option specifies a file descriptor  directly  (only  those[0m
+[38;2;248;248;242m              managed  by this system are useful), the other two specify sessions as de‐[0m
+[38;2;248;248;242m              scribed for tcp_open above.[0m
+
+[38;2;248;248;242m              The function checks for new data available on  all  the  sessions  listed.[0m
+[38;2;248;248;242m              Unless  the  -b  option  is given, it will not block waiting for new data.[0m
+[38;2;248;248;242m              Any one line of data from any of the  available  sessions  will  be  read,[0m
+[38;2;248;248;242m              stored in the parameter $TCP_LINE, and displayed to standard output unless[0m
+[38;2;248;248;242m              $TCP_SILENT  contains a non-empty string.  When printed to standard output[0m
+[38;2;248;248;242m              the string $TCP_PROMPT will be shown at the start of the line; the default[0m
+[38;2;248;248;242m              form for this includes the name of the session being read.  See below  for[0m
+[38;2;248;248;242m              more  information  on  these  parameters.   In  this mode, tcp_read can be[0m
+[38;2;248;248;242m              called repeatedly until it returns status 2 which  indicates  all  pending[0m
+[38;2;248;248;242m              input from all specified sessions has been handled.[0m
+
+[38;2;248;248;242m              With  the  option -b, equivalent to an infinite timeout, the function will[0m
+[38;2;248;248;242m              block until a line is available to read from one  of  the  specified  ses‐[0m
+[38;2;248;248;242m              sions.  However, only a single line is returned.[0m
+
+[38;2;248;248;242m              The option -d indicates that all pending input should be drained.  In this[0m
+[38;2;248;248;242m              case  tcp_read  may process multiple lines in the manner given above; only[0m
+[38;2;248;248;242m              the last is stored in $TCP_LINE, but the complete set is stored in the ar‐[0m
+[38;2;248;248;242m              ray $tcp_lines.  This is cleared at the start of each call to tcp_read.[0m
+
+[38;2;248;248;242m              The options -t and -T specify a timeout in seconds, which may be a  float‐[0m
+[38;2;248;248;242m              ing  point  number for increased accuracy.  With -t the timeout is applied[0m
+[38;2;248;248;242m              before each line read.  With -T, the timeout applies to the overall opera‐[0m
+[38;2;248;248;242m              tion, possibly including multiple read operations  if  the  option  -d  is[0m
+[38;2;248;248;242m              present; without this option, there is no distinction between -t and -T.[0m
+
+[38;2;248;248;242m              The  function  does not print informational messages, but if the option -q[0m
+[38;2;248;248;242m              is given, no error message is printed for a non-existent session.[0m
+
+[38;2;248;248;242m              A return status of 2 indicates a timeout or no data to  read.   Any  other[0m
+[38;2;248;248;242m              non-zero return status indicates some error condition.[0m
+
+[38;2;248;248;242m              See tcp_log for how to control where data is sent by tcp_read.[0m
+
+[38;2;248;248;242m       tcp_send [ -cnq ] [ -s sess | -l sess[,...] ] data ...[0m
+[38;2;248;248;242m       tcp_send [ -cnq ] -a data ...[0m
+[38;2;248;248;242m              Send the supplied data strings to all the specified sessions in turn.  The[0m
+[38;2;248;248;242m              underlying  operation  differs  little  from a `print -r' to the session's[0m
+[38;2;248;248;242m              file descriptor, although it attempts to prevent the shell from dying  ow‐[0m
+[38;2;248;248;242m              ing to a SIGPIPE caused by an attempt to write to a defunct session.[0m
+
+[38;2;248;248;242m              The  option  -c  causes  tcp_send to behave like cat.  It reads lines from[0m
+[38;2;248;248;242m              standard input until end of input and sends them in turn to the  specified[0m
+[38;2;248;248;242m              session(s)  exactly  as if they were given as data arguments to individual[0m
+[38;2;248;248;242m              tcp_send commands.[0m
+
+[38;2;248;248;242m              The option -n prevents tcp_send from putting a newline at the end  of  the[0m
+[38;2;248;248;242m              data strings.[0m
+
+[38;2;248;248;242m              The remaining options all behave as for tcp_read.[0m
+
+[38;2;248;248;242m              The data arguments are not further processed once they have been passed to[0m
+[38;2;248;248;242m              tcp_send; they are simply passed down to print -r.[0m
+
+[38;2;248;248;242m              If  the parameter $TCP_OUTPUT is a non-empty string and logging is enabled[0m
+[38;2;248;248;242m              then the data sent to each session will be echoed to the log file(s)  with[0m
+[38;2;248;248;242m              $TCP_OUTPUT in front where appropriate, much in the manner of $TCP_PROMPT.[0m
+
+[38;2;248;248;242m   Session Management[0m
+[38;2;248;248;242m       tcp_alias [ -q ] alias=sess ...[0m
+[38;2;248;248;242m       tcp_alias [ -q ] [ alias ... ][0m
+[38;2;248;248;242m       tcp_alias -d [ -q ] alias ...[0m
+[38;2;248;248;242m              This function is not particularly well tested.[0m
+
+[38;2;248;248;242m              The first form creates an alias for a session name; alias can then be used[0m
+[38;2;248;248;242m              to  refer  to the existing session sess.  As many aliases may be listed as[0m
+[38;2;248;248;242m              required.[0m
+
+[38;2;248;248;242m              The second form lists any aliases specified, or all aliases if none.[0m
+
+[38;2;248;248;242m              The third form deletes all the aliases listed.   The  underlying  sessions[0m
+[38;2;248;248;242m              are not affected.[0m
+
+[38;2;248;248;242m              The  option  -q  suppresses  an inconsistently chosen subset of error mes‐[0m
+[38;2;248;248;242m              sages.[0m
+
+[38;2;248;248;242m       tcp_log [ -asc ] [ -n | -N ] [ logfile ][0m
+[38;2;248;248;242m              With an argument logfile, all future input from tcp_read will be logged to[0m
+[38;2;248;248;242m              the named file.  Unless -a (append) is given,  this  file  will  first  be[0m
+[38;2;248;248;242m              truncated or created empty.  With no arguments, show the current status of[0m
+[38;2;248;248;242m              logging.[0m
+
+[38;2;248;248;242m              With  the  option -s, per-session logging is enabled.  Input from tcp_read[0m
+[38;2;248;248;242m              is output to the file logfile.sess.  As the session is automatically  dis‐[0m
+[38;2;248;248;242m              criminated  by  the  filename, the contents are raw (no $TCP_PROMPT).  The[0m
+[38;2;248;248;242m              option  -a applies as above.  Per-session logging and logging of all  data[0m
+[38;2;248;248;242m              in one file are not mutually exclusive.[0m
+
+[38;2;248;248;242m              The option -c closes all logging, both complete and per-session logs.[0m
+
+[38;2;248;248;242m              The options -n and -N respectively turn off or restore output of data read[0m
+[38;2;248;248;242m              by  tcp_read  to standard output; hence `tcp_log -cn' turns off all output[0m
+[38;2;248;248;242m              by tcp_read.[0m
+
+[38;2;248;248;242m              The function is purely a convenient front end to  setting  the  parameters[0m
+[38;2;248;248;242m              $TCP_LOG, $TCP_LOG_SESS, $TCP_SILENT, which are described below.[0m
+
+[38;2;248;248;242m       tcp_rename old new[0m
+[38;2;248;248;242m              Rename session old to session new.  The old name becomes invalid.[0m
+
+[38;2;248;248;242m       tcp_sess [ sess [ command [ arg ... ] ] ][0m
+[38;2;248;248;242m              With no arguments, list all the open sessions and associated file descrip‐[0m
+[38;2;248;248;242m              tors.   The  current session is marked with a star.  For use in functions,[0m
+[38;2;248;248;242m              direct access to the parameters $tcp_by_name, $tcp_by_fd and $TCP_SESS  is[0m
+[38;2;248;248;242m              probably more convenient; see below.[0m
+
+[38;2;248;248;242m              With a sess argument, set the current session to sess.  This is equivalent[0m
+[38;2;248;248;242m              to changing $TCP_SESS directly.[0m
+
+[38;2;248;248;242m              With  additional arguments, temporarily set the current session while exe‐[0m
+[38;2;248;248;242m              cuting `command arg ...'.  command is re-evaluated so as to expand aliases[0m
+[38;2;248;248;242m              etc., but the  remaining  args  are  passed  through  as  that  appear  to[0m
+[38;2;248;248;242m              tcp_sess.  The original session is restored when tcp_sess exits.[0m
+
+[38;2;248;248;242m   Advanced I/O[0m
+[38;2;248;248;242m       tcp_command send-option ... send-argument ...[0m
+[38;2;248;248;242m              This  is  a convenient front-end to tcp_send.  All arguments are passed to[0m
+[38;2;248;248;242m              tcp_send, then the function pauses waiting for data.  While data is arriv‐[0m
+[38;2;248;248;242m              ing at least every $TCP_TIMEOUT (default 0.3) seconds, data is handled and[0m
+[38;2;248;248;242m              printed out according to the current settings.  Status  0  is  always  re‐[0m
+[38;2;248;248;242m              turned.[0m
+
+[38;2;248;248;242m              This  is generally only useful for interactive use, to prevent the display[0m
+[38;2;248;248;242m              becoming fragmented by output returned from the connection.  Within a pro‐[0m
+[38;2;248;248;242m              gramme or function it is generally better to handle reading data by a more[0m
+[38;2;248;248;242m              explicit method.[0m
+
+[38;2;248;248;242m       tcp_expect [ -q ] [ -p var | -P var ] [ -t TO | -T TO ][0m
+[38;2;248;248;242m                  [ -a | -s sess | -l sess[,...] ] pattern ...[0m
+[38;2;248;248;242m              Wait for input matching any of the given patterns from any of  the  speci‐[0m
+[38;2;248;248;242m              fied  sessions.   Input  is ignored until an input line matches one of the[0m
+[38;2;248;248;242m              given patterns; at this point status zero is returned, the  matching  line[0m
+[38;2;248;248;242m              is  stored in $TCP_LINE, and the full set of lines read during the call to[0m
+[38;2;248;248;242m              tcp_expect is stored in the array $tcp_expect_lines.[0m
+
+[38;2;248;248;242m              Sessions are specified in the same way as tcp_read: the default is to  use[0m
+[38;2;248;248;242m              the current session, otherwise the sessions specified by -a, -s, or -l are[0m
+[38;2;248;248;242m              used.[0m
+
+[38;2;248;248;242m              Each  pattern  is  a  standard zsh extended-globbing pattern; note that it[0m
+[38;2;248;248;242m              needs to be quoted to avoid it being expanded immediately by filename gen‐[0m
+[38;2;248;248;242m              eration.  It must match the full line, so to match a substring there  must[0m
+[38;2;248;248;242m              be  a  `*'  at  the  start and end.  The line matched against includes the[0m
+[38;2;248;248;242m              $TCP_PROMPT added by tcp_read.  It is possible  to  include  the  globbing[0m
+[38;2;248;248;242m              flags `#b' or `#m' in the patterns to make backreferences available in the[0m
+[38;2;248;248;242m              parameters  $MATCH,  $match, etc., as described in the base zsh documenta‐[0m
+[38;2;248;248;242m              tion on pattern matching.[0m
+
+[38;2;248;248;242m              Unlike tcp_read, the default behaviour of tcp_expect is to  block  indefi‐[0m
+[38;2;248;248;242m              nitely  until the required input is found.  This can be modified by speci‐[0m
+[38;2;248;248;242m              fying a timeout with -t or -T; these function as in tcp_read, specifying a[0m
+[38;2;248;248;242m              per-read or overall timeout, respectively, in seconds, as  an  integer  or[0m
+[38;2;248;248;242m              floating-point  number.   As  tcp_read, the function returns status 2 if a[0m
+[38;2;248;248;242m              timeout occurs.[0m
+
+[38;2;248;248;242m              The function returns as soon as any one of the patterns given  match.   If[0m
+[38;2;248;248;242m              the  caller needs to know which of the patterns matched, the option -p var[0m
+[38;2;248;248;242m              can be used; on return, $var is set to the number of the pattern using or‐[0m
+[38;2;248;248;242m              dinary zsh indexing, i.e. the first is 1, and so on.  Note the absence  of[0m
+[38;2;248;248;242m              a  `$' in front of var.  To avoid clashes, the parameter cannot begin with[0m
+[38;2;248;248;242m              `_expect'.  The index -1 is used if there is a timeout and 0 if  there  is[0m
+[38;2;248;248;242m              no match.[0m
+
+[38;2;248;248;242m              The  option -P var works similarly to -p, but instead of numerical indexes[0m
+[38;2;248;248;242m              the regular arguments must begin with a prefix followed by a  colon:  that[0m
+[38;2;248;248;242m              prefix  is  then  used  as  a  tag  to  which var is set when the argument[0m
+[38;2;248;248;242m              matches.  The tag timeout is used if there is  a  timeout  and  the  empty[0m
+[38;2;248;248;242m              string  if  there  is no match.  Note it is acceptable for different argu‐[0m
+[38;2;248;248;242m              ments to start with the same prefix if the matches do not need to be  dis‐[0m
+[38;2;248;248;242m              tinguished.[0m
+
+[38;2;248;248;242m              The option -q is passed directly down to tcp_read.[0m
+
+[38;2;248;248;242m              As  all  input  is  done via tcp_read, all the usual rules about output of[0m
+[38;2;248;248;242m              lines read apply.  One exception is that  the  parameter  $tcp_lines  will[0m
+[38;2;248;248;242m              only  reflect  the  line  actually  matched  by  tcp_expect;  use $tcp_ex‐[0m
+[38;2;248;248;242m              pect_lines for the full set of lines read during the function call.[0m
+
+[38;2;248;248;242m       tcp_proxy[0m
+[38;2;248;248;242m              This is a simple-minded function to accept a TCP connection and execute  a[0m
+[38;2;248;248;242m              command  with I/O redirected to the connection.  Extreme caution should be[0m
+[38;2;248;248;242m              taken as there is no security whatsoever and this can leave your  computer[0m
+[38;2;248;248;242m              open to the world.  Ideally, it should only be used behind a firewall.[0m
+
+[38;2;248;248;242m              The first argument is a TCP port on which the function will listen.[0m
+
+[38;2;248;248;242m              The  remaining  arguments give a command and its arguments to execute with[0m
+[38;2;248;248;242m              standard input, standard output and standard error redirected to the  file[0m
+[38;2;248;248;242m              descriptor  on  which the TCP session has been accepted.  If no command is[0m
+[38;2;248;248;242m              given, a new zsh is started.  This gives everyone on your  network  direct[0m
+[38;2;248;248;242m              access to your account, which in many cases will be a bad thing.[0m
+
+[38;2;248;248;242m              The  command  is  run  in the background, so tcp_proxy can then accept new[0m
+[38;2;248;248;242m              connections.  It continues to accept new connections until interrupted.[0m
+
+[38;2;248;248;242m       tcp_spam [ -ertv ] [ -a | -s sess | -l sess[,...] ] cmd [ arg ... ][0m
+[38;2;248;248;242m              Execute `cmd [ arg ... ]' for each session in turn.   Note  this  executes[0m
+[38;2;248;248;242m              the  command  and arguments; it does not send the command line as data un‐[0m
+[38;2;248;248;242m              less the -t (transmit) option is given.[0m
+
+[38;2;248;248;242m              The sessions may be selected explicitly with the standard -a, -s or -l op‐[0m
+[38;2;248;248;242m              tions, or may be chosen implicitly.  If none of the three options is given[0m
+[38;2;248;248;242m              the rules are: first, if the array $tcp_spam_list is set, this is taken as[0m
+[38;2;248;248;242m              the list of sessions, otherwise all sessions are taken.  Second, any  ses‐[0m
+[38;2;248;248;242m              sions  given  in  the array $tcp_no_spam_list are removed from the list of[0m
+[38;2;248;248;242m              sessions.[0m
+
+[38;2;248;248;242m              Normally, any sessions added by the `-a' flag or  when  all  sessions  are[0m
+[38;2;248;248;242m              chosen  implicitly  are spammed in alphabetic order; sessions given by the[0m
+[38;2;248;248;242m              $tcp_spam_list array or on the command  line  are  spammed  in  the  order[0m
+[38;2;248;248;242m              given.  The -r flag reverses the order however it was arrived it.[0m
+
+[38;2;248;248;242m              The  -v  flag specifies that a $TCP_PROMPT will be output before each ses‐[0m
+[38;2;248;248;242m              sion.  This is output after any modification to TCP_SESS by  the  user-de‐[0m
+[38;2;248;248;242m              fined  tcp_on_spam  function described below.  (Obviously that function is[0m
+[38;2;248;248;242m              able to generate its own output.)[0m
+
+[38;2;248;248;242m              If the option -e is present, the line given as `cmd [ arg ... ]'  is  exe‐[0m
+[38;2;248;248;242m              cuted using eval, otherwise it is executed without any further processing.[0m
+
+[38;2;248;248;242m       tcp_talk[0m
+[38;2;248;248;242m              This  is  a fairly simple-minded attempt to force input to the line editor[0m
+[38;2;248;248;242m              to go straight to the default TCP_SESS.[0m
+
+[38;2;248;248;242m              An escape string, $TCP_TALK_ESCAPE, default `:', is used to  allow  access[0m
+[38;2;248;248;242m              to  normal shell operation.  If it is on its own at the start of the line,[0m
+[38;2;248;248;242m              or followed only by whitespace, the line editor returns to  normal  opera‐[0m
+[38;2;248;248;242m              tion.   Otherwise, the string and any following whitespace are skipped and[0m
+[38;2;248;248;242m              the remainder of the line executed as shell input without  any  change  of[0m
+[38;2;248;248;242m              the line editor's operating mode.[0m
+
+[38;2;248;248;242m              The  current  implementation  is somewhat deficient in terms of use of the[0m
+[38;2;248;248;242m              command history.  For this reason, many users will prefer to use some form[0m
+[38;2;248;248;242m              of alternative approach for sending data easily to  the  current  session.[0m
+[38;2;248;248;242m              One  simple  approach  is to alias some special character (such as `%') to[0m
+[38;2;248;248;242m              `tcp_command --'.[0m
+
+[38;2;248;248;242m       tcp_wait[0m
+[38;2;248;248;242m              The sole argument is an integer or floating point number which  gives  the[0m
+[38;2;248;248;242m              seconds  to  delay.  The shell will do nothing for that period except wait[0m
+[38;2;248;248;242m              for input on all TCP sessions by calling tcp_read -a.  This is similar  to[0m
+[38;2;248;248;242m              the  interactive behaviour at the command prompt when zle handlers are in‐[0m
+[38;2;248;248;242m              stalled.[0m
+
+[38;2;248;248;242m   `One-shot' file transfer[0m
+[38;2;248;248;242m       tcp_point port[0m
+[38;2;248;248;242m       tcp_shoot host port[0m
+[38;2;248;248;242m              This pair of functions provide a simple way to transfer a file between two[0m
+[38;2;248;248;242m              hosts within the shell.  Note, however, that bulk data  transfer  is  cur‐[0m
+[38;2;248;248;242m              rently  done  using  cat.   tcp_point  reads any data arriving at port and[0m
+[38;2;248;248;242m              sends it to standard output; tcp_shoot connects to port on host and  sends[0m
+[38;2;248;248;242m              its  standard  input.  Any unused port may be used; the standard mechanism[0m
+[38;2;248;248;242m              for picking a port is to think of a random four-digit  number  above  1024[0m
+[38;2;248;248;242m              until one works.[0m
+
+[38;2;248;248;242m              To transfer a file from host woodcock to host springes, on springes:[0m
+
+[38;2;248;248;242m                     tcp_point 8091 >output_file[0m
+
+[38;2;248;248;242m              and on woodcock:[0m
+
+[38;2;248;248;242m                     tcp_shoot springes 8091 <input_file[0m
+
+[38;2;248;248;242m              As  these two functions do not require tcp_open to set up a TCP connection[0m
+[38;2;248;248;242m              first, they may need to be autoloaded separately.[0m
+
+[38;2;248;248;242mTCP USER-DEFINED FUNCTIONS[0m
+[38;2;248;248;242m       Certain functions, if defined by the user, will be called by the function  system[0m
+[38;2;248;248;242m       in certain contexts.  This facility depends on the module zsh/parameter, which is[0m
+[38;2;248;248;242m       usually  available  in interactive shells as the completion system depends on it.[0m
+[38;2;248;248;242m       None of the functions need be defined; they simply provide convenient hooks  when[0m
+[38;2;248;248;242m       necessary.[0m
+
+[38;2;248;248;242m       Typically,  these  are  called after the requested action has been taken, so that[0m
+[38;2;248;248;242m       the various parameters will reflect the new state.[0m
+
+[38;2;248;248;242m       tcp_on_alias alias fd[0m
+[38;2;248;248;242m              When an alias is defined, this function will be called with two arguments:[0m
+[38;2;248;248;242m              the name of the alias, and the file descriptor of the  corresponding  ses‐[0m
+[38;2;248;248;242m              sion.[0m
+
+[38;2;248;248;242m       tcp_on_awol sess fd[0m
+[38;2;248;248;242m              If  the function tcp_fd_handler is handling input from the line editor and[0m
+[38;2;248;248;242m              detects that the file descriptor is no longer reusable, by default it  re‐[0m
+[38;2;248;248;242m              moves  it  from  the  list  of file descriptors handled by this method and[0m
+[38;2;248;248;242m              prints a message.  If the function tcp_on_awol is defined it is called im‐[0m
+[38;2;248;248;242m              mediately before this point.  It may return status  100,  which  indicates[0m
+[38;2;248;248;242m              that  the normal handling should still be performed; any other return sta‐[0m
+[38;2;248;248;242m              tus indicates that no further action should be taken and  the  tcp_fd_han‐[0m
+[38;2;248;248;242m              dler  should  return immediately with the given status.  Typically the ac‐[0m
+[38;2;248;248;242m              tion of tcp_on_awol will be to close the session.[0m
+
+[38;2;248;248;242m              The variable TCP_INVALIDATE_ZLE will be a non-empty string if it is neces‐[0m
+[38;2;248;248;242m              sary to invalidate the line editor display using `zle -I' before  printing[0m
+[38;2;248;248;242m              output from the function.[0m
+
+[38;2;248;248;242m              (`AWOL'  is  military jargon for `absent without leave' or some variation.[0m
+[38;2;248;248;242m              It has no pre-existing technical meaning known to the author.)[0m
+
+[38;2;248;248;242m       tcp_on_close sess fd[0m
+[38;2;248;248;242m              This is called with the name of a session being closed and  the  file  de‐[0m
+[38;2;248;248;242m              scriptor  which corresponded to that session.  Both will be invalid by the[0m
+[38;2;248;248;242m              time the function is called.[0m
+
+[38;2;248;248;242m       tcp_on_open sess fd[0m
+[38;2;248;248;242m              This is called after a new session has been defined with the session  name[0m
+[38;2;248;248;242m              and  file descriptor as arguments.  If it returns a non-zero status, open‐[0m
+[38;2;248;248;242m              ing the session is assumed to fail and the session is closed  again;  how‐[0m
+[38;2;248;248;242m              ever,  tcp_open  will  continue  to attempt to open any remaining sessions[0m
+[38;2;248;248;242m              given on the command line.[0m
+
+[38;2;248;248;242m       tcp_on_rename oldsess fd newsess[0m
+[38;2;248;248;242m              This is called after a session has been renamed with the  three  arguments[0m
+[38;2;248;248;242m              old session name, file descriptor, new session name.[0m
+
+[38;2;248;248;242m       tcp_on_spam sess command ...[0m
+[38;2;248;248;242m              This is called once for each session spammed, just before a command is ex‐[0m
+[38;2;248;248;242m              ecuted for a session by tcp_spam.  The arguments are the session name fol‐[0m
+[38;2;248;248;242m              lowed by the command list to be executed.  If tcp_spam was called with the[0m
+[38;2;248;248;242m              option -t, the first command will be tcp_send.[0m
+
+[38;2;248;248;242m              This  function  is called after $TCP_SESS is set to reflect the session to[0m
+[38;2;248;248;242m              be spammed, but before any use of it is made.  Hence it is possible to al‐[0m
+[38;2;248;248;242m              ter the value of $TCP_SESS within this function.  For example, the session[0m
+[38;2;248;248;242m              arguments to tcp_spam could include extra information to be  stripped  off[0m
+[38;2;248;248;242m              and processed in tcp_on_spam.[0m
+
+[38;2;248;248;242m              If  the  function sets the parameter $REPLY to `done', the command line is[0m
+[38;2;248;248;242m              not executed; in addition, no prompt is  printed  for  the  -v  option  to[0m
+[38;2;248;248;242m              tcp_spam.[0m
+
+[38;2;248;248;242m       tcp_on_unalias alias fd[0m
+[38;2;248;248;242m              This  is  called with the name of an alias and the corresponding session's[0m
+[38;2;248;248;242m              file descriptor after an alias has been deleted.[0m
+
+[38;2;248;248;242mTCP UTILITY FUNCTIONS[0m
+[38;2;248;248;242m       The following functions are used by the TCP function system but  will  rarely  if[0m
+[38;2;248;248;242m       ever need to be called directly.[0m
+
+[38;2;248;248;242m       tcp_fd_handler[0m
+[38;2;248;248;242m              This  is the function installed by tcp_open for handling input from within[0m
+[38;2;248;248;242m              the line editor, if that is required.  It is in the format documented  for[0m
+[38;2;248;248;242m              the builtin `zle -F' in zshzle(1) .[0m
+
+[38;2;248;248;242m              While  active,  the  function  sets the parameter TCP_HANDLER_ACTIVE to 1.[0m
+[38;2;248;248;242m              This  allows  shell  code  called  internally  (for  example,  by  setting[0m
+[38;2;248;248;242m              tcp_on_read)  to  tell if is being called when the shell is otherwise idle[0m
+[38;2;248;248;242m              at the editor prompt.[0m
+
+[38;2;248;248;242m       tcp_output [ -q ] -P prompt -F fd -S sess[0m
+[38;2;248;248;242m              This function is used for both logging and  handling  output  to  standard[0m
+[38;2;248;248;242m              output, from within tcp_read and (if $TCP_OUTPUT is set) tcp_send.[0m
+
+[38;2;248;248;242m              The prompt to use is specified by -P; the default is the empty string.  It[0m
+[38;2;248;248;242m              can contain:[0m
+[38;2;248;248;242m              %c     Expands  to  1  if the session is the current session, otherwise 0.[0m
+[38;2;248;248;242m                     Used with ternary expressions such as `%(c.-.+)' to output `+'  for[0m
+[38;2;248;248;242m                     the current session and `-' otherwise.[0m
+
+[38;2;248;248;242m              %f     Replaced by the session's file descriptor.[0m
+
+[38;2;248;248;242m              %s     Replaced by the session name.[0m
+
+[38;2;248;248;242m              %%     Replaced by a single `%'.[0m
+
+[38;2;248;248;242m              The  option  -q  suppresses  output to standard output, but not to any log[0m
+[38;2;248;248;242m              files which are configured.[0m
+
+[38;2;248;248;242m              The -S and -F options are used to pass in the session name  and  file  de‐[0m
+[38;2;248;248;242m              scriptor for possible replacement in the prompt.[0m
+
+[38;2;248;248;242mTCP USER PARAMETERS[0m
+[38;2;248;248;242m       Parameters follow the usual convention that uppercase is used for scalars and in‐[0m
+[38;2;248;248;242m       tegers,  while  lowercase is used for normal and associative array.  It is always[0m
+[38;2;248;248;242m       safe for user code to read these parameters.  Some parameters may  also  be  set;[0m
+[38;2;248;248;242m       these are noted explicitly.  Others are included in this group as they are set by[0m
+[38;2;248;248;242m       the  function  system  for the user's benefit, i.e. setting them is typically not[0m
+[38;2;248;248;242m       useful but is benign.[0m
+
+[38;2;248;248;242m       It is often also useful to make settable parameters local to a function.  For ex‐[0m
+[38;2;248;248;242m       ample, `local TCP_SILENT=1' specifies that data read  during  the  function  call[0m
+[38;2;248;248;242m       will  not  be  printed  to standard output, regardless of the setting outside the[0m
+[38;2;248;248;242m       function.  Likewise, `local TCP_SESS=sess' sets a session for the duration  of  a[0m
+[38;2;248;248;242m       function, and `local TCP_PROMPT=' specifies that no prompt is used for input dur‐[0m
+[38;2;248;248;242m       ing the function.[0m
+
+[38;2;248;248;242m       tcp_expect_lines[0m
+[38;2;248;248;242m              Array.   The set of lines read during the last call to tcp_expect, includ‐[0m
+[38;2;248;248;242m              ing the last ($TCP_LINE).[0m
+
+[38;2;248;248;242m       tcp_filter[0m
+[38;2;248;248;242m              Array. May be set directly.  A set of extended globbing patterns which, if[0m
+[38;2;248;248;242m              matched in tcp_output, will cause the line not to be printed  to  standard[0m
+[38;2;248;248;242m              output.   The patterns should be defined as described for the arguments to[0m
+[38;2;248;248;242m              tcp_expect.  Output of line to log files is not affected.[0m
+
+[38;2;248;248;242m       TCP_HANDLER_ACTIVE[0m
+[38;2;248;248;242m              Scalar.  Set to 1 within tcp_fd_handler to indicate  to  functions  called[0m
+[38;2;248;248;242m              recursively  that  they have been called during an editor session.  Other‐[0m
+[38;2;248;248;242m              wise unset.[0m
+
+[38;2;248;248;242m       TCP_LINE[0m
+[38;2;248;248;242m              The last line read by tcp_read, and hence also tcp_expect.[0m
+
+[38;2;248;248;242m       TCP_LINE_FD[0m
+[38;2;248;248;242m              The    file    descriptor    from    which     $TCP_LINE     was     read.[0m
+[38;2;248;248;242m              ${tcp_by_fd[$TCP_LINE_FD]} will give the corresponding session name.[0m
+
+[38;2;248;248;242m       tcp_lines[0m
+[38;2;248;248;242m              Array.  The  set of lines read during the last call to tcp_read, including[0m
+[38;2;248;248;242m              the last ($TCP_LINE).[0m
+
+[38;2;248;248;242m       TCP_LOG[0m
+[38;2;248;248;242m              May be set directly, although it is also controlled by tcp_log.  The  name[0m
+[38;2;248;248;242m              of  a  file to which output from all sessions will be sent.  The output is[0m
+[38;2;248;248;242m              proceeded by the usual $TCP_PROMPT.  If it is not an absolute  path  name,[0m
+[38;2;248;248;242m              it will follow the user's current directory.[0m
+
+[38;2;248;248;242m       TCP_LOG_SESS[0m
+[38;2;248;248;242m              May  be set directly, although it is also controlled by tcp_log.  The pre‐[0m
+[38;2;248;248;242m              fix for a set of files to which output from each session  separately  will[0m
+[38;2;248;248;242m              be  sent;  the full filename is ${TCP_LOG_SESS}.sess.  Output to each file[0m
+[38;2;248;248;242m              is raw; no prompt is added.  If it is not an absolute path name,  it  will[0m
+[38;2;248;248;242m              follow the user's current directory.[0m
+
+[38;2;248;248;242m       tcp_no_spam_list[0m
+[38;2;248;248;242m              Array.  May be set directly.  See tcp_spam for how this is used.[0m
+
+[38;2;248;248;242m       TCP_OUTPUT[0m
+[38;2;248;248;242m              May be set directly.  If a non-empty string, any data sent to a session by[0m
+[38;2;248;248;242m              tcp_send  will be logged.  This parameter gives the prompt to be used in a[0m
+[38;2;248;248;242m              file specified by $TCP_LOG but not in a file generated from $TCP_LOG_SESS.[0m
+[38;2;248;248;242m              The prompt string has the same format as TCP_PROMPT and the same rules for[0m
+[38;2;248;248;242m              its use apply.[0m
+
+[38;2;248;248;242m       TCP_PROMPT[0m
+[38;2;248;248;242m              May be set directly.  Used as the prefix for data read by  tcp_read  which[0m
+[38;2;248;248;242m              is  printed  to  standard  output or to the log file given by $TCP_LOG, if[0m
+[38;2;248;248;242m              any.  Any `%s', `%f' or `%%' occurring in the string will be  replaced  by[0m
+[38;2;248;248;242m              the  name  of  the session, the session's underlying file descriptor, or a[0m
+[38;2;248;248;242m              single `%', respectively.  The expression `%c' expands to 1 if the session[0m
+[38;2;248;248;242m              being read is the current session, else 0; this is most useful in  ternary[0m
+[38;2;248;248;242m              expressions  such  as  `%(c.-.+)'  which outputs `+' if the session is the[0m
+[38;2;248;248;242m              current one, else `-'.[0m
+
+[38;2;248;248;242m              If the prompt starts with %P, this is stripped and the complete result  of[0m
+[38;2;248;248;242m              the  previous  stage  is passed through standard prompt %-style formatting[0m
+[38;2;248;248;242m              before being output.[0m
+
+[38;2;248;248;242m       TCP_READ_DEBUG[0m
+[38;2;248;248;242m              May be set directly.  If this has non-zero length, tcp_read will give some[0m
+[38;2;248;248;242m              limited diagnostics about data being read.[0m
+
+[38;2;248;248;242m       TCP_SECONDS_START[0m
+[38;2;248;248;242m              This value is created and initialised to zero by tcp_open.[0m
+
+[38;2;248;248;242m              The functions tcp_read and tcp_expect use the  shell's  SECONDS  parameter[0m
+[38;2;248;248;242m              for their own timing purposes.  If that parameter is not of floating point[0m
+[38;2;248;248;242m              type  on  entry  to one of the functions, it will create a local parameter[0m
+[38;2;248;248;242m              SECONDS which is floating point and set the parameter TCP_SECONDS_START to[0m
+[38;2;248;248;242m              the previous value of $SECONDS.  If  the  parameter  is  already  floating[0m
+[38;2;248;248;242m              point, it is used without a local copy being created and TCP_SECONDS_START[0m
+[38;2;248;248;242m              is  not set.  As the global value is zero, the shell elapsed time is guar‐[0m
+[38;2;248;248;242m              anteed to be the sum of $SECONDS and $TCP_SECONDS_START.[0m
+
+[38;2;248;248;242m              This can be avoided by setting SECONDS globally to a floating point  value[0m
+[38;2;248;248;242m              using `typeset -F SECONDS'; then the TCP functions will never make a local[0m
+[38;2;248;248;242m              copy and never set TCP_SECONDS_START to a non-zero value.[0m
+
+[38;2;248;248;242m       TCP_SESS[0m
+[38;2;248;248;242m              May  be  set directly.  The current session; must refer to one of the ses‐[0m
+[38;2;248;248;242m              sions established by tcp_open.[0m
+
+[38;2;248;248;242m       TCP_SILENT[0m
+[38;2;248;248;242m              May be set directly, although it is also controlled  by  tcp_log.   If  of[0m
+[38;2;248;248;242m              non-zero  length,  data  read  by tcp_read will not be written to standard[0m
+[38;2;248;248;242m              output, though may still be written to a log file.[0m
+
+[38;2;248;248;242m       tcp_spam_list[0m
+[38;2;248;248;242m              Array.  May be set directly.  See the description of the function tcp_spam[0m
+[38;2;248;248;242m              for how this is used.[0m
+
+[38;2;248;248;242m       TCP_TALK_ESCAPE[0m
+[38;2;248;248;242m              May be set directly.  See the description of the function tcp_talk for how[0m
+[38;2;248;248;242m              this is used.[0m
+
+[38;2;248;248;242m       TCP_TIMEOUT[0m
+[38;2;248;248;242m              May be set directly.  Currently this is only used by the function tcp_com‐[0m
+[38;2;248;248;242m              mand, see above.[0m
+
+[38;2;248;248;242mTCP USER-DEFINED PARAMETERS[0m
+[38;2;248;248;242m       The following parameters are not set by the function system, but have  a  special[0m
+[38;2;248;248;242m       effect if set by the user.[0m
+
+[38;2;248;248;242m       tcp_on_read[0m
+[38;2;248;248;242m              This  should be an associative array; if it is not, the behaviour is unde‐[0m
+[38;2;248;248;242m              fined.  Each key is the name of a shell function or other command, and the[0m
+[38;2;248;248;242m              corresponding value is a shell pattern (using EXTENDED_GLOB).  Every  line[0m
+[38;2;248;248;242m              read  from  a TCP session directly or indirectly using tcp_read (which in‐[0m
+[38;2;248;248;242m              cludes lines read by tcp_expect) is compared against the pattern.  If  the[0m
+[38;2;248;248;242m              line  matches,  the command given in the key is called with two arguments:[0m
+[38;2;248;248;242m              the name of the session from which the line was read, and the line itself.[0m
+
+[38;2;248;248;242m              If any function called to handle a line returns  a  non-zero  status,  the[0m
+[38;2;248;248;242m              line  is  not  output.  Thus a tcp_on_read handler containing only the in‐[0m
+[38;2;248;248;242m              struction `return 1' can be used to suppress output  of  particular  lines[0m
+[38;2;248;248;242m              (see,  however,  tcp_filter  above).  However, the line is still stored in[0m
+[38;2;248;248;242m              TCP_LINE and tcp_lines; this occurs after all tcp_on_read processing.[0m
+
+[38;2;248;248;242mTCP UTILITY PARAMETERS[0m
+[38;2;248;248;242m       These parameters are controlled by the function system;  they  may  be  read  di‐[0m
+[38;2;248;248;242m       rectly, but should not usually be set by user code.[0m
+
+[38;2;248;248;242m       tcp_aliases[0m
+[38;2;248;248;242m              Associative  array.   The  keys are the names of sessions established with[0m
+[38;2;248;248;242m              tcp_open; each value is a space-separated list of aliases which  refer  to[0m
+[38;2;248;248;242m              that session.[0m
+
+[38;2;248;248;242m       tcp_by_fd[0m
+[38;2;248;248;242m              Associative  array.   The keys are session file descriptors; each value is[0m
+[38;2;248;248;242m              the name of that session.[0m
+
+[38;2;248;248;242m       tcp_by_name[0m
+[38;2;248;248;242m              Associative array.  The keys are the names of sessions; each value is  the[0m
+[38;2;248;248;242m              file descriptor associated with that session.[0m
+
+[38;2;248;248;242mTCP EXAMPLES[0m
+[38;2;248;248;242m       Here is a trivial example using a remote calculator.[0m
+
+[38;2;248;248;242m       To  create a calculator server on port 7337 (see the dc manual page for quite how[0m
+[38;2;248;248;242m       infuriating the underlying command is):[0m
+
+[38;2;248;248;242m              tcp_proxy 7337 dc[0m
+
+[38;2;248;248;242m       To connect to this from the same host with a session also named `dc':[0m
+
+[38;2;248;248;242m              tcp_open localhost 7337 dc[0m
+
+[38;2;248;248;242m       To send a command to the remote session and wait a short while for output (assum‐[0m
+[38;2;248;248;242m       ing dc is the current session):[0m
+
+[38;2;248;248;242m              tcp_command 2 4 + p[0m
+
+[38;2;248;248;242m       To close the session:[0m
+
+[38;2;248;248;242m              tcp_close[0m
+
+[38;2;248;248;242m       The tcp_proxy needs to be killed to be stopped.  Note this will not usually  kill[0m
+[38;2;248;248;242m       any  connections  which have already been accepted, and also that the port is not[0m
+[38;2;248;248;242m       immediately available for reuse.[0m
+
+[38;2;248;248;242m       The following chunk of code puts a list of sessions into an  xterm  header,  with[0m
+[38;2;248;248;242m       the current session followed by a star.[0m
+
+[38;2;248;248;242m              print -n "\033]2;TCP:" ${(k)tcp_by_name:/$TCP_SESS/$TCP_SESS\*} "\a"[0m
+
+[38;2;248;248;242mTCP BUGS[0m
+[38;2;248;248;242m       The function tcp_read uses the shell's normal read builtin.  As this reads a com‐[0m
+[38;2;248;248;242m       plete  line  at  once,  data arriving without a terminating newline can cause the[0m
+[38;2;248;248;242m       function to block indefinitely.[0m
+
+[38;2;248;248;242m       Though the function suite works well for interactive use and for data arriving in[0m
+[38;2;248;248;242m       small amounts, the performance when large amounts of data are being exchanged  is[0m
+[38;2;248;248;242m       likely to be extremely poor.[0m
+
+[38;2;248;248;242mzsh 5.9                               May 14, 2022                          ZSHTCPSYS(1)[0m

@@ -1,0 +1,24 @@
+REDIRECTIONS WITH NO COMMAND
+     When a simple command consists of one or more redirection operators and
+     zero or more parameter assignments, but no command name, zsh can behave in
+     several ways.
+
+     If the parameter NULLCMD is not set or the option CSH_NULLCMD is set, an
+     error is caused.  This is the csh behavior and CSH_NULLCMD is set by
+     default when emulating csh.
+
+     If the option SH_NULLCMD is set, the builtin ‘:' is inserted as a command
+     with the given redirections.  This is the default when emulating sh or
+     ksh.
+
+     Otherwise, if the parameter NULLCMD is set, its value will be used as a
+     command with the given redirections.  If both NULLCMD and READNULLCMD are
+     set, then the value of the latter will be used instead of that of the
+     former when the redirection is an input.  The default for NULLCMD is ‘cat'
+     and for READNULLCMD is ‘more'. Thus
+
+            < file
+
+     shows the contents of file on standard output, with paging if that is a
+     terminal.  NULLCMD and READNULLCMD may refer to shell functions.
+

@@ -1,0 +1,541 @@
+[38;2;248;248;242mZSHCOMPCTL(1)                    General Commands Manual                   ZSHCOMPCTL(1)[0m
+
+[38;2;248;248;242mNAME[0m
+[38;2;248;248;242m       zshcompctl - zsh programmable completion[0m
+
+[38;2;248;248;242mDESCRIPTION[0m
+[38;2;248;248;242m       This version of zsh has two ways of performing completion of words on the command[0m
+[38;2;248;248;242m       line.   New users of the shell may prefer to use the newer and more powerful sys‐[0m
+[38;2;248;248;242m       tem based on shell functions; this is described in zshcompsys(1), and  the  basic[0m
+[38;2;248;248;242m       shell  mechanisms  which  support it are described in zshcompwid(1).  This manual[0m
+[38;2;248;248;242m       entry describes the older compctl command.[0m
+
+[38;2;248;248;242m       compctl [ -CDT ] options [ command ... ][0m
+[38;2;248;248;242m       compctl [ -CDT ] options [ -x pattern options - ... -- ][0m
+[38;2;248;248;242m               [ + options [ -x ... -- ] ... [+] ] [ command ... ][0m
+[38;2;248;248;242m       compctl -M match-specs ...[0m
+[38;2;248;248;242m       compctl -L [ -CDTM ] [ command ... ][0m
+[38;2;248;248;242m       compctl + command ...[0m
+
+[38;2;248;248;242m       Control the editor's completion behavior according to the  supplied  set  of  op‐[0m
+[38;2;248;248;242m       tions.   Various editing commands, notably expand-or-complete-word, usually bound[0m
+[38;2;248;248;242m       to tab, will attempt to complete a word typed by the user, while others,  notably[0m
+[38;2;248;248;242m       delete-char-or-list,  usually  bound to ^D in EMACS editing mode, list the possi‐[0m
+[38;2;248;248;242m       bilities; compctl controls what those possibilities are.  They may for example be[0m
+[38;2;248;248;242m       filenames (the most common case, and hence  the  default),  shell  variables,  or[0m
+[38;2;248;248;242m       words from a user-specified list.[0m
+
+[38;2;248;248;242mCOMMAND FLAGS[0m
+[38;2;248;248;242m       Completion of the arguments of a command may be different for each command or may[0m
+[38;2;248;248;242m       use  the  default.  The behavior when completing the command word itself may also[0m
+[38;2;248;248;242m       be separately specified.  These correspond to the following flags and  arguments,[0m
+[38;2;248;248;242m       all  of which (except for -L) may be combined with any combination of the options[0m
+[38;2;248;248;242m       described subsequently in the section `Option Flags':[0m
+
+[38;2;248;248;242m       command ...[0m
+[38;2;248;248;242m              controls completion for the named commands, which must be listed  last  on[0m
+[38;2;248;248;242m              the  command  line.  If completion is attempted for a command with a path‐[0m
+[38;2;248;248;242m              name containing slashes and no completion definition is found, the  search[0m
+[38;2;248;248;242m              is  retried with the last pathname component. If the command starts with a[0m
+[38;2;248;248;242m              =, completion is tried with the pathname of the command.[0m
+
+[38;2;248;248;242m              Any of the command strings may be patterns of the form normally  used  for[0m
+[38;2;248;248;242m              filename  generation.  These should be quoted to protect them from immedi‐[0m
+[38;2;248;248;242m              ate expansion; for example the command string 'foo*' arranges for  comple‐[0m
+[38;2;248;248;242m              tion  of  the words of any command beginning with foo.  When completion is[0m
+[38;2;248;248;242m              attempted, all pattern completions are tried in the reverse order of their[0m
+[38;2;248;248;242m              definition until one matches.  By default,  completion  then  proceeds  as[0m
+[38;2;248;248;242m              normal,  i.e. the shell will try to generate more matches for the specific[0m
+[38;2;248;248;242m              command on the command line; this can be overridden by  including  -tn  in[0m
+[38;2;248;248;242m              the flags for the pattern completion.[0m
+
+[38;2;248;248;242m              Note  that  aliases are expanded before the command name is determined un‐[0m
+[38;2;248;248;242m              less the COMPLETE_ALIASES option is set.  Commands  may  not  be  combined[0m
+[38;2;248;248;242m              with the -C, -D or -T flags.[0m
+
+[38;2;248;248;242m       -C     controls  completion  when the command word itself is being completed.  If[0m
+[38;2;248;248;242m              no compctl -C command has been issued,  the names of any  executable  com‐[0m
+[38;2;248;248;242m              mand  (whether  in  the  path or specific to the shell, such as aliases or[0m
+[38;2;248;248;242m              functions) are completed.[0m
+
+[38;2;248;248;242m       -D     controls default completion behavior for the arguments of commands not as‐[0m
+[38;2;248;248;242m              signed any special behavior.  If no compctl -D command  has  been  issued,[0m
+[38;2;248;248;242m              filenames are completed.[0m
+
+[38;2;248;248;242m       -T     supplies  completion flags to be used before any other processing is done,[0m
+[38;2;248;248;242m              even before processing for compctls defined for specific  commands.   This[0m
+[38;2;248;248;242m              is  especially useful when combined with extended completion (the -x flag,[0m
+[38;2;248;248;242m              see the section `Extended Completion' below).  Using this flag you can de‐[0m
+[38;2;248;248;242m              fine default behavior which will apply to all commands without  exception,[0m
+[38;2;248;248;242m              or  you can alter the standard behavior for all commands.  For example, if[0m
+[38;2;248;248;242m              your access to the user database is too slow and/or it contains  too  many[0m
+[38;2;248;248;242m              users (so that completion after `~' is too slow to be usable), you can use[0m
+
+[38;2;248;248;242m                     compctl -T -x 's[~] C[0,[^/]#]' -k friends -S/ -tn[0m
+
+[38;2;248;248;242m              to  complete the strings in the array friends after a `~'.  The C[...] ar‐[0m
+[38;2;248;248;242m              gument is necessary so that this form of ~-completion is not  tried  after[0m
+[38;2;248;248;242m              the directory name is finished.[0m
+
+[38;2;248;248;242m       -L     lists  the  existing  completion behavior in a manner suitable for putting[0m
+[38;2;248;248;242m              into a start-up script; the existing behavior is not changed.  Any  combi‐[0m
+[38;2;248;248;242m              nation of the above forms, or the -M flag (which must follow the -L flag),[0m
+[38;2;248;248;242m              may be specified, otherwise all defined completions are listed.  Any other[0m
+[38;2;248;248;242m              flags supplied are ignored.[0m
+
+[38;2;248;248;242m       no argument[0m
+[38;2;248;248;242m              If  no  argument is given, compctl lists all defined completions in an ab‐[0m
+[38;2;248;248;242m              breviated form;  with a list of options, all completions with those  flags[0m
+[38;2;248;248;242m              set (not counting extended completion) are listed.[0m
+
+[38;2;248;248;242m       If  the + flag is alone and followed immediately by the command list, the comple‐[0m
+[38;2;248;248;242m       tion behavior for all the commands in the list is reset to the default.  In other[0m
+[38;2;248;248;242m       words, completion will subsequently use the options specified by the -D flag.[0m
+
+[38;2;248;248;242m       The form with -M as the first and only option defines global matching  specifica‐[0m
+[38;2;248;248;242m       tions  (see  zshcompwid).  The  match specifications given will be used for every[0m
+[38;2;248;248;242m       completion attempt (only when using compctl, not with the new completion  system)[0m
+[38;2;248;248;242m       and are tried in the order in which they are defined until one generates at least[0m
+[38;2;248;248;242m       one match. E.g.:[0m
+
+[38;2;248;248;242m              compctl -M '' 'm:{a-zA-Z}={A-Za-z}'[0m
+
+[38;2;248;248;242m       This will first try completion without any global match specifications (the empty[0m
+[38;2;248;248;242m       string) and, if that generates no matches, will try case insensitive completion.[0m
+
+[38;2;248;248;242mOPTION FLAGS[0m
+[38;2;248;248;242m       [ -fcFBdeaRGovNAIOPZEnbjrzu/12 ][0m
+[38;2;248;248;242m       [ -k array ] [ -g globstring ] [ -s subststring ][0m
+[38;2;248;248;242m       [ -K function ][0m
+[38;2;248;248;242m       [ -Q ] [ -P prefix ] [ -S suffix ][0m
+[38;2;248;248;242m       [ -W file-prefix ] [ -H num pattern ][0m
+[38;2;248;248;242m       [ -q ] [ -X explanation ] [ -Y explanation ][0m
+[38;2;248;248;242m       [ -y func-or-var ] [ -l cmd ] [ -h cmd ] [ -U ][0m
+[38;2;248;248;242m       [ -t continue ] [ -J name ] [ -V name ][0m
+[38;2;248;248;242m       [ -M match-spec ][0m
+
+[38;2;248;248;242m       The  remaining  options  specify the type of command arguments to look for during[0m
+[38;2;248;248;242m       completion.  Any combination of these flags may be specified;  the  result  is  a[0m
+[38;2;248;248;242m       sorted list of all the possibilities.  The options are as follows.[0m
+
+[38;2;248;248;242m   Simple Flags[0m
+[38;2;248;248;242m       These produce completion lists made up by the shell itself:[0m
+
+[38;2;248;248;242m       -f     Filenames and file system paths.[0m
+
+[38;2;248;248;242m       -/     Just file system paths.[0m
+
+[38;2;248;248;242m       -c     Command  names,  including aliases, shell functions, builtins and reserved[0m
+[38;2;248;248;242m              words.[0m
+
+[38;2;248;248;242m       -F     Function names.[0m
+
+[38;2;248;248;242m       -B     Names of builtin commands.[0m
+
+[38;2;248;248;242m       -m     Names of external commands.[0m
+
+[38;2;248;248;242m       -w     Reserved words.[0m
+
+[38;2;248;248;242m       -a     Alias names.[0m
+
+[38;2;248;248;242m       -R     Names of regular (non-global) aliases.[0m
+
+[38;2;248;248;242m       -G     Names of global aliases.[0m
+
+[38;2;248;248;242m       -d     This can be combined with -F, -B, -w, -a, -R and -G to get names  of  dis‐[0m
+[38;2;248;248;242m              abled functions, builtins, reserved words or aliases.[0m
+
+[38;2;248;248;242m       -e     This option (to show enabled commands) is in effect by default, but may be[0m
+[38;2;248;248;242m              combined  with  -d; -de in combination with -F, -B, -w, -a, -R and -G will[0m
+[38;2;248;248;242m              complete names of functions, builtins, reserved words or  aliases  whether[0m
+[38;2;248;248;242m              or not they are disabled.[0m
+
+[38;2;248;248;242m       -o     Names of shell options (see zshoptions(1)).[0m
+
+[38;2;248;248;242m       -v     Names of any variable defined in the shell.[0m
+
+[38;2;248;248;242m       -N     Names of scalar (non-array) parameters.[0m
+
+[38;2;248;248;242m       -A     Array names.[0m
+
+[38;2;248;248;242m       -I     Names of integer variables.[0m
+
+[38;2;248;248;242m       -O     Names of read-only variables.[0m
+
+[38;2;248;248;242m       -p     Names of parameters used by the shell (including special parameters).[0m
+
+[38;2;248;248;242m       -Z     Names of shell special parameters.[0m
+
+[38;2;248;248;242m       -E     Names of environment variables.[0m
+
+[38;2;248;248;242m       -n     Named directories.[0m
+
+[38;2;248;248;242m       -b     Key binding names.[0m
+
+[38;2;248;248;242m       -j     Job names:  the first word of the job leader's command line.  This is use‐[0m
+[38;2;248;248;242m              ful with the kill builtin.[0m
+
+[38;2;248;248;242m       -r     Names of running jobs.[0m
+
+[38;2;248;248;242m       -z     Names of suspended jobs.[0m
+
+[38;2;248;248;242m       -u     User names.[0m
+
+[38;2;248;248;242m   Flags with Arguments[0m
+[38;2;248;248;242m       These have user supplied arguments to determine how the list of completions is to[0m
+[38;2;248;248;242m       be made up:[0m
+
+[38;2;248;248;242m       -k array[0m
+[38;2;248;248;242m              Names taken from the elements of $array (note that the `$' does not appear[0m
+[38;2;248;248;242m              on  the  command line).  Alternatively, the argument array itself may be a[0m
+[38;2;248;248;242m              set of space- or comma-separated values in parentheses, in which  any  de‐[0m
+[38;2;248;248;242m              limiter  may be escaped with a backslash; in this case the argument should[0m
+[38;2;248;248;242m              be quoted.  For example,[0m
+
+[38;2;248;248;242m                     compctl -k "(cputime filesize datasize stacksize[0m
+[38;2;248;248;242m                                 coredumpsize resident descriptors)" limit[0m
+
+[38;2;248;248;242m       -g globstring[0m
+[38;2;248;248;242m              The globstring is expanded using filename globbing; it should be quoted to[0m
+[38;2;248;248;242m              protect it from immediate expansion. The resulting filenames are taken  as[0m
+[38;2;248;248;242m              the  possible  completions.   Use  `*(/)' instead of `*/' for directories.[0m
+[38;2;248;248;242m              The fignore special parameter is not applied to the resulting files.  More[0m
+[38;2;248;248;242m              than one pattern may be given separated by blanks. (Note that brace expan‐[0m
+[38;2;248;248;242m              sion is not part of globbing.  Use the syntax `(either|or)' to  match  al‐[0m
+[38;2;248;248;242m              ternatives.)[0m
+
+[38;2;248;248;242m       -s subststring[0m
+[38;2;248;248;242m              The  subststring is split into words and these words are than expanded us‐[0m
+[38;2;248;248;242m              ing all shell expansion mechanisms (see zshexpn(1)).  The resulting  words[0m
+[38;2;248;248;242m              are  taken  as possible completions.  The fignore special parameter is not[0m
+[38;2;248;248;242m              applied to the resulting files.  Note that -g is faster for filenames.[0m
+
+[38;2;248;248;242m       -K function[0m
+[38;2;248;248;242m              Call the given function to get the completions.  Unless  the  name  starts[0m
+[38;2;248;248;242m              with  an  underscore, the function is passed two arguments: the prefix and[0m
+[38;2;248;248;242m              the suffix of the word on which completion is to be  attempted,  in  other[0m
+[38;2;248;248;242m              words those characters before the cursor position, and those from the cur‐[0m
+[38;2;248;248;242m              sor  position onwards.  The whole command line can be accessed with the -c[0m
+[38;2;248;248;242m              and -l flags of the read builtin. The function should set the variable re‐[0m
+[38;2;248;248;242m              ply to an array containing the completions (one completion  per  element);[0m
+[38;2;248;248;242m              note  that  reply  should  not be made local to the function.  From such a[0m
+[38;2;248;248;242m              function the command line can be accessed with the -c and -l flags to  the[0m
+[38;2;248;248;242m              read builtin.  For example,[0m
+
+[38;2;248;248;242m                     function whoson { reply=(`users`); }[0m
+[38;2;248;248;242m                     compctl -K whoson talk[0m
+
+[38;2;248;248;242m              completes  only logged-on users after `talk'.  Note that `whoson' must re‐[0m
+[38;2;248;248;242m              turn an array, so `reply=`users`' would be incorrect.[0m
+
+[38;2;248;248;242m       -H num pattern[0m
+[38;2;248;248;242m              The possible completions are taken from the last num history lines.   Only[0m
+[38;2;248;248;242m              words  matching  pattern  are taken.  If num is zero or negative the whole[0m
+[38;2;248;248;242m              history is searched and if pattern is the empty string all words are taken[0m
+[38;2;248;248;242m              (as with `*').  A typical use is[0m
+
+[38;2;248;248;242m                     compctl -D -f + -H 0 ''[0m
+
+[38;2;248;248;242m              which forces completion to look back in the history list for a word if  no[0m
+[38;2;248;248;242m              filename matches.[0m
+
+[38;2;248;248;242m   Control Flags[0m
+[38;2;248;248;242m       These  do  not directly specify types of name to be completed, but manipulate the[0m
+[38;2;248;248;242m       options that do:[0m
+
+[38;2;248;248;242m       -Q     This instructs the shell not to quote any metacharacters in  the  possible[0m
+[38;2;248;248;242m              completions.   Normally  the results of a completion are inserted into the[0m
+[38;2;248;248;242m              command line with any metacharacters quoted so that they  are  interpreted[0m
+[38;2;248;248;242m              as  normal  characters.   This  is  appropriate for filenames and ordinary[0m
+[38;2;248;248;242m              strings.  However, for special effects, such as inserting a backquoted ex‐[0m
+[38;2;248;248;242m              pression from a completion array (-k) so that the expression will  not  be[0m
+[38;2;248;248;242m              evaluated until the complete line is executed, this option must be used.[0m
+
+[38;2;248;248;242m       -P prefix[0m
+[38;2;248;248;242m              The  prefix is inserted just before the completed string; any initial part[0m
+[38;2;248;248;242m              already typed will be completed and the whole prefix ignored  for  comple‐[0m
+[38;2;248;248;242m              tion purposes.  For example,[0m
+
+[38;2;248;248;242m                     compctl -j -P "%" kill[0m
+
+[38;2;248;248;242m              inserts a `%' after the kill command and then completes job names.[0m
+
+[38;2;248;248;242m       -S suffix[0m
+[38;2;248;248;242m              When  a  completion  is  found  the suffix is inserted after the completed[0m
+[38;2;248;248;242m              string.  In the case of menu completion the  suffix  is  inserted  immedi‐[0m
+[38;2;248;248;242m              ately,  but  it is still possible to cycle through the list of completions[0m
+[38;2;248;248;242m              by repeatedly hitting the same key.[0m
+
+[38;2;248;248;242m       -W file-prefix[0m
+[38;2;248;248;242m              With directory file-prefix:  for command,  file,  directory  and  globbing[0m
+[38;2;248;248;242m              completion  (options  -c, -f, -/, -g), the file prefix is implicitly added[0m
+[38;2;248;248;242m              in front of the completion.  For example,[0m
+
+[38;2;248;248;242m                     compctl -/ -W ~/Mail maildirs[0m
+
+[38;2;248;248;242m              completes any subdirectories to any depth beneath  the  directory  ~/Mail,[0m
+[38;2;248;248;242m              although that prefix does not appear on the command line.  The file-prefix[0m
+[38;2;248;248;242m              may also be of the form accepted by the -k flag, i.e. the name of an array[0m
+[38;2;248;248;242m              or  a literal list in parenthesis. In this case all the directories in the[0m
+[38;2;248;248;242m              list will be searched for possible completions.[0m
+
+[38;2;248;248;242m       -q     If used with a suffix as specified by the -S option, this causes the  suf‐[0m
+[38;2;248;248;242m              fix  to  be removed if the next character typed is a blank or does not in‐[0m
+[38;2;248;248;242m              sert anything or if the suffix consists of only one character and the next[0m
+[38;2;248;248;242m              character typed is the same character; this the same  rule  used  for  the[0m
+[38;2;248;248;242m              AUTO_REMOVE_SLASH  option.   The option is most useful for list separators[0m
+[38;2;248;248;242m              (comma, colon, etc.).[0m
+
+[38;2;248;248;242m       -l cmd This option restricts the range of command line words that are  considered[0m
+[38;2;248;248;242m              to be arguments.  If combined with one of the extended completion patterns[0m
+[38;2;248;248;242m              `p[...]',  `r[...]',  or  `R[...]'  (see the section `Extended Completion'[0m
+[38;2;248;248;242m              below) the range is restricted to the range of arguments specified in  the[0m
+[38;2;248;248;242m              brackets.   Completion is then performed as if these had been given as ar‐[0m
+[38;2;248;248;242m              guments to the cmd supplied with the option. If the cmd  string  is  empty[0m
+[38;2;248;248;242m              the first word in the range is instead taken as the command name, and com‐[0m
+[38;2;248;248;242m              mand  name completion performed on the first word in the range.  For exam‐[0m
+[38;2;248;248;242m              ple,[0m
+
+[38;2;248;248;242m                     compctl -x 'r[-exec,;]' -l '' -- find[0m
+
+[38;2;248;248;242m              completes arguments between `-exec' and the following `;' (or the  end  of[0m
+[38;2;248;248;242m              the  command  line  if there is no such string) as if they were a separate[0m
+[38;2;248;248;242m              command line.[0m
+
+[38;2;248;248;242m       -h cmd Normally zsh completes quoted strings as a whole. With this  option,  com‐[0m
+[38;2;248;248;242m              pletion  can  be  done  separately  on different parts of such strings. It[0m
+[38;2;248;248;242m              works like the -l option but makes the completion code work on  the  parts[0m
+[38;2;248;248;242m              of  the  current  word  that are separated by spaces. These parts are com‐[0m
+[38;2;248;248;242m              pleted as if they were arguments to the given cmd. If  cmd  is  the  empty[0m
+[38;2;248;248;242m              string, the first part is completed as a command name, as with -l.[0m
+
+[38;2;248;248;242m       -U     Use  the  whole list of possible completions, whether or not they actually[0m
+[38;2;248;248;242m              match the word on the command  line.   The  word  typed  so  far  will  be[0m
+[38;2;248;248;242m              deleted.   This  is  most  useful with a function (given by the -K option)[0m
+[38;2;248;248;242m              which can examine the word components  passed  to  it  (or  via  the  read[0m
+[38;2;248;248;242m              builtin's  -c  and  -l  flags)  and  use  its  own criteria to decide what[0m
+[38;2;248;248;242m              matches.  If there is no completion, the original word is retained.  Since[0m
+[38;2;248;248;242m              the produced possible completions seldom have interesting common  prefixes[0m
+[38;2;248;248;242m              and  suffixes,  menu completion is started immediately if AUTO_MENU is set[0m
+[38;2;248;248;242m              and this flag is used.[0m
+
+[38;2;248;248;242m       -y func-or-var[0m
+[38;2;248;248;242m              The list provided by func-or-var is displayed instead of the list of  com‐[0m
+[38;2;248;248;242m              pletions  whenever a listing is required; the actual completions to be in‐[0m
+[38;2;248;248;242m              serted are not affected.  It can be provided  in  two  ways.  Firstly,  if[0m
+[38;2;248;248;242m              func-or-var  begins with a $ it defines a variable, or if it begins with a[0m
+[38;2;248;248;242m              left parenthesis a literal array, which contains the list.  A variable may[0m
+[38;2;248;248;242m              have been set by a call to a function using the -K option.   Otherwise  it[0m
+[38;2;248;248;242m              contains the name of a function which will be executed to create the list.[0m
+[38;2;248;248;242m              The  function will be passed as an argument list all matching completions,[0m
+[38;2;248;248;242m              including prefixes and suffixes expanded in full, and should set the array[0m
+[38;2;248;248;242m              reply to the result.  In both cases, the display list  will  only  be  re‐[0m
+[38;2;248;248;242m              trieved after a complete list of matches has been created.[0m
+
+[38;2;248;248;242m              Note  that  the returned list does not have to correspond, even in length,[0m
+[38;2;248;248;242m              to the original set of matches, and may be passed as a scalar  instead  of[0m
+[38;2;248;248;242m              an  array.  No special formatting of characters is performed on the output[0m
+[38;2;248;248;242m              in this case; in particular, newlines are printed literally  and  if  they[0m
+[38;2;248;248;242m              appear output in columns is suppressed.[0m
+
+[38;2;248;248;242m       -X explanation[0m
+[38;2;248;248;242m              Print  explanation when trying completion on the current set of options. A[0m
+[38;2;248;248;242m              `%n' in this string is replaced by the number of matches that  were  added[0m
+[38;2;248;248;242m              for  this  explanation string.  The explanation only appears if completion[0m
+[38;2;248;248;242m              was tried and there was no unique match, or when listing completions.  Ex‐[0m
+[38;2;248;248;242m              planation  strings  will  be listed together with the matches of the group[0m
+[38;2;248;248;242m              specified together with the -X option (using the -J or -V option). If  the[0m
+[38;2;248;248;242m              same  explanation  string  is given to multiple -X options, the string ap‐[0m
+[38;2;248;248;242m              pears only once (for each group) and the number of matches shown  for  the[0m
+[38;2;248;248;242m              `%n'  is  the  total  number of all matches for each of these uses. In any[0m
+[38;2;248;248;242m              case, the explanation string will only be shown if there was at least  one[0m
+[38;2;248;248;242m              match added for the explanation string.[0m
+
+[38;2;248;248;242m              The  sequences %B, %b, %S, %s, %U, and %u specify output attributes (bold,[0m
+[38;2;248;248;242m              standout, and underline), %F, %f, %K, %k specify foreground and background[0m
+[38;2;248;248;242m              colours, and %{...%} can be used to include literal escape sequences as in[0m
+[38;2;248;248;242m              prompts.[0m
+
+[38;2;248;248;242m       -Y explanation[0m
+[38;2;248;248;242m              Identical to -X, except that the  explanation  first  undergoes  expansion[0m
+[38;2;248;248;242m              following  the  usual  rules  for strings in double quotes.  The expansion[0m
+[38;2;248;248;242m              will be carried out after any functions are called for the -K  or  -y  op‐[0m
+[38;2;248;248;242m              tions, allowing them to set variables.[0m
+
+[38;2;248;248;242m       -t continue[0m
+[38;2;248;248;242m              The  continue-string contains a character that specifies which set of com‐[0m
+[38;2;248;248;242m              pletion flags should be used next.  It is useful:[0m
+
+[38;2;248;248;242m              (i) With -T, or when trying a list of pattern  completions,  when  compctl[0m
+[38;2;248;248;242m              would  usually  continue  with  ordinary processing after finding matches;[0m
+[38;2;248;248;242m              this can be suppressed with `-tn'.[0m
+
+[38;2;248;248;242m              (ii) With a list of alternatives separated by +, when compctl  would  nor‐[0m
+[38;2;248;248;242m              mally  stop  when  one  of  the alternatives generates matches.  It can be[0m
+[38;2;248;248;242m              forced to consider the next set of completions  by  adding  `-t+'  to  the[0m
+[38;2;248;248;242m              flags of the alternative before the `+'.[0m
+
+[38;2;248;248;242m              (iii)  In an extended completion list (see below), when compctl would nor‐[0m
+[38;2;248;248;242m              mally continue until a set of conditions succeeded, then use only the  im‐[0m
+[38;2;248;248;242m              mediately  following  flags.  With `-t-', compctl will continue trying ex‐[0m
+[38;2;248;248;242m              tended completions after the next `-'; with `-tx' it will attempt  comple‐[0m
+[38;2;248;248;242m              tion with the default flags, in other words those before the `-x'.[0m
+
+[38;2;248;248;242m       -J name[0m
+[38;2;248;248;242m              This  gives  the name of the group the matches should be placed in. Groups[0m
+[38;2;248;248;242m              are listed and sorted separately; likewise, menu completion will offer the[0m
+[38;2;248;248;242m              matches in the groups in the order in which the groups were defined. If no[0m
+[38;2;248;248;242m              group name is explicitly given, the matches are stored in  a  group  named[0m
+[38;2;248;248;242m              default.  The  first  time  a group name is encountered, a group with that[0m
+[38;2;248;248;242m              name is created. After that all matches  with  the  same  group  name  are[0m
+[38;2;248;248;242m              stored in that group.[0m
+
+[38;2;248;248;242m              This  can be useful with non-exclusive alternative completions.  For exam‐[0m
+[38;2;248;248;242m              ple, in[0m
+
+[38;2;248;248;242m                     compctl -f -J files -t+ + -v -J variables foo[0m
+
+[38;2;248;248;242m              both files and variables are possible completions, as the -t+ forces  both[0m
+[38;2;248;248;242m              sets of alternatives before and after the + to be considered at once.  Be‐[0m
+[38;2;248;248;242m              cause  of  the  -J options, however, all files are listed before all vari‐[0m
+[38;2;248;248;242m              ables.[0m
+
+[38;2;248;248;242m       -V name[0m
+[38;2;248;248;242m              Like -J, but matches within the group will not be sorted in  listings  nor[0m
+[38;2;248;248;242m              in  menu  completion.  These unsorted groups are in a different name space[0m
+[38;2;248;248;242m              from the sorted ones, so groups defined as -J files and -V files are  dis‐[0m
+[38;2;248;248;242m              tinct.[0m
+
+[38;2;248;248;242m       -1     If given together with the -V option, makes only consecutive duplicates in[0m
+[38;2;248;248;242m              the  group  be removed. Note that groups with and without this flag are in[0m
+[38;2;248;248;242m              different name spaces.[0m
+
+[38;2;248;248;242m       -2     If given together with the -J or -V option, makes all duplicates be  kept.[0m
+[38;2;248;248;242m              Again, groups with and without this flag are in different name spaces.[0m
+
+[38;2;248;248;242m       -M match-spec[0m
+[38;2;248;248;242m              This  defines  additional  matching  control specifications that should be[0m
+[38;2;248;248;242m              used only when testing words for the list of flags this flag  appears  in.[0m
+[38;2;248;248;242m              The format of the match-spec string is described in zshcompwid.[0m
+
+[38;2;248;248;242mALTERNATIVE COMPLETION[0m
+[38;2;248;248;242m       compctl [ -CDT ] options + options [ + ... ] [ + ] command ...[0m
+
+[38;2;248;248;242m       The form with `+' specifies alternative options. Completion is tried with the op‐[0m
+[38;2;248;248;242m       tions  before the first `+'. If this produces no matches completion is tried with[0m
+[38;2;248;248;242m       the flags after the `+' and so on. If there are no flags after the last `+' and a[0m
+[38;2;248;248;242m       match has not been found up to that point, default completion is tried.   If  the[0m
+[38;2;248;248;242m       list  of  flags  contains a -t with a + character, the next list of flags is used[0m
+[38;2;248;248;242m       even if the current list produced matches.[0m
+
+[38;2;248;248;242m       Additional options are available that restrict completion to  some  part  of  the[0m
+[38;2;248;248;242m       command line; this is referred to as `extended completion'.[0m
+
+[38;2;248;248;242mEXTENDED COMPLETION[0m
+[38;2;248;248;242m       compctl [ -CDT ] options -x pattern options - ... --[0m
+[38;2;248;248;242m               [ command ... ][0m
+[38;2;248;248;242m       compctl [ -CDT ] options [ -x pattern options - ... -- ][0m
+[38;2;248;248;242m               [ + options [ -x ... -- ] ... [+] ] [ command ... ][0m
+
+[38;2;248;248;242m       The  form  with  `-x'  specifies  extended  completion for the commands given; as[0m
+[38;2;248;248;242m       shown, it may be combined with alternative completion using `+'.  Each pattern is[0m
+[38;2;248;248;242m       examined in turn; when a match is found, the corresponding options, as  described[0m
+[38;2;248;248;242m       in  the  section `Option Flags' above, are used to generate possible completions.[0m
+[38;2;248;248;242m       If no pattern matches, the options given before the -x are used.[0m
+
+[38;2;248;248;242m       Note that each pattern should be supplied as a  single  argument  and  should  be[0m
+[38;2;248;248;242m       quoted to prevent expansion of metacharacters by the shell.[0m
+
+[38;2;248;248;242m       A  pattern  is  built of sub-patterns separated by commas; it matches if at least[0m
+[38;2;248;248;242m       one of these sub-patterns matches (they are `or'ed). These  sub-patterns  are  in[0m
+[38;2;248;248;242m       turn  composed of other sub-patterns separated by white spaces which match if all[0m
+[38;2;248;248;242m       of the sub-patterns match (they are `and'ed).  An element of the sub-patterns  is[0m
+[38;2;248;248;242m       of  the  form `c[...][...]', where the pairs of brackets may be repeated as often[0m
+[38;2;248;248;242m       as necessary, and matches if any of the sets of brackets match  (an  `or').   The[0m
+[38;2;248;248;242m       example below makes this clearer.[0m
+
+[38;2;248;248;242m       The elements may be any of the following:[0m
+
+[38;2;248;248;242m       s[string]...[0m
+[38;2;248;248;242m              Matches  if  the  current  word on the command line starts with one of the[0m
+[38;2;248;248;242m              strings given in brackets.  The string is not removed and is not  part  of[0m
+[38;2;248;248;242m              the completion.[0m
+
+[38;2;248;248;242m       S[string]...[0m
+[38;2;248;248;242m              Like s[string] except that the string is part of the completion.[0m
+
+[38;2;248;248;242m       p[from,to]...[0m
+[38;2;248;248;242m              Matches  if  the number of the current word is between one of the from and[0m
+[38;2;248;248;242m              to pairs inclusive. The comma and to are optional; to defaults to the same[0m
+[38;2;248;248;242m              value as from.  The numbers may be negative: -n refers to  the  n'th  last[0m
+[38;2;248;248;242m              word on the line.[0m
+
+[38;2;248;248;242m       c[offset,string]...[0m
+[38;2;248;248;242m              Matches  if  the string matches the word offset by offset from the current[0m
+[38;2;248;248;242m              word position.  Usually offset will be negative.[0m
+
+[38;2;248;248;242m       C[offset,pattern]...[0m
+[38;2;248;248;242m              Like c but using pattern matching instead.[0m
+
+[38;2;248;248;242m       w[index,string]...[0m
+[38;2;248;248;242m              Matches if the word in  position  index  is  equal  to  the  corresponding[0m
+[38;2;248;248;242m              string.  Note that the word count is made after any alias expansion.[0m
+
+[38;2;248;248;242m       W[index,pattern]...[0m
+[38;2;248;248;242m              Like w but using pattern matching instead.[0m
+
+[38;2;248;248;242m       n[index,string]...[0m
+[38;2;248;248;242m              Matches if the current word contains string.  Anything up to and including[0m
+[38;2;248;248;242m              the  indexth  occurrence of this string will not be considered part of the[0m
+[38;2;248;248;242m              completion, but the rest will.  index may be negative to  count  from  the[0m
+[38;2;248;248;242m              end: in most cases, index will be 1 or -1.  For example,[0m
+
+[38;2;248;248;242m                     compctl -s '`users`' -x 'n[1,@]' -k hosts -- talk[0m
+
+[38;2;248;248;242m              will  usually  complete  usernames, but if you insert an @ after the name,[0m
+[38;2;248;248;242m              names from the array hosts (assumed to contain hostnames, though you  must[0m
+[38;2;248;248;242m              make  the  array  yourself) will be completed.  Other commands such as rcp[0m
+[38;2;248;248;242m              can be handled similarly.[0m
+
+[38;2;248;248;242m       N[index,string]...[0m
+[38;2;248;248;242m              Like n except that the string will be taken as a  character  class.   Any‐[0m
+[38;2;248;248;242m              thing  up to and including the indexth occurrence of any of the characters[0m
+[38;2;248;248;242m              in string will not be considered part of the completion.[0m
+
+[38;2;248;248;242m       m[min,max]...[0m
+[38;2;248;248;242m              Matches if the total number of words lies between min and max inclusive.[0m
+
+[38;2;248;248;242m       r[str1,str2]...[0m
+[38;2;248;248;242m              Matches if the cursor is after a word with prefix str1.  If there is  also[0m
+[38;2;248;248;242m              a  word with prefix str2 on the command line after the one matched by str1[0m
+[38;2;248;248;242m              it matches only if the cursor is before this word. If the comma  and  str2[0m
+[38;2;248;248;242m              are omitted, it matches if the cursor is after a word with prefix str1.[0m
+
+[38;2;248;248;242m       R[str1,str2]...[0m
+[38;2;248;248;242m              Like r but using pattern matching instead.[0m
+
+[38;2;248;248;242m       q[str]...[0m
+[38;2;248;248;242m              Matches the word currently being completed is in single quotes and the str[0m
+[38;2;248;248;242m              begins  with the letter `s', or if completion is done in double quotes and[0m
+[38;2;248;248;242m              str starts with the letter `d', or if completion is done in backticks  and[0m
+[38;2;248;248;242m              str starts with a `b'.[0m
+
+[38;2;248;248;242mEXAMPLE[0m
+[38;2;248;248;242m              compctl -u -x 's[+] c[-1,-f],s[-f+]' \[0m
+[38;2;248;248;242m                -g '~/Mail/*(:t)' - 's[-f],c[-1,-f]' -f -- mail[0m
+
+[38;2;248;248;242m       This is to be interpreted as follows:[0m
+
+[38;2;248;248;242m       If the current command is mail, then[0m
+
+[38;2;248;248;242m              if ((the current word begins with + and the previous word is -f)[0m
+[38;2;248;248;242m              or (the current word begins with -f+)), then complete the[0m
+[38;2;248;248;242m              non-directory part (the `:t' glob modifier) of files in the directory[0m
+[38;2;248;248;242m              ~/Mail; else[0m
+
+[38;2;248;248;242m              if the current word begins with -f or the previous word was -f, then[0m
+[38;2;248;248;242m              complete any file; else[0m
+
+[38;2;248;248;242m              complete user names.[0m
+
+[38;2;248;248;242mzsh 5.9                               May 14, 2022                         ZSHCOMPCTL(1)[0m

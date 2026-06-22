@@ -1,0 +1,21 @@
+EXPANSION OF PROMPT SEQUENCES
+     Prompt sequences undergo a special form of expansion.  This type of
+     expansion is also available using the -P option to the print builtin.
+
+     If the PROMPT_SUBST option is set, the prompt string is first subjected to
+     parameter expansion, command substitution and arithmetic expansion.  See
+     zshexpn(1).
+
+     Certain escape sequences may be recognised in the prompt string.
+
+     If the PROMPT_BANG option is set, a ‘!' in the prompt is replaced by the
+     current history event number.  A literal ‘!' may then be represented as
+     ‘!!'.
+
+     If the PROMPT_PERCENT option is set, certain escape sequences that start
+     with ‘%' are expanded.  Many escapes are followed by a single character,
+     although some of these take an optional integer argument that should
+     appear between the ‘%' and the next character of the sequence.  More
+     complicated escape sequences are available to provide conditional
+     expansion.
+

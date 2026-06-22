@@ -1,0 +1,1220 @@
+1 0 ZSHPARAM(1)                 General Commands Manual                 ZSHPARAM(1)
+1 0 NAME
+3 5 zshparam - zsh parameters
+1 0 DESCRIPTION
+3 5 A parameter has a name, a value, and a number of attributes.  A name may
+3 5 be any sequence of alphanumeric characters and underscores, or the single
+3 5 characters ‘*', ‘@', ‘#', ‘?', ‘-', ‘$', or ‘!'.  A parameter whose name
+3 5 begins with an alphanumeric or underscore is also referred to as a
+3 5 variable.
+3 5 The attributes of a parameter determine the type of its value, often
+3 5 referred to as the parameter type or variable type, and also control other
+3 5 processing that may be applied to the value when it is referenced.  The
+3 5 value type may be a scalar (a string, an integer, or a floating point
+3 5 number), an array (indexed numerically), or an associative array (an
+3 5 unordered set of name-value pairs, indexed by name, also referred to as a
+3 5 hash).
+3 5 Named scalar parameters may have the exported, -x, attribute, to copy them
+3 5 into the process environment, which is then passed from the shell to any
+3 5 new processes that it starts.  Exported parameters are called environment
+3 5 variables. The shell also imports environment variables at startup time
+3 5 and automatically marks the corresponding parameters as exported.  Some
+3 5 environment variables are not imported for reasons of security or because
+3 5 they would interfere with the correct operation of other shell features.
+3 5 Parameters may also be special, that is, they have a predetermined meaning
+3 5 to the shell.  Special parameters cannot have their type changed or their
+3 5 readonly attribute turned off, and if a special parameter is unset, then
+3 5 later recreated, the special properties will be retained.
+3 5 To declare the type of a parameter, or to assign a string or numeric value
+3 5 to a scalar parameter, use the typeset builtin.
+3 5 The value of a scalar parameter may also be assigned by writing:
+4 12 name=value
+3 5 In scalar assignment, value is expanded as a single string, in which the
+3 5 elements of arrays are joined together; filename expansion is not
+3 5 performed unless the option GLOB_ASSIGN is set.
+3 5 When the integer attribute, -i, or a floating point attribute, -E or -F,
+3 5 is set for name, the value is subject to arithmetic evaluation.
+3 5 Furthermore, by replacing ‘=' with ‘+=', a parameter can be incremented or
+3 5 appended to.  See the section ‘Array Parameters' and Arithmetic Evaluation
+3 5 (in zshmisc(1)) for additional forms of assignment.
+3 5 Note that assignment may implicitly change the attributes of a parameter.
+3 5 For example, assigning a number to a variable in arithmetic evaluation may
+3 5 change its type to integer or float, and with GLOB_ASSIGN assigning a
+3 5 pattern to a variable may change its type to an array.
+3 5 To reference the value of a parameter, write ‘$name' or ‘${name}'.  See
+3 5 Parameter Expansion in zshexpn(1) for complete details.  That section also
+3 5 explains the effect of the difference between scalar and array assignment
+3 5 on parameter expansion.
+1 0 ARRAY PARAMETERS
+3 5 To assign an array value, write one of:
+4 12 set -A name value ...
+4 12 name=(value ...)
+4 12 name=([key]=value ...)
+3 5 If no parameter name exists, an ordinary array parameter is created.  If
+3 5 the parameter name exists and is a scalar, it is replaced by a new array.
+3 5 In the third form, key is an expression that will be evaluated in
+3 5 arithmetic context (in its simplest form, an integer) that gives the index
+3 5 of the element to be assigned with value.  In this form any elements not
+3 5 explicitly mentioned that come before the largest index to which a value
+3 5 is assigned are assigned an empty string.  The indices may be in any
+3 5 order.  Note that this syntax is strict: [ and ]= must not be quoted, and
+3 5 key may not consist of the unquoted string ]=, but is otherwise treated as
+3 5 a simple string.  The enhanced forms of subscript expression that may be
+3 5 used when directly subscripting a variable name, described in the section
+3 5 ‘Array Subscripts' below, are not available.
+3 5 The syntaxes with and without the explicit key may be mixed.  An implicit
+3 5 key is deduced by incrementing the index from the previously assigned
+3 5 element.  Note that it is not treated as an error if latter assignments in
+3 5 this form overwrite earlier assignments.
+3 5 For example, assuming the option KSH_ARRAYS is not set, the following:
+4 12 array=(one [3]=three four)
+3 5 causes the array variable array to contain four elements one, an empty
+3 5 string, three and four, in that order.
+3 5 In the forms where only value is specified, full command line expansion is
+3 5 performed.
+3 5 In the [key]=value form, both key and value undergo all forms of expansion
+3 5 allowed for single word shell expansions (this does not include filename
+3 5 generation); these are as performed by the parameter expansion flag (e) as
+3 5 described in zshexpn(1).  Nested parentheses may surround value and are
+3 5 included as part of the value, which is joined into a plain string; this
+3 5 differs from ksh which allows the values themselves to be arrays.  A
+3 5 future version of zsh may support that.  To cause the brackets to be
+3 5 interpreted as a character class for filename generation, and therefore to
+3 5 treat the resulting list of files as a set of values, quote the equal sign
+3 5 using any form of quoting.  Example:
+4 12 name=([a-z]'='*)
+3 5 To append to an array without changing the existing values, use one of the
+3 5 following:
+4 12 name+=(value ...)
+4 12 name+=([key]=value ...)
+3 5 In the second form key may specify an existing index as well as an index
+3 5 off the end of the old array; any existing value is overwritten by value.
+3 5 Also, it is possible to use [key]+=value to append to the existing value
+3 5 at that index.
+3 5 Within the parentheses on the right hand side of either form of the
+3 5 assignment, newlines and semicolons are treated the same as white space,
+3 5 separating individual values.  Any consecutive sequence of such characters
+3 5 has the same effect.
+3 5 Ordinary array parameters may also be explicitly declared with:
+4 12 typeset -a name
+3 5 Associative arrays must be declared before assignment, by using:
+4 12 typeset -A name
+3 5 When name refers to an associative array, the list in an assignment is
+3 5 interpreted as alternating keys and values:
+4 12 set -A name key value ...
+4 12 name=(key value ...)
+4 12 name=([key]=value ...)
+3 5 Note that only one of the two syntaxes above may be used in any given
+3 5 assignment; the forms may not be mixed.  This is unlike the case of
+3 5 numerically indexed arrays.
+3 5 Every key must have a value in this case.  Note that this assigns to the
+3 5 entire array, deleting any elements that do not appear in the list.  The
+3 5 append syntax may also be used with an associative array:
+4 12 name+=(key value ...)
+4 12 name+=([key]=value ...)
+3 5 This adds a new key/value pair if the key is not already present, and
+3 5 replaces the value for the existing key if it is.  In the second form it
+3 5 is also possible to use [key]+=value to append to the existing value at
+3 5 that key.  Expansion is performed identically to the corresponding forms
+3 5 for normal arrays, as described above.
+3 5 To create an empty array (including associative arrays), use one of:
+4 12 set -A name
+4 12 name=()
+2 3 Array Subscripts
+3 5 Individual elements of an array may be selected using a subscript.  A
+3 5 subscript of the form ‘[exp]' selects the single element exp, where exp is
+3 5 an arithmetic expression which will be subject to arithmetic expansion as
+3 5 if it were surrounded by ‘$((...))'.  The elements are numbered beginning
+3 5 with 1, unless the KSH_ARRAYS option is set in which case they are
+3 5 numbered from zero.
+3 5 Subscripts may be used inside braces used to delimit a parameter name,
+3 5 thus ‘${foo[2]}' is equivalent to ‘$foo[2]'.  If the KSH_ARRAYS option is
+3 5 set, the braced form is the only one that works, as bracketed expressions
+3 5 otherwise are not treated as subscripts.
+3 5 If the KSH_ARRAYS option is not set, then by default accesses to an array
+3 5 element with a subscript that evaluates to zero return an empty string,
+3 5 while an attempt to write such an element is treated as an error.  For
+3 5 backward compatibility the KSH_ZERO_SUBSCRIPT option can be set to cause
+3 5 subscript values 0 and 1 to be equivalent; see the description of the
+3 5 option in zshoptions(1).
+3 5 The same subscripting syntax is used for associative arrays, except that
+3 5 no arithmetic expansion is applied to exp.  However, the parsing rules for
+3 5 arithmetic expressions still apply, which affects the way that certain
+3 5 special characters must be protected from interpretation.  See Subscript
+3 5 Parsing below for details.
+3 5 A subscript of the form ‘[*]' or ‘[@]' evaluates to all elements of an
+3 5 array; there is no difference between the two except when they appear
+3 5 within double quotes.  ‘"$foo[*]"' evaluates to ‘"$foo[1] $foo[2] ..."',
+3 5 whereas ‘"$foo[@]"' evaluates to ‘"$foo[1]" "$foo[2]" ...'.  For
+3 5 associative arrays, ‘[*]' or ‘[@]' evaluate to all the values, in no
+3 5 particular order.  Note that this does not substitute the keys; see the
+3 5 documentation for the ‘k' flag under Parameter Expansion Flags in
+3 5 zshexpn(1) for complete details.  When an array parameter is referenced as
+3 5 ‘$name' (with no subscript) it evaluates to ‘$name[*]', unless the
+3 5 KSH_ARRAYS option is set in which case it evaluates to ‘${name[0]}' (for
+3 5 an associative array, this means the value of the key ‘0', which may not
+3 5 exist even if there are values for other keys).
+3 5 A subscript of the form ‘[exp1,exp2]' selects all elements in the range
+3 5 exp1 to exp2, inclusive. (Associative arrays are unordered, and so do not
+3 5 support ranges.) If one of the subscripts evaluates to a negative number,
+3 5 say -n, then the nth element from the end of the array is used.  Thus
+3 5 ‘$foo[-3]' is the third element from the end of the array foo, and
+3 5 ‘$foo[1,-1]' is the same as ‘$foo[*]'.
+3 5 Subscripting may also be performed on non-array values, in which case the
+3 5 subscripts specify a substring to be extracted.  For example, if FOO is
+3 5 set to ‘foobar', then ‘echo $FOO[2,5]' prints ‘ooba'.  Note that some
+3 5 forms of subscripting described below perform pattern matching, and in
+3 5 that case the substring extends from the start of the match of the first
+3 5 subscript to the end of the match of the second subscript.  For example,
+4 12 string="abcdefghijklm"
+4 12 print ${string[(r)d?,(r)h?]}
+3 5 prints ‘defghi'.  This is an obvious generalisation of the rule for
+3 5 single-character matches.  For a single subscript, only a single character
+3 5 is referenced (not the range of characters covered by the match).
+3 5 Note that in substring operations the second subscript is handled
+3 5 differently by the r and R subscript flags: the former takes the shortest
+3 5 match as the length and the latter the longest match.  Hence in the former
+3 5 case a * at the end is redundant while in the latter case it matches the
+3 5 whole remainder of the string.  This does not affect the result of the
+3 5 single subscript case as here the length of the match is irrelevant.
+2 3 Array Element Assignment
+3 5 A subscript may be used on the left side of an assignment like so:
+4 12 name[exp]=value
+3 5 In this form of assignment the element or range specified by exp is
+3 5 replaced by the expression on the right side.  An array (but not an
+3 5 associative array) may be created by assignment to a range or element.
+3 5 Arrays do not nest, so assigning a parenthesized list of values to an
+3 5 element or range changes the number of elements in the array, shifting the
+3 5 other elements to accommodate the new values.  (This is not supported for
+3 5 associative arrays.)
+3 5 This syntax also works as an argument to the typeset command:
+4 12 typeset "name[exp]"=value
+3 5 The value may not be a parenthesized list in this case; only
+3 5 single-element assignments may be made with typeset.  Note that quotes are
+3 5 necessary in this case to prevent the brackets from being interpreted as
+3 5 filename generation operators.  The noglob precommand modifier could be
+3 5 used instead.
+3 5 To delete an element of an ordinary array, assign ‘()' to that element.
+3 5 To delete an element of an associative array, use the unset command:
+4 12 unset "name[exp]"
+2 3 Subscript Flags
+3 5 If the opening bracket, or the comma in a range, in any subscript
+3 5 expression is directly followed by an opening parenthesis, the string up
+3 5 to the matching closing one is considered to be a list of flags, as in
+3 5 ‘name[(flags)exp]'.
+3 5 The flags s, n and b take an argument; the delimiter is shown below as
+3 5 ‘:', but any character, or the matching pairs ‘(...)', ‘{...}', ‘[...]',
+3 5 or ‘<...>', may be used, but note that ‘<...>' can only be used if the
+3 5 subscript is inside a double quoted expression or a parameter substitution
+3 5 enclosed in braces as otherwise the expression is interpreted as a
+3 5 redirection.
+3 5 The flags currently understood are:
+3 5 w      If the parameter subscripted is a scalar then this flag makes
+4 12 subscripting work on words instead of characters.  The default word
+4 12 separator is whitespace.  When combined with the i or I flag, the
+4 12 effect is to produce the index of the first character of the
+4 12 first/last word which matches the given pattern; note that a failed
+4 12 match in this case always yields 0.
+3 5 s:string:
+4 12 This gives the string that separates words (for use with the w
+4 12 flag).  The delimiter character : is arbitrary; see above.
+3 5 p      Recognize the same escape sequences as the print builtin in the
+4 12 string argument of a subsequent ‘s' flag.
+3 5 f      If the parameter subscripted is a scalar then this flag makes
+4 12 subscripting work on lines instead of characters, i.e. with
+4 12 elements separated by newlines.  This is a shorthand for ‘pws:\n:'.
+3 5 r      Reverse subscripting: if this flag is given, the exp is taken as a
+4 12 pattern and the result is the first matching array element,
+4 12 substring or word (if the parameter is an array, if it is a scalar,
+4 12 or if it is a scalar and the ‘w' flag is given, respectively).  The
+4 12 subscript used is the number of the matching element, so that pairs
+4 12 of subscripts such as ‘$foo[(r)??,3]' and ‘$foo[(r)??,(r)f*]' are
+4 12 possible if the parameter is not an associative array.  If the
+4 12 parameter is an associative array, only the value part of each pair
+4 12 is compared to the pattern, and the result is that value.
+4 12 If a search through an ordinary array failed, the search sets the
+4 12 subscript to one past the end of the array, and hence
+4 12 ${array[(r)pattern]} will substitute the empty string.  Thus the
+4 12 success of a search can be tested by using the (i) flag, for
+4 12 example (assuming the option KSH_ARRAYS is not in effect):
+5 19 [[ ${array[(i)pattern]} -le ${#array} ]]
+4 12 If KSH_ARRAYS is in effect, the -le should be replaced by -lt.
+3 5 R      Like ‘r', but gives the last match.  For associative arrays, gives
+4 12 all possible matches. May be used for assigning to ordinary array
+4 12 elements, but not for assigning to associative arrays.  On failure,
+4 12 for normal arrays this has the effect of returning the element
+4 12 corresponding to subscript 0; this is empty unless one of the
+4 12 options KSH_ARRAYS or KSH_ZERO_SUBSCRIPT is in effect.
+4 12 Note that in subscripts with both ‘r' and ‘R' pattern characters
+4 12 are active even if they were substituted for a parameter
+4 12 (regardless of the setting of GLOB_SUBST which controls this
+4 12 feature in normal pattern matching).  The flag ‘e' can be added to
+4 12 inhibit pattern matching.  As this flag does not inhibit other
+4 12 forms of substitution, care is still required; using a parameter to
+4 12 hold the key has the desired effect:
+5 19 key2='original key'
+5 19 print ${array[(Re)$key2]}
+3 5 i      Like ‘r', but gives the index of the match instead; this may not be
+4 12 combined with a second argument.  On the left side of an
+4 12 assignment, behaves like ‘r'.  For associative arrays, the key part
+4 12 of each pair is compared to the pattern, and the first matching key
+4 12 found is the result.  On failure substitutes the length of the
+4 12 array plus one, as discussed under the description of ‘r', or the
+4 12 empty string for an associative array.
+4 12 Note: Although ‘i' may be applied to a scalar substitution to find
+4 12 the offset of a substring, the results are likely to be misleading
+4 12 when searching within substitutions that yield an empty string, or
+4 12 when searching for the empty substring.
+3 5 I      Like ‘i', but gives the index of the last match, or all possible
+4 12 matching keys in an associative array.  On failure substitutes 0,
+4 12 or the empty string for an associative array.  This flag is best
+4 12 when testing for values or keys that do not exist.
+4 12 Note: If the option KSH_ARRAYS is in effect and no match is found,
+4 12 the result is indistinguishable from the case when the first
+4 12 element of the array matches.
+3 5 k      If used in a subscript on an associative array, this flag causes
+4 12 the keys to be interpreted as patterns, and returns the value for
+4 12 the first key found where exp is matched by the key.  Note this
+4 12 could be any such key as no ordering of associative arrays is
+4 12 defined.  This flag does not work on the left side of an assignment
+4 12 to an associative array element.  If used on another type of
+4 12 parameter, this behaves like ‘r'.
+3 5 K      On an associative array this is like ‘k' but returns all values
+4 12 where exp is matched by the keys.  On other types of parameters
+4 12 this has the same effect as ‘R'.
+3 5 n:expr:
+4 12 If combined with ‘r', ‘R', ‘i' or ‘I', makes them give the nth or
+4 12 nth last match (if expr evaluates to n).  This flag is ignored when
+4 12 the array is associative.  The delimiter character : is arbitrary;
+4 12 see above.
+3 5 b:expr:
+4 12 If combined with ‘r', ‘R', ‘i' or ‘I', makes them begin at the nth
+4 12 or nth last element, word, or character (if expr evaluates to n).
+4 12 This flag is ignored when the array is associative.  The delimiter
+4 12 character : is arbitrary; see above.
+3 5 e      This flag causes any pattern matching that would be performed on
+4 12 the subscript to use plain string matching instead.  Hence
+4 12 ‘${array[(re)*]}' matches only the array element whose value is *.
+4 12 Note that other forms of substitution such as parameter
+4 12 substitution are not inhibited.
+4 12 This flag can also be used to force * or @ to be interpreted as a
+4 12 single key rather than as a reference to all values.  It may be
+4 12 used for either purpose on the left side of an assignment.
+3 5 See Parameter Expansion Flags (zshexpn(1)) for additional ways to
+3 5 manipulate the results of array subscripting.
+2 3 Subscript Parsing
+3 5 This discussion applies mainly to associative array key strings and to
+3 5 patterns used for reverse subscripting (the ‘r', ‘R', ‘i', etc. flags),
+3 5 but it may also affect parameter substitutions that appear as part of an
+3 5 arithmetic expression in an ordinary subscript.
+3 5 To avoid subscript parsing limitations in assignments to associative array
+3 5 elements, use the append syntax:
+4 12 aa+=('key with "*strange*" characters' 'value string')
+3 5 The basic rule to remember when writing a subscript expression is that all
+3 5 text between the opening ‘[' and the closing ‘]' is interpreted as if it
+3 5 were in double quotes (see zshmisc(1)).  However, unlike double quotes
+3 5 which normally cannot nest, subscript expressions may appear inside
+3 5 double-quoted strings or inside other subscript expressions (or both!), so
+3 5 the rules have two important differences.
+3 5 The first difference is that brackets (‘[' and ‘]') must appear as
+3 5 balanced pairs in a subscript expression unless they are preceded by a
+3 5 backslash (‘\').  Therefore, within a subscript expression (and unlike
+3 5 true double-quoting) the sequence ‘\[' becomes ‘[', and similarly ‘\]'
+3 5 becomes ‘]'.  This applies even in cases where a backslash is not normally
+3 5 required; for example, the pattern ‘[^[]' (to match any character other
+3 5 than an open bracket) should be written ‘[^\[]' in a reverse-subscript
+3 5 pattern.  However, note that ‘\[^\[\]' and even ‘\[^[]' mean the same
+3 5 thing, because backslashes are always stripped when they appear before
+3 5 brackets!
+3 5 The same rule applies to parentheses (‘(' and ‘)') and braces (‘{' and
+3 5 ‘}'): they must appear either in balanced pairs or preceded by a
+3 5 backslash, and backslashes that protect parentheses or braces are removed
+3 5 during parsing.  This is because parameter expansions may be surrounded by
+3 5 balanced braces, and subscript flags are introduced by balanced
+3 5 parentheses.
+3 5 The second difference is that a double-quote (‘"') may appear as part of a
+3 5 subscript expression without being preceded by a backslash, and therefore
+3 5 that the two characters ‘\"' remain as two characters in the subscript (in
+3 5 true double-quoting, ‘\"' becomes ‘"').  However, because of the standard
+3 5 shell quoting rules, any double-quotes that appear must occur in balanced
+3 5 pairs unless preceded by a backslash.  This makes it more difficult to
+3 5 write a subscript expression that contains an odd number of double-quote
+3 5 characters, but the reason for this difference is so that when a subscript
+3 5 expression appears inside true double-quotes, one can still write ‘\"'
+3 5 (rather than ‘\\\"') for ‘"'.
+3 5 To use an odd number of double quotes as a key in an assignment, use the
+3 5 typeset builtin and an enclosing pair of double quotes; to refer to the
+3 5 value of that key, again use double quotes:
+4 12 typeset -A aa
+4 12 typeset "aa[one\"two\"three\"quotes]"=QQQ
+4 12 print "$aa[one\"two\"three\"quotes]"
+3 5 It is important to note that the quoting rules do not change when a
+3 5 parameter expansion with a subscript is nested inside another subscript
+3 5 expression.  That is, it is not necessary to use additional backslashes
+3 5 within the inner subscript expression; they are removed only once, from
+3 5 the innermost subscript outwards.  Parameters are also expanded from the
+3 5 innermost subscript first, as each expansion is encountered left to right
+3 5 in the outer expression.
+3 5 A further complication arises from a way in which subscript parsing is not
+3 5 different from double quote parsing.  As in true double-quoting, the
+3 5 sequences ‘\*', and ‘\@' remain as two characters when they appear in a
+3 5 subscript expression.  To use a literal ‘*' or ‘@' as an associative array
+3 5 key, the ‘e' flag must be used:
+4 12 typeset -A aa
+4 12 aa[(e)*]=star
+4 12 print $aa[(e)*]
+3 5 A last detail must be considered when reverse subscripting is performed.
+3 5 Parameters appearing in the subscript expression are first expanded and
+3 5 then the complete expression is interpreted as a pattern.  This has two
+3 5 effects: first, parameters behave as if GLOB_SUBST were on (and it cannot
+3 5 be turned off); second, backslashes are interpreted twice, once when
+3 5 parsing the array subscript and again when parsing the pattern.  In a
+3 5 reverse subscript, it's necessary to use four backslashes to cause a
+3 5 single backslash to match literally in the pattern.  For complex patterns,
+3 5 it is often easiest to assign the desired pattern to a parameter and then
+3 5 refer to that parameter in the subscript, because then the backslashes,
+3 5 brackets, parentheses, etc., are seen only when the complete expression is
+3 5 converted to a pattern.  To match the value of a parameter literally in a
+3 5 reverse subscript, rather than as a pattern, use ‘${(q)name}' (see
+3 5 zshexpn(1)) to quote the expanded value.
+3 5 Note that the ‘k' and ‘K' flags are reverse subscripting for an ordinary
+3 5 array, but are not reverse subscripting for an associative array!  (For an
+3 5 associative array, the keys in the array itself are interpreted as
+3 5 patterns by those flags; the subscript is a plain string in that case.)
+3 5 One final note, not directly related to subscripting: the numeric names of
+3 5 positional parameters (described below) are parsed specially, so for
+3 5 example ‘$2foo' is equivalent to ‘${2}foo'.  Therefore, to use subscript
+3 5 syntax to extract a substring from a positional parameter, the expansion
+3 5 must be surrounded by braces; for example, ‘${2[3,5]}' evaluates to the
+3 5 third through fifth characters of the second positional parameter, but
+3 5 ‘$2[3,5]' is the entire second parameter concatenated with the filename
+3 5 generation pattern ‘[3,5]'.
+1 0 POSITIONAL PARAMETERS
+3 5 The positional parameters provide access to the command-line arguments of
+3 5 a shell function, shell script, or the shell itself; see the section
+3 5 ‘Invocation', and also the section ‘Functions'.  The parameter n, where n
+3 5 is a number, is the nth positional parameter.  The parameter ‘$0' is a
+3 5 special case, see the section ‘Parameters Set By The Shell'.
+3 5 The parameters *, @ and argv are arrays containing all the positional
+3 5 parameters; thus ‘$argv[n]', etc., is equivalent to simply ‘$n'.  Note
+3 5 that the options KSH_ARRAYS or KSH_ZERO_SUBSCRIPT apply to these arrays as
+3 5 well, so with either of those options set, ‘${argv[0]}' is equivalent to
+3 5 ‘$1' and so on.
+3 5 Positional parameters may be changed after the shell or function starts by
+3 5 using the set builtin, by assigning to the argv array, or by direct
+3 5 assignment of the form ‘n=value' where n is the number of the positional
+3 5 parameter to be changed.  This also creates (with empty values) any of the
+3 5 positions from 1 to n that do not already have values.  Note that, because
+3 5 the positional parameters form an array, an array assignment of the form
+3 5 ‘n=(value ...)' is allowed, and has the effect of shifting all the values
+3 5 at positions greater than n by as many positions as necessary to
+3 5 accommodate the new values.
+1 0 LOCAL PARAMETERS
+3 5 Shell function executions delimit scopes for shell parameters.
+3 5 (Parameters are dynamically scoped.)  The typeset builtin, and its
+3 5 alternative forms declare, integer, local and readonly (but not export),
+3 5 can be used to declare a parameter as being local to the innermost scope.
+3 5 When a parameter is read or assigned to, the innermost existing parameter
+3 5 of that name is used.  (That is, the local parameter hides any less-local
+3 5 parameter.)  However, assigning to a non-existent parameter, or declaring
+3 5 a new parameter with export, causes it to be created in the outermost
+3 5 scope.
+3 5 Local parameters disappear when their scope ends.  unset can be used to
+3 5 delete a parameter while it is still in scope; any outer parameter of the
+3 5 same name remains hidden.
+3 5 Special parameters may also be made local; they retain their special
+3 5 attributes unless either the existing or the newly-created parameter has
+3 5 the -h (hide) attribute.  This may have unexpected effects: there is no
+3 5 default value, so if there is no assignment at the point the variable is
+3 5 made local, it will be set to an empty value (or zero in the case of
+3 5 integers).  The following:
+4 12 typeset PATH=/new/directory:$PATH
+3 5 is valid for temporarily allowing the shell or programmes called from it
+3 5 to find the programs in /new/directory inside a function.
+3 5 Note that the restriction in older versions of zsh that local parameters
+3 5 were never exported has been removed.
+1 0 PARAMETERS SET BY THE SHELL
+3 5 In the parameter lists that follow, the mark ‘<S>' indicates that the
+3 5 parameter is special.  ‘<Z>' indicates that the parameter does not exist
+3 5 when the shell initializes in sh or ksh emulation mode.
+3 5 The parameters ‘!', ‘#', ‘*', ‘-', ‘?', ‘@', ‘$', ‘ARGC', ‘HISTCMD',
+3 5 ‘LINENO', ‘PPID', ‘status', ‘TTYIDLE', ‘zsh_eval_context',
+3 5 ‘ZSH_EVAL_CONTEXT', and ‘ZSH_SUBSHELL' are read-only and thus cannot be
+3 5 restored by the user, so they are not output by ‘typeset -p'.  This also
+3 5 applies to many read-only parameters loaded from modules.
+3 5 The following parameters are automatically set by the shell:
+3 5 ! <S>  The process ID of the last command started in the background with
+4 12 &, put into the background with the bg builtin, or spawned with
+4 12 coproc.
+3 5 # <S>  The number of positional parameters in decimal.  Note that some
+4 12 confusion may occur with the syntax $#param which substitutes the
+4 12 length of param.  Use ${#} to resolve ambiguities.  In particular,
+4 12 the sequence ‘$#-...' in an arithmetic expression is interpreted as
+4 12 the length of the parameter -, q.v.
+3 5 ARGC <S> <Z>
+4 12 Same as #.
+3 5 $ <S>  The process ID of this shell, set when the shell initializes.
+4 12 Processes forked from the shell without executing a new program,
+4 12 such as command substitutions and commands grouped with (...), are
+4 12 subshells that duplicate the current shell, and thus substitute the
+4 12 same value for $$ as their parent shell.
+3 5 - <S>  Flags supplied to the shell on invocation or by the set or setopt
+4 12 commands.
+3 5 * <S>  An array containing the positional parameters.
+3 5 argv <S> <Z>
+4 12 Same as *.  Assigning to argv changes the local positional
+4 12 parameters, but argv is not itself a local parameter.  Deleting
+4 12 argv with unset in any function deletes it everywhere, although
+4 12 only the innermost positional parameter array is deleted (so * and
+4 12 @ in other scopes are not affected).
+3 5 @ <S>  Same as argv[@], even when argv is not set.
+3 5 ? <S>  The exit status returned by the last command.
+3 5 0 <S>  The name used to invoke the current shell, or as set by the -c
+4 12 command line option upon invocation.  If the FUNCTION_ARGZERO
+4 12 option is set, $0 is set upon entry to a shell function to the name
+4 12 of the function, and upon entry to a sourced script to the name of
+4 12 the script, and reset to its previous value when the function or
+4 12 script returns.
+3 5 status <S> <Z>
+4 12 Same as ?.
+3 5 pipestatus <S> <Z>
+4 12 An array containing the exit statuses returned by all commands in
+4 12 the last pipeline.
+3 5 _ <S>  The last argument of the previous command.  Also, this parameter is
+4 12 set in the environment of every command executed to the full
+4 12 pathname of the command.
+3 5 CPUTYPE
+4 12 The machine type (microprocessor class or machine model), as
+4 12 determined at run time.
+3 5 EGID <S>
+4 12 The effective group ID of the shell process.  If you have
+4 12 sufficient privileges, you may change the effective group ID of the
+4 12 shell process by assigning to this parameter.  Also (assuming
+4 12 sufficient privileges), you may start a single command with a
+4 12 different effective group ID by ‘(EGID=gid; command)'
+4 12 If this is made local, it is not implicitly set to 0, but may be
+4 12 explicitly set locally.
+3 5 EUID <S>
+4 12 The effective user ID of the shell process.  If you have sufficient
+4 12 privileges, you may change the effective user ID of the shell
+4 12 process by assigning to this parameter.  Also (assuming sufficient
+4 12 privileges), you may start a single command with a different
+4 12 effective user ID by ‘(EUID=uid; command)'
+4 12 If this is made local, it is not implicitly set to 0, but may be
+4 12 explicitly set locally.
+3 5 ERRNO <S>
+4 12 The value of errno (see errno(3)) as set by the most recently
+4 12 failed system call.  This value is system dependent and is intended
+4 12 for debugging purposes.  It is also useful with the zsh/system
+4 12 module which allows the number to be turned into a name or message.
+4 12 To use this parameter, it must first be assigned a value (typically
+4 12 0 (zero)).  It is initially unset for scripting compatibility.
+3 5 FUNCNEST <S>
+4 12 Integer.  If greater than or equal to zero, the maximum nesting
+4 12 depth of shell functions.  When it is exceeded, an error is raised
+4 12 at the point where a function is called.  The default value is
+4 12 determined when the shell is configured, but is typically 500.
+4 12 Increasing the value increases the danger of a runaway function
+4 12 recursion causing the shell to crash.  Setting a negative value
+4 12 turns off the check.
+3 5 GID <S>
+4 12 The real group ID of the shell process.  If you have sufficient
+4 12 privileges, you may change the group ID of the shell process by
+4 12 assigning to this parameter.  Also (assuming sufficient
+4 12 privileges), you may start a single command under a different group
+4 12 ID by ‘(GID=gid; command)'
+4 12 If this is made local, it is not implicitly set to 0, but may be
+4 12 explicitly set locally.
+3 5 HISTCMD
+4 12 The current history event number in an interactive shell, in other
+4 12 words the event number for the command that caused $HISTCMD to be
+4 12 read.  If the current history event modifies the history, HISTCMD
+4 12 changes to the new maximum history event number.
+3 5 HOST   The current hostname.
+3 5 LINENO <S>
+4 12 The line number of the current line within the current script,
+4 12 sourced file, or shell function being executed, whichever was
+4 12 started most recently.  Note that in the case of shell functions
+4 12 the line number refers to the function as it appeared in the
+4 12 original definition, not necessarily as displayed by the functions
+4 12 builtin.
+3 5 LOGNAME
+4 12 If the corresponding variable is not set in the environment of the
+4 12 shell, it is initialized to the login name corresponding to the
+4 12 current login session. This parameter is exported by default but
+4 12 this can be disabled using the typeset builtin.  The value is set
+4 12 to the string returned by the getlogin(3) system call if that is
+4 12 available.
+3 5 MACHTYPE
+4 12 The machine type (microprocessor class or machine model), as
+4 12 determined at compile time.
+3 5 OLDPWD
+4 12 The previous working directory.  This is set when the shell
+4 12 initializes and whenever the directory changes.
+3 5 OPTARG <S>
+4 12 The value of the last option argument processed by the getopts
+4 12 command.
+3 5 OPTIND <S>
+4 12 The index of the last option argument processed by the getopts
+4 12 command.
+3 5 OSTYPE
+4 12 The operating system, as determined at compile time.
+3 5 PPID <S>
+4 12 The process ID of the parent of the shell, set when the shell
+4 12 initializes.  As with $$, the value does not change in subshells
+4 12 created as a duplicate of the current shell.
+3 5 PWD    The present working directory.  This is set when the shell
+4 12 initializes and whenever the directory changes.
+3 5 RANDOM <S>
+4 12 A pseudo-random integer from 0 to 32767, newly generated each time
+4 12 this parameter is referenced.  The random number generator can be
+4 12 seeded by assigning a numeric value to RANDOM.
+4 12 The values of RANDOM form an intentionally-repeatable pseudo-random
+4 12 sequence; subshells that reference RANDOM will result in identical
+4 12 pseudo-random values unless the value of RANDOM is referenced or
+4 12 seeded in the parent shell in between subshell invocations.
+3 5 SECONDS <S>
+4 12 The number of seconds since shell invocation.  If this parameter is
+4 12 assigned a value, then the value returned upon reference will be
+4 12 the value that was assigned plus the number of seconds since the
+4 12 assignment.
+4 12 Unlike other special parameters, the type of the SECONDS parameter
+4 12 can be changed using the typeset command.  The type may be changed
+4 12 only to one of the floating point types or back to integer.  For
+4 12 example, ‘typeset -F SECONDS' causes the value to be reported as a
+4 12 floating point number.  The value is available to microsecond
+4 12 accuracy, although the shell may show more or fewer digits
+4 12 depending on the use of typeset.  See the documentation for the
+4 12 builtin typeset in zshbuiltins(1) for more details.
+3 5 SHLVL <S>
+4 12 Incremented by one each time a new shell is started.
+3 5 signals
+4 12 An array containing the names of the signals.  Note that with the
+4 12 standard zsh numbering of array indices, where the first element
+4 12 has index 1, the signals are offset by 1 from the signal number
+4 12 used by the operating system.  For example, on typical Unix-like
+4 12 systems HUP is signal number 1, but is referred to as $signals[2].
+4 12 This is because of EXIT at position 1 in the array, which is used
+4 12 internally by zsh but is not known to the operating system. On many
+4 12 systems there is a block of reserved or unused signal numbers
+4 12 before the POSIX real-time signals so the array index can't be used
+4 12 as an accurate indicator of their signal number. Use, for example,
+4 12 kill -l SIGRTMIN instead.
+3 5 TRY_BLOCK_ERROR <S>
+4 12 In an always block, indicates whether the preceding list of code
+4 12 caused an error.  The value is 1 to indicate an error, 0 otherwise.
+4 12 It may be reset, clearing the error condition.  See Complex
+4 12 Commands in zshmisc(1)
+3 5 TRY_BLOCK_INTERRUPT <S>
+4 12 This variable works in a similar way to TRY_BLOCK_ERROR, but
+4 12 represents the status of an interrupt from the signal SIGINT, which
+4 12 typically comes from the keyboard when the user types ^C.  If set
+4 12 to 0, any such interrupt will be reset; otherwise, the interrupt is
+4 12 propagated after the always block.
+4 12 Note that it is possible that an interrupt arrives during the
+4 12 execution of the always block; this interrupt is also propagated.
+3 5 TTY    The name of the tty associated with the shell, if any.
+3 5 TTYIDLE <S>
+4 12 The idle time of the tty associated with the shell in seconds or -1
+4 12 if there is no such tty.
+3 5 UID <S>
+4 12 The real user ID of the shell process.  If you have sufficient
+4 12 privileges, you may change the user ID of the shell by assigning to
+4 12 this parameter.  Also (assuming sufficient privileges), you may
+4 12 start a single command under a different user ID by ‘(UID=uid;
+4 12 command)'
+4 12 If this is made local, it is not implicitly set to 0, but may be
+4 12 explicitly set locally.
+3 5 USERNAME <S>
+4 12 The username corresponding to the real user ID of the shell
+4 12 process.  If you have sufficient privileges, you may change the
+4 12 username (and also the user ID and group ID) of the shell by
+4 12 assigning to this parameter.  Also (assuming sufficient
+4 12 privileges), you may start a single command under a different
+4 12 username (and user ID and group ID) by ‘(USERNAME=username;
+4 12 command)'
+3 5 VENDOR
+4 12 The vendor, as determined at compile time.
+3 5 zsh_eval_context <S> <Z> (ZSH_EVAL_CONTEXT <S>)
+4 12 An array (colon-separated list) indicating the context of shell
+4 12 code that is being run.  Each time a piece of shell code that is
+4 12 stored within the shell is executed a string is temporarily
+4 12 appended to the array to indicate the type of operation that is
+4 12 being performed.  Read in order the array gives an indication of
+4 12 the stack of operations being performed with the most immediate
+4 12 context last.
+4 12 Note that the variable does not give information on syntactic
+4 12 context such as pipelines or subshells.  Use $ZSH_SUBSHELL to
+4 12 detect subshells.
+4 12 The context is one of the following:
+4 12 cmdarg
+5 19 Code specified by the -c option to the command line that
+5 19 invoked the shell.
+4 12 cmdsubst
+5 19 Command substitution using the ‘...‘ or $(...) construct.
+4 12 equalsubst
+5 19 File substitution using the =(...) construct.
+4 12 eval   Code executed by the eval builtin.
+4 12 evalautofunc
+5 19 Code executed with the KSH_AUTOLOAD mechanism in order to
+5 19 define an autoloaded function.
+4 12 fc     Code from the shell history executed by the -e option to the
+5 19 fc builtin.
+4 12 file   Lines of code being read directly from a file, for example
+5 19 by the source builtin.
+4 12 filecode
+5 19 Lines of code being read from a .zwc file instead of
+5 19 directly from the source file.
+4 12 globqual
+5 19 Code executed by the e or + glob qualifier.
+4 12 globsort
+5 19 Code executed to order files by the o glob qualifier.
+4 12 insubst
+5 19 File substitution using the <(...) construct.
+4 12 loadautofunc
+5 19 Code read directly from a file to define an autoloaded
+5 19 function.
+4 12 outsubst
+5 19 File substitution using the >(...) construct.
+4 12 sched  Code executed by the sched builtin.
+4 12 shfunc
+5 19 A shell function.
+4 12 stty   Code passed to stty by the STTY environment variable.
+5 19 Normally this is passed directly to the system's stty
+5 19 command, so this value is unlikely to be seen in practice.
+4 12 style  Code executed as part of a style retrieved by the zstyle
+5 19 builtin from the zsh/zutil module.
+4 12 toplevel
+5 19 The highest execution level of a script or interactive
+5 19 shell.
+4 12 trap   Code executed as a trap defined by the trap builtin.  Traps
+5 19 defined as functions have the context shfunc.  As traps are
+5 19 asynchronous they may have a different hierarchy from other
+5 19 code.
+4 12 zpty   Code executed by the zpty builtin from the zsh/zpty module.
+4 12 zregexparse-guard
+5 19 Code executed as a guard by the zregexparse command from the
+5 19 zsh/zutil module.
+4 12 zregexparse-action
+5 19 Code executed as an action by the zregexparse command from
+5 19 the zsh/zutil module.
+3 5 ZSH_ARGZERO
+4 12 If zsh was invoked to run a script, this is the name of the script.
+4 12 Otherwise, it is the name used to invoke the current shell.  This
+4 12 is the same as the value of $0 when the POSIX_ARGZERO option is
+4 12 set, but is always available.
+3 5 ZSH_EXECUTION_STRING
+4 12 If the shell was started with the option -c, this contains the
+4 12 argument passed to the option.  Otherwise it is not set.
+3 5 ZSH_NAME
+4 12 Expands to the basename of the command used to invoke this instance
+4 12 of zsh.
+3 5 ZSH_PATCHLEVEL
+4 12 The output of ‘git describe --tags --long' for the zsh repository
+4 12 used to build the shell.  This is most useful in order to keep
+4 12 track of versions of the shell during development between releases;
+4 12 hence most users should not use it and should instead rely on
+4 12 $ZSH_VERSION.
+3 5 zsh_scheduled_events
+4 12 See the section ‘The zsh/sched Module' in zshmodules(1).
+3 5 ZSH_SCRIPT
+4 12 If zsh was invoked to run a script, this is the name of the script,
+4 12 otherwise it is unset.
+3 5 ZSH_SUBSHELL
+4 12 Readonly integer.  Initially zero, incremented each time the shell
+4 12 forks to create a subshell for executing code.  Hence ‘(print
+4 12 $ZSH_SUBSHELL)' and ‘print $(print $ZSH_SUBSHELL)' output 1, while
+4 12 ‘( (print $ZSH_SUBSHELL) )' outputs 2.
+3 5 ZSH_VERSION
+4 12 The version number of the release of zsh.
+1 0 PARAMETERS USED BY THE SHELL
+3 5 The following parameters are used by the shell.  Again, ‘<S>' indicates
+3 5 that the parameter is special and ‘<Z>' indicates that the parameter does
+3 5 not exist when the shell initializes in sh or ksh emulation mode.
+3 5 In cases where there are two parameters with an upper- and lowercase form
+3 5 of the same name, such as path and PATH, the lowercase form is an array
+3 5 and the uppercase form is a scalar with the elements of the array joined
+3 5 together by colons.  These are similar to tied parameters created via
+3 5 ‘typeset -T'.  The normal use for the colon-separated form is for
+3 5 exporting to the environment, while the array form is easier to manipulate
+3 5 within the shell.  Note that unsetting either of the pair will unset the
+3 5 other; they retain their special properties when recreated, and recreating
+3 5 one of the pair will recreate the other.
+3 5 ARGV0  If exported, its value is used as the argv[0] of external commands.
+4 12 Usually used in constructs like ‘ARGV0=emacs nethack'.
+3 5 BAUD   The rate in bits per second at which data reaches the terminal.
+4 12 The line editor will use this value in order to compensate for a
+4 12 slow terminal by delaying updates to the display until necessary.
+4 12 If the parameter is unset or the value is zero the compensation
+4 12 mechanism is turned off.  The parameter is not set by default.
+4 12 This parameter may be profitably set in some circumstances, e.g.
+4 12 for slow modems dialing into a communications server, or on a slow
+4 12 wide area network.  It should be set to the baud rate of the
+4 12 slowest part of the link for best performance.
+3 5 cdpath <S> <Z> (CDPATH <S>)
+4 12 An array (colon-separated list) of directories specifying the
+4 12 search path for the cd command.
+3 5 COLUMNS <S>
+4 12 The number of columns for this terminal session.  Used for printing
+4 12 select lists and for the line editor.
+3 5 CORRECT_IGNORE
+4 12 If set, is treated as a pattern during spelling correction.  Any
+4 12 potential correction that matches the pattern is ignored.  For
+4 12 example, if the value is ‘_*' then completion functions (which, by
+4 12 convention, have names beginning with ‘_') will never be offered as
+4 12 spelling corrections.  The pattern does not apply to the correction
+4 12 of file names, as applied by the CORRECT_ALL option (so with the
+4 12 example just given files beginning with ‘_' in the current
+4 12 directory would still be completed).
+3 5 CORRECT_IGNORE_FILE
+4 12 If set, is treated as a pattern during spelling correction of file
+4 12 names.  Any file name that matches the pattern is never offered as
+4 12 a correction.  For example, if the value is ‘.*' then dot file
+4 12 names will never be offered as spelling corrections.  This is
+4 12 useful with the CORRECT_ALL option.
+3 5 DIRSTACKSIZE
+4 12 The maximum size of the directory stack, by default there is no
+4 12 limit.  If the stack gets larger than this, it will be truncated
+4 12 automatically.  This is useful with the AUTO_PUSHD option.
+3 5 ENV    If the ENV environment variable is set when zsh is invoked as sh or
+4 12 ksh, $ENV is sourced after the profile scripts.  The value of ENV
+4 12 is subjected to parameter expansion, command substitution, and
+4 12 arithmetic expansion before being interpreted as a pathname.  Note
+4 12 that ENV is not used unless the shell is interactive and zsh is
+4 12 emulating sh or ksh.
+3 5 FCEDIT
+4 12 The default editor for the fc builtin.  If FCEDIT is not set, the
+4 12 parameter EDITOR is used; if that is not set either, a builtin
+4 12 default, usually vi, is used.
+3 5 fignore <S> <Z> (FIGNORE <S>)
+4 12 An array (colon separated list) containing the suffixes of files to
+4 12 be ignored during filename completion.  However, if completion only
+4 12 generates files with suffixes in this list, then these files are
+4 12 completed anyway.
+3 5 fpath <S> <Z> (FPATH <S>)
+4 12 An array (colon separated list) of directories specifying the
+4 12 search path for function definitions.  This path is searched when a
+4 12 function with the -u attribute is referenced.  If an executable
+4 12 file is found, then it is read and executed in the current
+4 12 environment.
+3 5 histchars <S>
+4 12 Three characters used by the shell's history and lexical analysis
+4 12 mechanism.  The first character signals the start of a history
+4 12 expansion (default ‘!').  The second character signals the start of
+4 12 a quick history substitution (default ‘^').  The third character is
+4 12 the comment character (default ‘#').
+4 12 The characters must be in the ASCII character set; any attempt to
+4 12 set histchars to characters with a locale-dependent meaning will be
+4 12 rejected with an error message.
+3 5 HISTCHARS <S> <Z>
+4 12 Same as histchars.  (Deprecated.)
+3 5 HISTFILE
+4 12 The file to save the history in when an interactive shell exits.
+4 12 If unset, the history is not saved.
+3 5 HISTORY_IGNORE
+4 12 If set, is treated as a pattern at the time history files are
+4 12 written.  Any potential history entry that matches the pattern is
+4 12 skipped.  For example, if the value is ‘fc *' then commands that
+4 12 invoke the interactive history editor are never written to the
+4 12 history file.
+4 12 Note that HISTORY_IGNORE defines a single pattern: to specify
+4 12 alternatives use the ‘(first|second|...)' syntax.
+4 12 Compare the HIST_NO_STORE option or the zshaddhistory hook, either
+4 12 of which would prevent such commands from being added to the
+4 12 interactive history at all.  If you wish to use HISTORY_IGNORE to
+4 12 stop history being added in the first place, you can define the
+4 12 following hook:
+5 19 zshaddhistory() {
+6 21 emulate -L zsh
+6 21 ## uncomment if HISTORY_IGNORE
+6 21 ## should use EXTENDED_GLOB syntax
+6 21 # setopt extendedglob
+6 21 [[ $1 != ${~HISTORY_IGNORE} ]]
+5 19 }
+3 5 HISTSIZE <S>
+4 12 The maximum number of events stored in the internal history list.
+4 12 If you use the HIST_EXPIRE_DUPS_FIRST option, setting this value
+4 12 larger than the SAVEHIST size will give you the difference as a
+4 12 cushion for saving duplicated history events.
+4 12 If this is made local, it is not implicitly set to 0, but may be
+4 12 explicitly set locally.
+3 5 HOME <S>
+4 12 The default argument for the cd command.  This is not set
+4 12 automatically by the shell in sh, ksh or csh emulation, but it is
+4 12 typically present in the environment anyway, and if it becomes set
+4 12 it has its usual special behaviour.
+3 5 IFS <S>
+4 12 Internal field separators (by default space, tab, newline and NUL),
+4 12 that are used to separate words which result from command or
+4 12 parameter expansion and words read by the read builtin.  Any
+4 12 characters from the set space, tab and newline that appear in the
+4 12 IFS are called IFS white space.  One or more IFS white space
+4 12 characters or one non-IFS white space character together with any
+4 12 adjacent IFS white space character delimit a field.  If an IFS
+4 12 white space character appears twice consecutively in the IFS, this
+4 12 character is treated as if it were not an IFS white space
+4 12 character.
+4 12 If the parameter is unset, the default is used.  Note this has a
+4 12 different effect from setting the parameter to an empty string.
+4 12 If MULTIBYTE option is on and IFS contains invalid characters in
+4 12 the current locale, it is reset to the default.
+3 5 KEYBOARD_HACK
+4 12 This variable defines a character to be removed from the end of the
+4 12 command line before interpreting it (interactive shells only). It
+4 12 is intended to fix the problem with keys placed annoyingly close to
+4 12 return and replaces the SUNKEYBOARDHACK option which did this for
+4 12 backquotes only.  Should the chosen character be one of
+4 12 singlequote, doublequote or backquote, there must also be an odd
+4 12 number of them on the command line for the last one to be removed.
+4 12 For backward compatibility, if the SUNKEYBOARDHACK option is
+4 12 explicitly set, the value of KEYBOARD_HACK reverts to backquote.
+4 12 If the option is explicitly unset, this variable is set to empty.
+3 5 KEYTIMEOUT
+4 12 The time the shell waits, in hundredths of seconds, for another key
+4 12 to be pressed when reading bound multi-character sequences.
+3 5 LANG <S>
+4 12 This variable determines the locale category for any category not
+4 12 specifically selected via a variable starting with ‘LC_'.
+3 5 LC_ALL <S>
+4 12 This variable overrides the value of the ‘LANG' variable and the
+4 12 value of any of the other variables starting with ‘LC_'.
+3 5 LC_COLLATE <S>
+4 12 This variable determines the locale category for character
+4 12 collation information within ranges in glob brackets and for
+4 12 sorting.
+3 5 LC_CTYPE <S>
+4 12 This variable determines the locale category for character handling
+4 12 functions.  If the MULTIBYTE option is in effect this variable or
+4 12 LANG should contain a value that reflects the character set in use,
+4 12 even if it is a single-byte character set, unless only the 7-bit
+4 12 subset (ASCII) is used.  For example, if the character set is
+4 12 ISO-8859-1, a suitable value might be en_US.iso88591 (certain Linux
+4 12 distributions) or en_US.ISO8859-1 (MacOS).
+3 5 LC_MESSAGES <S>
+4 12 This variable determines the language in which messages should be
+4 12 written.  Note that zsh does not use message catalogs.
+3 5 LC_NUMERIC <S>
+4 12 This variable affects the decimal point character and thousands
+4 12 separator character for the formatted input/output functions and
+4 12 string conversion functions.  Note that zsh ignores this setting
+4 12 when parsing floating point mathematical expressions.
+3 5 LC_TIME <S>
+4 12 This variable determines the locale category for date and time
+4 12 formatting in prompt escape sequences.
+3 5 LINES <S>
+4 12 The number of lines for this terminal session.  Used for printing
+4 12 select lists and for the line editor.
+3 5 LISTMAX
+4 12 In the line editor, the number of matches to list without asking
+4 12 first. If the value is negative, the list will be shown if it spans
+4 12 at most as many lines as given by the absolute value.  If set to
+4 12 zero, the shell asks only if the top of the listing would scroll
+4 12 off the screen.
+3 5 MAIL   If this parameter is set and mailpath is not set, the shell looks
+4 12 for mail in the specified file.
+3 5 MAILCHECK
+4 12 The interval in seconds between checks for new mail.
+3 5 mailpath <S> <Z> (MAILPATH <S>)
+4 12 An array (colon-separated list) of filenames to check for new mail.
+4 12 Each filename can be followed by a ‘?' and a message that will be
+4 12 printed.  The message will undergo parameter expansion, command
+4 12 substitution and arithmetic expansion with the variable $_ defined
+4 12 as the name of the file that has changed.  The default message is
+4 12 ‘You have new mail'.  If an element is a directory instead of a
+4 12 file the shell will recursively check every file in every
+4 12 subdirectory of the element.
+3 5 manpath <S> <Z> (MANPATH <S> <Z>)
+4 12 An array (colon-separated list) whose value is not used by the
+4 12 shell.  The manpath array can be useful, however, since setting it
+4 12 also sets MANPATH, and vice versa.
+3 5 match
+3 5 mbegin
+3 5 mend   Arrays set by the shell when the b globbing flag is used in pattern
+4 12 matches.  See the subsection Globbing flags in the documentation
+4 12 for Filename Generation in zshexpn(1).
+3 5 MATCH
+3 5 MBEGIN
+3 5 MEND   Set by the shell when the m globbing flag is used in pattern
+4 12 matches.  See the subsection Globbing flags in the documentation
+4 12 for Filename Generation in zshexpn(1).
+3 5 module_path <S> <Z> (MODULE_PATH <S>)
+4 12 An array (colon-separated list) of directories that zmodload
+4 12 searches for dynamically loadable modules.  This is initialized to
+4 12 a standard pathname, usually ‘/usr/local/lib/zsh/$ZSH_VERSION'.
+4 12 (The ‘/usr/local/lib' part varies from installation to
+4 12 installation.)  For security reasons, any value set in the
+4 12 environment when the shell is started will be ignored.
+4 12 These parameters only exist if the installation supports dynamic
+4 12 module loading.
+3 5 NULLCMD <S>
+4 12 The command name to assume if a redirection is specified with no
+4 12 command.  Defaults to cat.  For sh/ksh behavior, change this to :.
+4 12 For csh-like behavior, unset this parameter; the shell will print
+4 12 an error message if null commands are entered.
+3 5 path <S> <Z> (PATH <S>)
+4 12 An array (colon-separated list) of directories to search for
+4 12 commands.  When this parameter is set, each directory is scanned
+4 12 and all files found are put in a hash table.  Directories named by
+4 12 relative path are not scanned for hashing.
+3 5 POSTEDIT <S>
+4 12 This string is output whenever the line editor exits.  It usually
+4 12 contains termcap strings to reset the terminal.
+3 5 PROMPT <S> <Z>
+3 5 PROMPT2 <S> <Z>
+3 5 PROMPT3 <S> <Z>
+3 5 PROMPT4 <S> <Z>
+4 12 Same as PS1, PS2, PS3 and PS4, respectively.
+3 5 prompt <S> <Z>
+4 12 Same as PS1.
+3 5 PROMPT_EOL_MARK
+4 12 When the PROMPT_CR and PROMPT_SP options are set, the
+4 12 PROMPT_EOL_MARK parameter can be used to customize how the end of
+4 12 partial lines are shown.  This parameter undergoes prompt
+4 12 expansion, with the PROMPT_PERCENT option set.  If not set, the
+4 12 default behavior is equivalent to the value ‘%B%S%#%s%b'.
+3 5 PS1 <S>
+4 12 The primary prompt string, printed before a command is read.  It
+4 12 undergoes a special form of expansion before being displayed; see
+4 12 EXPANSION OF PROMPT SEQUENCES in zshmisc(1).  The default is ‘%m%#
+4 12 '.
+3 5 PS2 <S>
+4 12 The secondary prompt, printed when the shell needs more information
+4 12 to complete a command.  It is expanded in the same way as PS1.  The
+4 12 default is ‘%_> ', which displays any shell constructs or quotation
+4 12 marks which are currently being processed.
+3 5 PS3 <S>
+4 12 Selection prompt used within a select loop.  It is expanded in the
+4 12 same way as PS1.  The default is ‘?# '.
+3 5 PS4 <S>
+4 12 The execution trace prompt.  Default is ‘+%N:%i> ', which displays
+4 12 the name of the current shell structure and the line number within
+4 12 it.  In sh or ksh emulation, the default is ‘+ '.
+3 5 psvar <S> <Z> (PSVAR <S>)
+4 12 An array (colon-separated list) whose elements can be used in
+4 12 PROMPT strings.  Setting psvar also sets PSVAR, and vice versa.
+3 5 READNULLCMD <S>
+4 12 The command name to assume if a single input redirection is
+4 12 specified with no command.  Defaults to more.
+3 5 REPORTMEMORY
+4 12 If nonnegative, commands whose maximum resident set size (roughly
+4 12 speaking, main memory usage) in kilobytes is greater than this
+4 12 value have timing statistics reported.  The format used to output
+4 12 statistics is the value of the TIMEFMT parameter, which is the same
+4 12 as for the REPORTTIME variable and the time builtin; note that by
+4 12 default this does not output memory usage.  Appending " max RSS %M"
+4 12 to the value of TIMEFMT causes it to output the value that
+4 12 triggered the report.  If REPORTTIME is also in use, at most a
+4 12 single report is printed for both triggers.  This feature requires
+4 12 the getrusage() system call, commonly supported by modern Unix-like
+4 12 systems.
+3 5 REPORTTIME
+4 12 If nonnegative, commands whose combined user and system execution
+4 12 times (measured in seconds) are greater than this value have timing
+4 12 statistics printed for them.  Output is suppressed for commands
+4 12 executed within the line editor, including completion; commands
+4 12 explicitly marked with the time keyword still cause the summary to
+4 12 be printed in this case.
+3 5 REPLY  This parameter is reserved by convention to pass string values
+4 12 between shell scripts and shell builtins in situations where a
+4 12 function call or redirection are impossible or undesirable.  The
+4 12 read builtin and the select complex command may set REPLY, and
+4 12 filename generation both sets and examines its value when
+4 12 evaluating certain expressions.  Some modules also employ REPLY for
+4 12 similar purposes.
+3 5 reply  As REPLY, but for array values rather than strings.
+3 5 RPROMPT <S>
+3 5 RPS1 <S>
+4 12 This prompt is displayed on the right-hand side of the screen when
+4 12 the primary prompt is being displayed on the left.  This does not
+4 12 work if the SINGLE_LINE_ZLE option is set.  It is expanded in the
+4 12 same way as PS1.
+3 5 RPROMPT2 <S>
+3 5 RPS2 <S>
+4 12 This prompt is displayed on the right-hand side of the screen when
+4 12 the secondary prompt is being displayed on the left.  This does not
+4 12 work if the SINGLE_LINE_ZLE option is set.  It is expanded in the
+4 12 same way as PS2.
+3 5 SAVEHIST
+4 12 The maximum number of history events to save in the history file.
+4 12 If this is made local, it is not implicitly set to 0, but may be
+4 12 explicitly set locally.
+3 5 SPROMPT <S>
+4 12 The prompt used for spelling correction.  The sequence ‘%R' expands
+4 12 to the string which presumably needs spelling correction, and ‘%r'
+4 12 expands to the proposed correction.  All other prompt escapes are
+4 12 also allowed.
+4 12 The actions available at the prompt are [nyae]:
+4 12 n (‘no') (default)
+5 19 Discard the correction and run the command.
+4 12 y (‘yes')
+5 19 Make the correction and run the command.
+4 12 a (‘abort')
+5 19 Discard the entire command line without running it.
+4 12 e (‘edit')
+5 19 Resume editing the command line.
+3 5 STTY   If this parameter is set in a command's environment, the shell runs
+4 12 the stty command with the value of this parameter as arguments in
+4 12 order to set up the terminal before executing the command. The
+4 12 modes apply only to the command, and are reset when it finishes or
+4 12 is suspended. If the command is suspended and continued later with
+4 12 the fg or wait builtins it will see the modes specified by STTY, as
+4 12 if it were not suspended.  This (intentionally) does not apply if
+4 12 the command is continued via ‘kill -CONT'.  STTY is ignored if the
+4 12 command is run in the background, or if it is in the environment of
+4 12 the shell but not explicitly assigned to in the input line. This
+4 12 avoids running stty at every external command by accidentally
+4 12 exporting it. Also note that STTY should not be used for window
+4 12 size specifications; these will not be local to the command.
+4 12 If the parameter is set and empty, all of the above applies except
+4 12 that stty is not run. This can be useful as a way to freeze the tty
+4 12 around a single command, blocking its changes to tty settings,
+4 12 similar to the ttyctl builtin.
+3 5 TERM <S>
+4 12 The type of terminal in use.  This is used when looking up termcap
+4 12 sequences.  An assignment to TERM causes zsh to re-initialize the
+4 12 terminal, even if the value does not change (e.g., ‘TERM=$TERM').
+4 12 It is necessary to make such an assignment upon any change to the
+4 12 terminal definition database or terminal type in order for the new
+4 12 settings to take effect.
+3 5 TERMINFO <S>
+4 12 A reference to your terminfo database, used by the ‘terminfo'
+4 12 library when the system has it; see terminfo(5).  If set, this
+4 12 causes the shell to reinitialise the terminal, making the
+4 12 workaround ‘TERM=$TERM' unnecessary.
+3 5 TERMINFO_DIRS <S>
+4 12 A colon-seprarated list of terminfo databases, used by the
+4 12 ‘terminfo' library when the system has it; see terminfo(5). This
+4 12 variable is only used by certain terminal libraries, in particular
+4 12 ncurses; see terminfo(5) to check support on your system.  If set,
+4 12 this causes the shell to reinitialise the terminal, making the
+4 12 workaround ‘TERM=$TERM' unnecessary.  Note that unlike other
+4 12 colon-separated arrays this is not tied to a zsh array.
+3 5 TIMEFMT
+4 12 The format of process time reports with the time keyword.  The
+4 12 default is ‘%J  %U user %S system %P cpu %*E total'.  Recognizes
+4 12 the following escape sequences, although not all may be available
+4 12 on all systems, and some that are available may not be useful:
+4 12 %%     A ‘%'.
+4 12 %U     CPU seconds spent in user mode.
+4 12 %S     CPU seconds spent in kernel mode.
+4 12 %E     Elapsed time in seconds.
+4 12 %P     The CPU percentage, computed as 100*(%U+%S)/%E.
+4 12 %W     Number of times the process was swapped.
+4 12 %X     The average amount in (shared) text space used in kilobytes.
+4 12 %D     The average amount in (unshared) data/stack space used in
+5 19 kilobytes.
+4 12 %K     The total space used (%X+%D) in kilobytes.
+4 12 %M     The  maximum memory the process had in use at any time in
+5 19 kilobytes.
+4 12 %F     The number of major page faults (page needed to be brought
+5 19 from disk).
+4 12 %R     The number of minor page faults.
+4 12 %I     The number of input operations.
+4 12 %O     The number of output operations.
+4 12 %r     The number of socket messages received.
+4 12 %s     The number of socket messages sent.
+4 12 %k     The number of signals received.
+4 12 %w     Number of voluntary context switches (waits).
+4 12 %c     Number of involuntary context switches.
+4 12 %J     The name of this job.
+4 12 A star may be inserted between the percent sign and flags printing
+4 12 time (e.g., ‘%*E'); this causes the time to be printed in
+4 12 ‘hh:mm:ss.ttt' format (hours and minutes are only printed if they
+4 12 are not zero).  Alternatively, ‘m' or ‘u' may be used (e.g., ‘%mE')
+4 12 to produce time output in milliseconds or microseconds,
+4 12 respectively.
+3 5 TMOUT  If this parameter is nonzero, the shell will receive an ALRM signal
+4 12 if a command is not entered within the specified number of seconds
+4 12 after issuing a prompt. If there is a trap on SIGALRM, it will be
+4 12 executed and a new alarm is scheduled using the value of the TMOUT
+4 12 parameter after executing the trap.  If no trap is set, and the
+4 12 idle time of the terminal is not less than the value of the TMOUT
+4 12 parameter, zsh terminates.  Otherwise a new alarm is scheduled to
+4 12 TMOUT seconds after the last keypress.
+3 5 TMPPREFIX
+4 12 A pathname prefix which the shell will use for all temporary files.
+4 12 Note that this should include an initial part for the file name as
+4 12 well as any directory names.  The default is ‘/tmp/zsh'.
+3 5 TMPSUFFIX
+4 12 A filename suffix which the shell will use for temporary files
+4 12 created by process substitutions (e.g., ‘=(list)').  Note that the
+4 12 value should include a leading dot ‘.' if intended to be
+4 12 interpreted as a file extension.  The default is not to append any
+4 12 suffix, thus this parameter should be assigned only when needed and
+4 12 then unset again.
+3 5 WORDCHARS <S>
+4 12 A list of non-alphanumeric characters considered part of a word by
+4 12 the line editor.
+3 5 ZBEEP  If set, this gives a string of characters, which can use all the
+4 12 same codes as the bindkey command as described in the zsh/zle
+4 12 module entry in zshmodules(1), that will be output to the terminal
+4 12 instead of beeping.  This may have a visible instead of an audible
+4 12 effect; for example, the string ‘\e[?5h\e[?5l' on a vt100 or xterm
+4 12 will have the effect of flashing reverse video on and off (if you
+4 12 usually use reverse video, you should use the string ‘\e[?5l\e[?5h'
+4 12 instead).  This takes precedence over the NOBEEP option.
+3 5 ZDOTDIR
+4 12 The directory to search for shell startup files (.zshrc, etc), if
+4 12 not $HOME.
+3 5 zle_bracketed_paste
+4 12 Many terminal emulators have a feature that allows applications to
+4 12 identify when text is pasted into the terminal rather than being
+4 12 typed normally. For ZLE, this means that special characters such as
+4 12 tabs and newlines can be inserted instead of invoking editor
+4 12 commands.  Furthermore, pasted text forms a single undo event and
+4 12 if the region is active, pasted text will replace the region.
+4 12 This two-element array contains the terminal escape sequences for
+4 12 enabling and disabling the feature. These escape sequences are used
+4 12 to enable bracketed paste when ZLE is active and disable it at
+4 12 other times.  Unsetting the parameter has the effect of ensuring
+4 12 that bracketed paste remains disabled.
+3 5 zle_highlight
+4 12 An array describing contexts in which ZLE should highlight the
+4 12 input text.  See Character Highlighting in zshzle(1).
+3 5 ZLE_LINE_ABORTED
+4 12 This parameter is set by the line editor when an error occurs.  It
+4 12 contains the line that was being edited at the point of the error.
+4 12 ‘print -zr -- $ZLE_LINE_ABORTED' can be used to recover the line.
+4 12 Only the most recent line of this kind is remembered.
+3 5 ZLE_REMOVE_SUFFIX_CHARS
+3 5 ZLE_SPACE_SUFFIX_CHARS
+4 12 These parameters are used by the line editor.  In certain
+4 12 circumstances suffixes (typically space or slash) added by the
+4 12 completion system will be removed automatically, either because the
+4 12 next editing command was not an insertable character, or because
+4 12 the character was marked as requiring the suffix to be removed.
+4 12 These variables can contain the sets of characters that will cause
+4 12 the suffix to be removed.  If ZLE_REMOVE_SUFFIX_CHARS is set, those
+4 12 characters will cause the suffix to be removed; if
+4 12 ZLE_SPACE_SUFFIX_CHARS is set, those characters will cause the
+4 12 suffix to be removed and replaced by a space.
+4 12 If ZLE_REMOVE_SUFFIX_CHARS is not set, the default behaviour is
+4 12 equivalent to:
+5 19 ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;&|'
+4 12 If ZLE_REMOVE_SUFFIX_CHARS is set but is empty, no characters have
+4 12 this behaviour.  ZLE_SPACE_SUFFIX_CHARS takes precedence, so that
+4 12 the following:
+5 19 ZLE_SPACE_SUFFIX_CHARS=$'&|'
+4 12 causes the characters ‘&' and ‘|' to remove the suffix but to
+4 12 replace it with a space.
+4 12 To illustrate the difference, suppose that the option
+4 12 AUTO_REMOVE_SLASH is in effect and the directory DIR has just been
+4 12 completed, with an appended /, following which the user types ‘&'.
+4 12 The default result is ‘DIR&'.  With ZLE_REMOVE_SUFFIX_CHARS set but
+4 12 without including ‘&' the result is ‘DIR/&'.  With
+4 12 ZLE_SPACE_SUFFIX_CHARS set to include ‘&' the result is ‘DIR &'.
+4 12 Note that certain completions may provide their own suffix removal
+4 12 or replacement behaviour which overrides the values described here.
+4 12 See the completion system documentation in zshcompsys(1).
+3 5 ZLE_RPROMPT_INDENT <S>
+4 12 If set, used to give the indentation between the right hand side of
+4 12 the right prompt in the line editor as given by RPS1 or RPROMPT and
+4 12 the right hand side of the screen.  If not set, the value 1 is
+4 12 used.
+4 12 Typically this will be used to set the value to 0 so that the
+4 12 prompt appears flush with the right hand side of the screen.  This
+4 12 is not the default as many terminals do not handle this correctly,
+4 12 in particular when the prompt appears at the extreme bottom right
+4 12 of the screen.  Recent virtual terminals are more likely to handle
+4 12 this case correctly.  Some experimentation is necessary.
+1 0 zsh 5.9.1                         May 31, 2026                      ZSHPARAM(1)

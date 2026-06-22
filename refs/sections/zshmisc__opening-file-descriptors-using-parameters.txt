@@ -1,0 +1,50 @@
+OPENING FILE DESCRIPTORS USING PARAMETERS
+     When the shell is parsing arguments to a command, and the shell option
+     IGNORE_BRACES is not set, a different form of redirection is allowed:
+     instead of a digit before the operator there is a valid shell identifier
+     enclosed in braces.  The shell will open a new file descriptor that is
+     guaranteed to be at least 10 and set the parameter named by the identifier
+     to the file descriptor opened.  No whitespace is allowed between the
+     closing brace and the redirection character.  For example:
+
+            ... {myfd}>&1
+
+     This opens a new file descriptor that is a duplicate of file descriptor 1
+     and sets the parameter myfd to the number of the file descriptor, which
+     will be at least 10.  The new file descriptor can be written to using the
+     syntax >&$myfd.  The file descriptor remains open in subshells and forked
+     external executables.
+
+     The syntax {varid}>&-, for example {myfd}>&-, may be used to close a file
+     descriptor opened in this fashion.  Note that the parameter given by varid
+     must previously be set to a file descriptor in this case.
+
+     It is an error to open or close a file descriptor in this fashion when the
+     parameter is readonly.  However, it is not an error to read or write a
+     file descriptor using <&$param or >&$param if param is readonly.
+
+     If the option CLOBBER is unset, it is an error to open a file descriptor
+     using a parameter that is already set to an open file descriptor
+     previously allocated by this mechanism.  Unsetting the parameter before
+     using it for allocating a file descriptor avoids the error.
+
+     Note that this mechanism merely allocates or closes a file descriptor; it
+     does not perform any redirections from or to it.  It is usually convenient
+     to allocate a file descriptor prior to use as an argument to exec.  The
+     syntax does not in any case work when used around complex commands such as
+     parenthesised subshells or loops, where the opening brace is interpreted
+     as part of a command list to be executed in the current shell.
+
+     The following shows a typical sequence of allocation, use, and closing of
+     a file descriptor:
+
+            integer myfd
+            exec {myfd}>~/logs/mylogfile.txt
+            print This is a log message. >&$myfd
+            exec {myfd}>&-
+
+     Note that the expansion of the variable in the expression >&$myfd occurs
+     at the point the redirection is opened.  This is after the expansion of
+     command arguments and after any redirections to the left on the command
+     line have been processed.
+

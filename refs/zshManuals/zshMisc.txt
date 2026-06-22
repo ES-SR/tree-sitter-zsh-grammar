@@ -1,0 +1,2040 @@
+[38;2;248;248;242mZSHMISC(1)                       General Commands Manual                      ZSHMISC(1)[0m
+
+[38;2;248;248;242mNAME[0m
+[38;2;248;248;242m       zshmisc - everything and then some[0m
+
+[38;2;248;248;242mSIMPLE COMMANDS & PIPELINES[0m
+[38;2;248;248;242m       A  simple  command  is  a  sequence of optional parameter assignments followed by[0m
+[38;2;248;248;242m       blank-separated words, with optional redirections interspersed.  For  a  descrip‐[0m
+[38;2;248;248;242m       tion of assignment, see the beginning of zshparam(1).[0m
+
+[38;2;248;248;242m       The  first  word  is the command to be executed, and the remaining words, if any,[0m
+[38;2;248;248;242m       are arguments to the command.  If a command name is given, the parameter  assign‐[0m
+[38;2;248;248;242m       ments  modify the environment of the command when it is executed.  The value of a[0m
+[38;2;248;248;242m       simple command is its exit status, or 128 plus the signal number if terminated by[0m
+[38;2;248;248;242m       a signal.  For example,[0m
+
+[38;2;248;248;242m              echo foo[0m
+
+[38;2;248;248;242m       is a simple command with arguments.[0m
+
+[38;2;248;248;242m       A pipeline is either a simple command, or a sequence of two or more  simple  com‐[0m
+[38;2;248;248;242m       mands  where  each command is separated from the next by `|' or `|&'.  Where com‐[0m
+[38;2;248;248;242m       mands are separated by `|', the standard output of the first command is connected[0m
+[38;2;248;248;242m       to the standard input of the next.  `|&' is shorthand for `2>&1  |',  which  con‐[0m
+[38;2;248;248;242m       nects both the standard output and the standard error of the command to the stan‐[0m
+[38;2;248;248;242m       dard  input  of  the next.  The value of a pipeline is the value of the last com‐[0m
+[38;2;248;248;242m       mand, unless the pipeline is preceded by `!' in which case the value is the logi‐[0m
+[38;2;248;248;242m       cal inverse of the value of the last command.  For example,[0m
+
+[38;2;248;248;242m              echo foo | sed 's/foo/bar/'[0m
+
+[38;2;248;248;242m       is a pipeline, where the output (`foo' plus a newline) of the first command  will[0m
+[38;2;248;248;242m       be passed to the input of the second.[0m
+
+[38;2;248;248;242m       If  a  pipeline is preceded by `coproc', it is executed as a coprocess; a two-way[0m
+[38;2;248;248;242m       pipe is established between it and the parent shell.  The shell can read from  or[0m
+[38;2;248;248;242m       write  to  the coprocess by means of the `>&p' and `<&p' redirection operators or[0m
+[38;2;248;248;242m       with `print -p' and `read -p'.  A pipeline cannot be preceded  by  both  `coproc'[0m
+[38;2;248;248;242m       and  `!'.   If  job control is active, the coprocess can be treated in other than[0m
+[38;2;248;248;242m       input and output as an ordinary background job.[0m
+
+[38;2;248;248;242m       A sublist is either a single pipeline, or a sequence of  two  or  more  pipelines[0m
+[38;2;248;248;242m       separated  by  `&&'  or `||'.  If two pipelines are separated by `&&', the second[0m
+[38;2;248;248;242m       pipeline is executed only if the first succeeds (returns a zero status).  If  two[0m
+[38;2;248;248;242m       pipelines  are  separated by `||', the second is executed only if the first fails[0m
+[38;2;248;248;242m       (returns a nonzero status).  Both operators have equal precedence  and  are  left[0m
+[38;2;248;248;242m       associative.   The  value  of  the sublist is the value of the last pipeline exe‐[0m
+[38;2;248;248;242m       cuted.  For example,[0m
+
+[38;2;248;248;242m              dmesg | grep panic && print yes[0m
+
+[38;2;248;248;242m       is a sublist consisting of two pipelines, the second just a simple command  which[0m
+[38;2;248;248;242m       will  be  executed  if and only if the grep command returns a zero status.  If it[0m
+[38;2;248;248;242m       does not, the value of the sublist is that return status, else it is  the  status[0m
+[38;2;248;248;242m       returned by the print (almost certainly zero).[0m
+
+[38;2;248;248;242m       A  list  is  a sequence of zero or more sublists, in which each sublist is termi‐[0m
+[38;2;248;248;242m       nated by `;', `&', `&|', `&!', or a newline.  This terminator may  optionally  be[0m
+[38;2;248;248;242m       omitted from the last sublist in the list when the list appears as a complex com‐[0m
+[38;2;248;248;242m       mand  inside `(...)' or `{...}'.  When a sublist is terminated by `;' or newline,[0m
+[38;2;248;248;242m       the shell waits for it to finish before executing the next sublist.  If a sublist[0m
+[38;2;248;248;242m       is terminated by a `&', `&|', or `&!', the shell executes the last pipeline in it[0m
+[38;2;248;248;242m       in the background, and does not wait for it to finish (note the  difference  from[0m
+[38;2;248;248;242m       other  shells which execute the whole sublist in the background).  A backgrounded[0m
+[38;2;248;248;242m       pipeline returns a status of zero.[0m
+
+[38;2;248;248;242m       More generally, a list can be seen as a set of any shell commands whatsoever, in‐[0m
+[38;2;248;248;242m       cluding the complex commands below; this is implied wherever the word `list'  ap‐[0m
+[38;2;248;248;242m       pears  in later descriptions.  For example, the commands in a shell function form[0m
+[38;2;248;248;242m       a special sort of list.[0m
+
+[38;2;248;248;242mPRECOMMAND MODIFIERS[0m
+[38;2;248;248;242m       A simple command may be preceded by a precommand modifier, which will  alter  how[0m
+[38;2;248;248;242m       the  command is interpreted.  These modifiers are shell builtin commands with the[0m
+[38;2;248;248;242m       exception of nocorrect which is a reserved word.[0m
+
+[38;2;248;248;242m       -      The command is executed with a `-' prepended to its argv[0] string.[0m
+
+[38;2;248;248;242m       builtin[0m
+[38;2;248;248;242m              The command word is taken to be the name of a builtin command, rather than[0m
+[38;2;248;248;242m              a shell function or external command.[0m
+
+[38;2;248;248;242m       command [ -pvV ][0m
+[38;2;248;248;242m              The command word is taken to be the name of an  external  command,  rather[0m
+[38;2;248;248;242m              than  a  shell function or builtin.   If the POSIX_BUILTINS option is set,[0m
+[38;2;248;248;242m              builtins will also be executed but certain special properties of them  are[0m
+[38;2;248;248;242m              suppressed.  The  -p  flag causes a default path to be searched instead of[0m
+[38;2;248;248;242m              that in $path. With the -v flag, command is similar to whence and with -V,[0m
+[38;2;248;248;242m              it is equivalent to whence -v.[0m
+
+[38;2;248;248;242m       exec [ -cl ] [ -a argv0 ][0m
+[38;2;248;248;242m              The following command together with any arguments is run in place  of  the[0m
+[38;2;248;248;242m              current  process,  rather  than as a sub-process.  The shell does not fork[0m
+[38;2;248;248;242m              and is replaced.  The shell does not invoke TRAPEXIT, nor does  it  source[0m
+[38;2;248;248;242m              zlogout  files.   The  options  are  provided for compatibility with other[0m
+[38;2;248;248;242m              shells.[0m
+
+[38;2;248;248;242m              The -c option clears the environment.[0m
+
+[38;2;248;248;242m              The -l option is equivalent to the - precommand modifier, to treat the re‐[0m
+[38;2;248;248;242m              placement command as a login shell; the  command  is  executed  with  a  -[0m
+[38;2;248;248;242m              prepended to its argv[0] string.  This flag has no effect if used together[0m
+[38;2;248;248;242m              with the -a option.[0m
+
+[38;2;248;248;242m              The  -a  option is used to specify explicitly the argv[0] string (the name[0m
+[38;2;248;248;242m              of the command as seen by the process itself) to be used by  the  replace‐[0m
+[38;2;248;248;242m              ment  command  and is directly equivalent to setting a value for the ARGV0[0m
+[38;2;248;248;242m              environment variable.[0m
+
+[38;2;248;248;242m       nocorrect[0m
+[38;2;248;248;242m              Spelling correction is not done on any of the words.  This must appear be‐[0m
+[38;2;248;248;242m              fore any other precommand modifier, as it is interpreted immediately,  be‐[0m
+[38;2;248;248;242m              fore any parsing is done.  It has no effect in non-interactive shells.[0m
+
+[38;2;248;248;242m       noglob Filename generation (globbing) is not performed on any of the words.[0m
+
+[38;2;248;248;242mCOMPLEX COMMANDS[0m
+[38;2;248;248;242m       A complex command in zsh is one of the following:[0m
+
+[38;2;248;248;242m       if list then list [ elif list then list ] ... [ else list ] fi[0m
+[38;2;248;248;242m              The  if  list  is executed, and if it returns a zero exit status, the then[0m
+[38;2;248;248;242m              list is executed.  Otherwise, the elif list is executed and if its  status[0m
+[38;2;248;248;242m              is  zero,  the  then  list is executed.  If each elif list returns nonzero[0m
+[38;2;248;248;242m              status, the else list is executed.[0m
+
+[38;2;248;248;242m       for name ... [ in word ... ] term do list done[0m
+[38;2;248;248;242m              Expand the list of words, and set the parameter name to each  of  them  in[0m
+[38;2;248;248;242m              turn,  executing list each time.  If the `in word' is omitted, use the po‐[0m
+[38;2;248;248;242m              sitional parameters instead of the words.[0m
+
+[38;2;248;248;242m              The term consists of one or more newline or ; which terminate  the  words,[0m
+[38;2;248;248;242m              and are optional when the `in word' is omitted.[0m
+
+[38;2;248;248;242m              More  than  one  parameter name can appear before the list of words.  If N[0m
+[38;2;248;248;242m              names are given, then on each execution of the loop the next N  words  are[0m
+[38;2;248;248;242m              assigned  to  the  corresponding parameters.  If there are more names than[0m
+[38;2;248;248;242m              remaining words, the remaining  parameters  are  each  set  to  the  empty[0m
+[38;2;248;248;242m              string.  Execution of the loop ends when there is no remaining word to as‐[0m
+[38;2;248;248;242m              sign to the first name.  It is only possible for in to appear as the first[0m
+[38;2;248;248;242m              name in the list, else it will be treated as marking the end of the list.[0m
+
+[38;2;248;248;242m       for (( [expr1] ; [expr2] ; [expr3] )) do list done[0m
+[38;2;248;248;242m              The  arithmetic  expression  expr1  is  evaluated  first  (see the section[0m
+[38;2;248;248;242m              `Arithmetic Evaluation').  The arithmetic expression expr2  is  repeatedly[0m
+[38;2;248;248;242m              evaluated  until  it evaluates to zero and when non-zero, list is executed[0m
+[38;2;248;248;242m              and the arithmetic expression expr3 evaluated.  If any expression is omit‐[0m
+[38;2;248;248;242m              ted, then it behaves as if it evaluated to 1.[0m
+
+[38;2;248;248;242m       while list do list done[0m
+[38;2;248;248;242m              Execute the do list as long as the while list returns a zero exit status.[0m
+
+[38;2;248;248;242m       until list do list done[0m
+[38;2;248;248;242m              Execute the do list as long as until list returns a nonzero exit status.[0m
+
+[38;2;248;248;242m       repeat word do list done[0m
+[38;2;248;248;242m              word is expanded and treated as an arithmetic expression, which must eval‐[0m
+[38;2;248;248;242m              uate to a number n.  list is then executed n times.[0m
+
+[38;2;248;248;242m              The repeat syntax is disabled by default when the shell starts in  a  mode[0m
+[38;2;248;248;242m              emulating  another  shell.   It can be enabled with the command `enable -r[0m
+[38;2;248;248;242m              repeat'[0m
+
+[38;2;248;248;242m       case word in [ [(] pattern [ | pattern ] ... ) list (;;|;&|;|) ] ... esac[0m
+[38;2;248;248;242m              Execute the list associated with the first pattern that matches  word,  if[0m
+[38;2;248;248;242m              any.   The form of the patterns is the same as that used for filename gen‐[0m
+[38;2;248;248;242m              eration.  See the section `Filename Generation'.[0m
+
+[38;2;248;248;242m              Note further that, unless the SH_GLOB option is  set,  the  whole  pattern[0m
+[38;2;248;248;242m              with alternatives is treated by the shell as equivalent to a group of pat‐[0m
+[38;2;248;248;242m              terns within parentheses, although white space may appear about the paren‐[0m
+[38;2;248;248;242m              theses and the vertical bar and will be stripped from the pattern at those[0m
+[38;2;248;248;242m              points.   White  space  may  appear  elsewhere in the pattern; this is not[0m
+[38;2;248;248;242m              stripped.  If the SH_GLOB option is set, so that  an  opening  parenthesis[0m
+[38;2;248;248;242m              can be unambiguously treated as part of the case syntax, the expression is[0m
+[38;2;248;248;242m              parsed  into  separate  words and these are treated as strict alternatives[0m
+[38;2;248;248;242m              (as in other shells).[0m
+
+[38;2;248;248;242m              If the list that is executed is terminated with ;&  rather  than  ;;,  the[0m
+[38;2;248;248;242m              following  list is also executed.  The rule for the terminator of the fol‐[0m
+[38;2;248;248;242m              lowing list ;;, ;& or ;| is applied unless the esac is reached.[0m
+
+[38;2;248;248;242m              If the list that is executed is terminated with ;| the shell continues  to[0m
+[38;2;248;248;242m              scan  the patterns looking for the next match, executing the corresponding[0m
+[38;2;248;248;242m              list, and applying the rule for the corresponding terminator ;;, ;& or ;|.[0m
+[38;2;248;248;242m              Note that word is not re-expanded; all applicable patterns are tested with[0m
+[38;2;248;248;242m              the same word.[0m
+
+[38;2;248;248;242m       select name [ in word ... term ] do list done[0m
+[38;2;248;248;242m              where term is one or more newline or ; to terminate the words.  Print  the[0m
+[38;2;248;248;242m              set  of  words, each preceded by a number.  If the in word is omitted, use[0m
+[38;2;248;248;242m              the positional parameters.  The PROMPT3 prompt is printed and  a  line  is[0m
+[38;2;248;248;242m              read  from the line editor if the shell is interactive and that is active,[0m
+[38;2;248;248;242m              or else standard input.  If this line consists of the number of one of the[0m
+[38;2;248;248;242m              listed words, then the parameter name is set to the word corresponding  to[0m
+[38;2;248;248;242m              this  number.  If this line is empty, the selection list is printed again.[0m
+[38;2;248;248;242m              Otherwise, the value of the parameter name is set to null.   The  contents[0m
+[38;2;248;248;242m              of  the  line  read  from  standard input is saved in the parameter REPLY.[0m
+[38;2;248;248;242m              list is executed for each selection until a break or  end-of-file  is  en‐[0m
+[38;2;248;248;242m              countered.[0m
+
+[38;2;248;248;242m       ( list )[0m
+[38;2;248;248;242m              Execute  list  in  a subshell.  Traps set by the trap builtin are reset to[0m
+[38;2;248;248;242m              their default values while executing list; an exception  is  that  ignored[0m
+[38;2;248;248;242m              signals will continue to be ignored if the option POSIXTRAPS is set.[0m
+
+[38;2;248;248;242m       { list }[0m
+[38;2;248;248;242m              Execute list.[0m
+
+[38;2;248;248;242m       { try-list } always { always-list }[0m
+[38;2;248;248;242m              First  execute  try-list.  Regardless of errors, or break or continue com‐[0m
+[38;2;248;248;242m              mands encountered within try-list, execute  always-list.   Execution  then[0m
+[38;2;248;248;242m              continues  from  the  result of the execution of try-list; in other words,[0m
+[38;2;248;248;242m              any error, or break or continue command is treated in the normal  way,  as[0m
+[38;2;248;248;242m              if  always-list  were not present.  The two chunks of code are referred to[0m
+[38;2;248;248;242m              as the `try block' and the `always block'.[0m
+
+[38;2;248;248;242m              Optional newlines or semicolons may appear after the  always;  note,  how‐[0m
+[38;2;248;248;242m              ever, that they may not appear between the preceding closing brace and the[0m
+[38;2;248;248;242m              always.[0m
+
+[38;2;248;248;242m              An  `error'  in  this  context is a condition such as a syntax error which[0m
+[38;2;248;248;242m              causes the shell to abort execution of the current  function,  script,  or[0m
+[38;2;248;248;242m              list.   Syntax  errors  encountered while the shell is parsing the code do[0m
+[38;2;248;248;242m              not cause the always-list to be executed.   For  example,  an  erroneously[0m
+[38;2;248;248;242m              constructed  if  block  in  try-list would cause the shell to abort during[0m
+[38;2;248;248;242m              parsing, so that always-list would not be  executed,  while  an  erroneous[0m
+[38;2;248;248;242m              substitution  such  as  ${*foo*} would cause a run-time error, after which[0m
+[38;2;248;248;242m              always-list would be executed.[0m
+
+[38;2;248;248;242m              An error condition can be tested and reset with the special integer  vari‐[0m
+[38;2;248;248;242m              able TRY_BLOCK_ERROR.  Outside an always-list the value is irrelevant, but[0m
+[38;2;248;248;242m              it  is  initialised to -1.  Inside always-list, the value is 1 if an error[0m
+[38;2;248;248;242m              occurred in the try-list, else 0.  If TRY_BLOCK_ERROR is set to  0  during[0m
+[38;2;248;248;242m              the  always-list, the error condition caused by the try-list is reset, and[0m
+[38;2;248;248;242m              shell execution continues normally after the end of always-list.  Altering[0m
+[38;2;248;248;242m              the value during the try-list is not useful (unless this forms part of  an[0m
+[38;2;248;248;242m              enclosing always block).[0m
+
+[38;2;248;248;242m              Regardless  of  TRY_BLOCK_ERROR,  after  the end of always-list the normal[0m
+[38;2;248;248;242m              shell status $? is  the  value  returned  from  try-list.   This  will  be[0m
+[38;2;248;248;242m              non-zero if there was an error, even if TRY_BLOCK_ERROR was set to zero.[0m
+
+[38;2;248;248;242m              The  following  executes  the  given  code, ignoring any errors it causes.[0m
+[38;2;248;248;242m              This is an alternative to the usual convention of protecting code by  exe‐[0m
+[38;2;248;248;242m              cuting it in a subshell.[0m
+
+[38;2;248;248;242m                     {[0m
+[38;2;248;248;242m                         # code which may cause an error[0m
+[38;2;248;248;242m                       } always {[0m
+[38;2;248;248;242m                         # This code is executed regardless of the error.[0m
+[38;2;248;248;242m                         (( TRY_BLOCK_ERROR = 0 ))[0m
+[38;2;248;248;242m                     }[0m
+[38;2;248;248;242m                     # The error condition has been reset.[0m
+
+[38;2;248;248;242m              When  a  try  block occurs outside of any function, a return or a exit en‐[0m
+[38;2;248;248;242m              countered in try-list does not cause the execution  of  always-list.   In‐[0m
+[38;2;248;248;242m              stead,  the shell exits immediately after any EXIT trap has been executed.[0m
+[38;2;248;248;242m              Otherwise, a return command encountered in try-list will cause the  execu‐[0m
+[38;2;248;248;242m              tion of always-list, just like break and continue.[0m
+
+[38;2;248;248;242m       function [ -T ] word ... [ () ] [ term ] { list }[0m
+[38;2;248;248;242m       word ... () [ term ] { list }[0m
+[38;2;248;248;242m       word ... () [ term ] command[0m
+[38;2;248;248;242m              where term is one or more newline or ;.  Define a function which is refer‐[0m
+[38;2;248;248;242m              enced  by  any one of word.  Normally, only one word is provided; multiple[0m
+[38;2;248;248;242m              words are usually only useful for setting traps.  The body of the function[0m
+[38;2;248;248;242m              is the list between the { and }.  See the section `Functions'.[0m
+
+[38;2;248;248;242m              The options of function have the following meanings:[0m
+
+[38;2;248;248;242m              -T     Enable tracing for this function, as though with functions -T.  See[0m
+[38;2;248;248;242m                     the documentation of the -f option to the typeset builtin, in  zsh‐[0m
+[38;2;248;248;242m                     builtins(1).[0m
+
+[38;2;248;248;242m              If  the  option  SH_GLOB  is set for compatibility with other shells, then[0m
+[38;2;248;248;242m              whitespace may appear between the left and right parentheses when there is[0m
+[38;2;248;248;242m              a single word;  otherwise, the parentheses will be treated  as  forming  a[0m
+[38;2;248;248;242m              globbing pattern in that case.[0m
+
+[38;2;248;248;242m              In  any  of the forms above, a redirection may appear outside the function[0m
+[38;2;248;248;242m              body, for example[0m
+
+[38;2;248;248;242m                     func() { ... } 2>&1[0m
+
+[38;2;248;248;242m              The redirection is stored with the function and applied whenever the func‐[0m
+[38;2;248;248;242m              tion is executed.  Any variables in the redirection are  expanded  at  the[0m
+[38;2;248;248;242m              point the function is executed, but outside the function scope.[0m
+
+[38;2;248;248;242m       time [ pipeline ][0m
+[38;2;248;248;242m              The  pipeline is executed, and timing statistics are reported on the stan‐[0m
+[38;2;248;248;242m              dard error in the form specified by the TIMEFMT parameter.  If pipeline is[0m
+[38;2;248;248;242m              omitted, print statistics about the shell process and its children.[0m
+
+[38;2;248;248;242m       [[ exp ]][0m
+[38;2;248;248;242m              Evaluates the conditional expression exp and return a zero exit status  if[0m
+[38;2;248;248;242m              it  is  true.  See the section `Conditional Expressions' for a description[0m
+[38;2;248;248;242m              of exp.[0m
+
+[38;2;248;248;242mALTERNATE FORMS FOR COMPLEX COMMANDS[0m
+[38;2;248;248;242m       Many of zsh's complex commands have alternate forms.  These are non-standard  and[0m
+[38;2;248;248;242m       are  likely not to be obvious even to seasoned shell programmers; they should not[0m
+[38;2;248;248;242m       be used anywhere that portability of shell code is a concern.[0m
+
+[38;2;248;248;242m       The short versions below only work if sublist is of the form `{ list }' or if the[0m
+[38;2;248;248;242m       SHORT_LOOPS option is set.  For the if, while and until commands, in  both  these[0m
+[38;2;248;248;242m       cases  the  test part of the loop must also be suitably delimited, such as by `[[[0m
+[38;2;248;248;242m       ... ]]' or `(( ... ))', else the end of the test will not be recognized.  For the[0m
+[38;2;248;248;242m       for, repeat, case and select commands no such special form for the  arguments  is[0m
+[38;2;248;248;242m       necessary,  but  the  other  condition (the special form of sublist or use of the[0m
+[38;2;248;248;242m       SHORT_LOOPS option) still applies.  The SHORT_REPEAT option is available  to  en‐[0m
+[38;2;248;248;242m       able the short version only for the repeat command.[0m
+
+[38;2;248;248;242m       if list { list } [ elif list { list } ] ... [ else { list } ][0m
+[38;2;248;248;242m              An alternate form of if.  The rules mean that[0m
+
+[38;2;248;248;242m                     if [[ -o ignorebraces ]] {[0m
+[38;2;248;248;242m                       print yes[0m
+[38;2;248;248;242m                     }[0m
+
+[38;2;248;248;242m              works, but[0m
+
+[38;2;248;248;242m                     if true {  # Does not work![0m
+[38;2;248;248;242m                       print yes[0m
+[38;2;248;248;242m                     }[0m
+
+[38;2;248;248;242m              does not, since the test is not suitably delimited.[0m
+
+[38;2;248;248;242m       if list sublist[0m
+[38;2;248;248;242m              A  short  form  of  the alternate if.  The same limitations on the form of[0m
+[38;2;248;248;242m              list apply as for the previous form.[0m
+
+[38;2;248;248;242m       for name ... ( word ... ) sublist[0m
+[38;2;248;248;242m              A short form of for.[0m
+
+[38;2;248;248;242m       for name ... [ in word ... ] term sublist[0m
+[38;2;248;248;242m              where term is at least one newline or ;.  Another short form of for.[0m
+
+[38;2;248;248;242m       for (( [expr1] ; [expr2] ; [expr3] )) sublist[0m
+[38;2;248;248;242m              A short form of the arithmetic for command.[0m
+
+[38;2;248;248;242m       foreach name ... ( word ... ) list end[0m
+[38;2;248;248;242m              Another form of for.[0m
+
+[38;2;248;248;242m       while list { list }[0m
+[38;2;248;248;242m              An alternative form of while.  Note the limitations on the  form  of  list[0m
+[38;2;248;248;242m              mentioned above.[0m
+
+[38;2;248;248;242m       until list { list }[0m
+[38;2;248;248;242m              An  alternative  form  of until.  Note the limitations on the form of list[0m
+[38;2;248;248;242m              mentioned above.[0m
+
+[38;2;248;248;242m       repeat word sublist[0m
+[38;2;248;248;242m              This is a short form of repeat.[0m
+
+[38;2;248;248;242m       case word { [ [(] pattern [ | pattern ] ... ) list (;;|;&|;|) ] ... }[0m
+[38;2;248;248;242m              An alternative form of case.[0m
+
+[38;2;248;248;242m       select name [ in word ... term ] sublist[0m
+[38;2;248;248;242m              where term is at least one newline or ;.  A short form of select.[0m
+
+[38;2;248;248;242m       function word ... [ () ] [ term ] sublist[0m
+[38;2;248;248;242m              This is a short form of function.[0m
+
+[38;2;248;248;242mRESERVED WORDS[0m
+[38;2;248;248;242m       The following words are recognized as reserved words when used as the first  word[0m
+[38;2;248;248;242m       of a command unless quoted or disabled using disable -r:[0m
+
+[38;2;248;248;242m       do  done  esac then elif else fi for case if while function repeat time until se‐[0m
+[38;2;248;248;242m       lect coproc nocorrect foreach end ! [[ { } declare  export  float  integer  local[0m
+[38;2;248;248;242m       readonly typeset[0m
+
+[38;2;248;248;242m       Additionally,  `}' is recognized in any position if neither the IGNORE_BRACES op‐[0m
+[38;2;248;248;242m       tion nor the IGNORE_CLOSE_BRACES option is set.[0m
+
+[38;2;248;248;242mERRORS[0m
+[38;2;248;248;242m       Certain errors are treated as fatal by the shell: in an interactive  shell,  they[0m
+[38;2;248;248;242m       cause  control to return to the command line, and in a non-interactive shell they[0m
+[38;2;248;248;242m       cause the shell to be aborted.  In older versions of zsh, a non-interactive shell[0m
+[38;2;248;248;242m       running a script would not abort completely, but would resume  execution  at  the[0m
+[38;2;248;248;242m       next  command to be read from the script, skipping the remainder of any functions[0m
+[38;2;248;248;242m       or shell constructs such as loops or conditions; this somewhat  illogical  behav‐[0m
+[38;2;248;248;242m       iour can be recovered by setting the option CONTINUE_ON_ERROR.[0m
+
+[38;2;248;248;242m       Fatal errors found in non-interactive shells include:[0m
+
+[38;2;248;248;242m       •      Failure to parse shell options passed when invoking the shell[0m
+
+[38;2;248;248;242m       •      Failure to change options with the set builtin[0m
+
+[38;2;248;248;242m       •      Parse  errors  of  all sorts, including failures to parse mathematical ex‐[0m
+[38;2;248;248;242m              pressions[0m
+
+[38;2;248;248;242m       •      Failures to set or modify variable behaviour with typeset, local, declare,[0m
+[38;2;248;248;242m              export, integer, float[0m
+
+[38;2;248;248;242m       •      Execution of incorrectly positioned  loop  control  structures  (continue,[0m
+[38;2;248;248;242m              break)[0m
+
+[38;2;248;248;242m       •      Attempts  to  use  regular  expression  with  no regular expression module[0m
+[38;2;248;248;242m              available[0m
+
+[38;2;248;248;242m       •      Disallowed operations when the RESTRICTED options is set[0m
+
+[38;2;248;248;242m       •      Failure to create a pipe needed for a pipeline[0m
+
+[38;2;248;248;242m       •      Failure to create a multio[0m
+
+[38;2;248;248;242m       •      Failure to autoload a module needed for a declared shell feature[0m
+
+[38;2;248;248;242m       •      Errors creating command or process substitutions[0m
+
+[38;2;248;248;242m       •      Syntax errors in glob qualifiers[0m
+
+[38;2;248;248;242m       •      File generation errors where not caught by the option BAD_PATTERN[0m
+
+[38;2;248;248;242m       •      All bad patterns used for matching within case statements[0m
+
+[38;2;248;248;242m       •      File generation failures where not caused by NO_MATCH or similar options[0m
+
+[38;2;248;248;242m       •      All file generation errors where the pattern was used to create a multio[0m
+
+[38;2;248;248;242m       •      Memory errors where detected by the shell[0m
+
+[38;2;248;248;242m       •      Invalid subscripts to shell variables[0m
+
+[38;2;248;248;242m       •      Attempts to assign read-only variables[0m
+
+[38;2;248;248;242m       •      Logical errors with variables such as assignment to the wrong type[0m
+
+[38;2;248;248;242m       •      Use of invalid variable names[0m
+
+[38;2;248;248;242m       •      Errors in variable substitution syntax[0m
+
+[38;2;248;248;242m       •      Failure to convert characters in $'...' expressions[0m
+
+[38;2;248;248;242m       If the POSIX_BUILTINS option is set, more errors associated  with  shell  builtin[0m
+[38;2;248;248;242m       commands are treated as fatal, as specified by the POSIX standard.[0m
+
+[38;2;248;248;242mCOMMENTS[0m
+[38;2;248;248;242m       In non-interactive shells, or in interactive shells with the INTERACTIVE_COMMENTS[0m
+[38;2;248;248;242m       option  set, a word beginning with the third character of the histchars parameter[0m
+[38;2;248;248;242m       (`#' by default) causes that word and all the following characters up to  a  new‐[0m
+[38;2;248;248;242m       line to be ignored.[0m
+
+[38;2;248;248;242mALIASING[0m
+[38;2;248;248;242m       Every eligible word in the shell input is checked to see if there is an alias de‐[0m
+[38;2;248;248;242m       fined for it.  If so, it is replaced by the text of the alias if it is in command[0m
+[38;2;248;248;242m       position  (if it could be the first word of a simple command), or if the alias is[0m
+[38;2;248;248;242m       global.  If the replacement text ends with a space, the next word  in  the  shell[0m
+[38;2;248;248;242m       input is always eligible for purposes of alias expansion.[0m
+
+[38;2;248;248;242m       It is an error for the function name, word, in the sh-compatible function defini‐[0m
+[38;2;248;248;242m       tion syntax `word () ...' to be a word that resulted from alias expansion, unless[0m
+[38;2;248;248;242m       the ALIAS_FUNC_DEF option is set.[0m
+
+[38;2;248;248;242m       An  alias is defined using the alias builtin; global aliases may be defined using[0m
+[38;2;248;248;242m       the -g option to that builtin.[0m
+
+[38;2;248;248;242m       A word is defined as:[0m
+
+[38;2;248;248;242m       •      Any plain string or glob pattern[0m
+
+[38;2;248;248;242m       •      Any quoted string, using any quoting method (note that the quotes must  be[0m
+[38;2;248;248;242m              part of the alias definition for this to be eligible)[0m
+
+[38;2;248;248;242m       •      Any parameter reference or command substitution[0m
+
+[38;2;248;248;242m       •      Any  series of the foregoing, concatenated without whitespace or other to‐[0m
+[38;2;248;248;242m              kens between them[0m
+
+[38;2;248;248;242m       •      Any reserved word (case, do, else, etc.)[0m
+
+[38;2;248;248;242m       •      With global aliasing, any command separator, any redirection operator, and[0m
+[38;2;248;248;242m              `(' or `)' when not part of a glob pattern[0m
+
+[38;2;248;248;242m       Alias expansion is done on the shell input before any other expansion except his‐[0m
+[38;2;248;248;242m       tory expansion.  Therefore, if an alias is defined for the word foo, alias expan‐[0m
+[38;2;248;248;242m       sion may be avoided by quoting part of the word, e.g. \foo.  Any form of  quoting[0m
+[38;2;248;248;242m       works, although there is nothing to prevent an alias being defined for the quoted[0m
+[38;2;248;248;242m       form such as \foo as well.[0m
+
+[38;2;248;248;242m       In particular, note that quoting must be used when using unalias to remove global[0m
+[38;2;248;248;242m       aliases:[0m
+
+[38;2;248;248;242m              % alias -g foo=bar[0m
+[38;2;248;248;242m              % unalias foo[0m
+[38;2;248;248;242m              unalias: no such hash table element: bar[0m
+[38;2;248;248;242m              % unalias \foo[0m
+[38;2;248;248;242m              %[0m
+
+[38;2;248;248;242m       When POSIX_ALIASES is set, only plain unquoted strings are eligible for aliasing.[0m
+[38;2;248;248;242m       The alias builtin does not reject ineligible aliases, but they are not expanded.[0m
+
+[38;2;248;248;242m       For  use  with  completion, which would remove an initial backslash followed by a[0m
+[38;2;248;248;242m       character that isn't special, it may be more convenient  to  quote  the  word  by[0m
+[38;2;248;248;242m       starting  with  a  single quote, i.e. 'foo; completion will automatically add the[0m
+[38;2;248;248;242m       trailing single quote.[0m
+
+[38;2;248;248;242m   Alias difficulties[0m
+[38;2;248;248;242m       Although aliases can be used in ways that bend normal  shell  syntax,  not  every[0m
+[38;2;248;248;242m       string of non-white-space characters can be used as an alias.[0m
+
+[38;2;248;248;242m       Any  set of characters not listed as a word above is not a word, hence no attempt[0m
+[38;2;248;248;242m       is made to expand it as an alias, no matter how  it  is  defined  (i.e.  via  the[0m
+[38;2;248;248;242m       builtin or the special parameter aliases described in the section THE ZSH/PARAME‐[0m
+[38;2;248;248;242m       TER  MODULE  in  zshmodules(1)).   However, as noted in the case of POSIX_ALIASES[0m
+[38;2;248;248;242m       above, the shell does not attempt to deduce whether the string corresponds  to  a[0m
+[38;2;248;248;242m       word at the time the alias is created.[0m
+
+[38;2;248;248;242m       For  example,  an expression containing an = at the start of a command line is an[0m
+[38;2;248;248;242m       assignment and cannot be expanded as an alias; a lone = is not an assignment  but[0m
+[38;2;248;248;242m       can only be set as an alias using the parameter, as otherwise the = is taken part[0m
+[38;2;248;248;242m       of the syntax of the builtin command.[0m
+
+[38;2;248;248;242m       It  is  not presently possible to alias the `((' token that introduces arithmetic[0m
+[38;2;248;248;242m       expressions, because until a full statement has been parsed, it cannot be distin‐[0m
+[38;2;248;248;242m       guished from two consecutive `(' tokens introducing nested subshells.  Also, if a[0m
+[38;2;248;248;242m       separator such as && is aliased, \&& turns into the two tokens \& and &, each  of[0m
+[38;2;248;248;242m       which may have been aliased separately.  Similarly for \<<, \>|, etc.[0m
+
+[38;2;248;248;242m       There is a commonly encountered problem with aliases illustrated by the following[0m
+[38;2;248;248;242m       code:[0m
+
+[38;2;248;248;242m              alias echobar='echo bar'; echobar[0m
+
+[38;2;248;248;242m       This  prints a message that the command echobar could not be found.  This happens[0m
+[38;2;248;248;242m       because aliases are expanded when the code is read in; the entire line is read in[0m
+[38;2;248;248;242m       one go, so that when echobar is executed it is too late to expand the  newly  de‐[0m
+[38;2;248;248;242m       fined  alias.  This is often a problem in shell scripts, functions, and code exe‐[0m
+[38;2;248;248;242m       cuted with `source' or `.'.  Consequently, use of functions rather  than  aliases[0m
+[38;2;248;248;242m       is recommended in non-interactive code.[0m
+
+[38;2;248;248;242mQUOTING[0m
+[38;2;248;248;242m       A  character  may  be  quoted (that is, made to stand for itself) by preceding it[0m
+[38;2;248;248;242m       with a `\'.  `\' followed by a newline is ignored.[0m
+
+[38;2;248;248;242m       A string enclosed between `$'' and `'' is processed the same way  as  the  string[0m
+[38;2;248;248;242m       arguments  of the print builtin, and the resulting string is considered to be en‐[0m
+[38;2;248;248;242m       tirely quoted.  A literal `'' character can be included in the  string  by  using[0m
+[38;2;248;248;242m       the `\'' escape.[0m
+
+[38;2;248;248;242m       All characters enclosed between a pair of single quotes ('') that is not preceded[0m
+[38;2;248;248;242m       by  a  `$'  are quoted.  A single quote cannot appear within single quotes unless[0m
+[38;2;248;248;242m       the option RC_QUOTES is set, in which case a pair of  single  quotes  are  turned[0m
+[38;2;248;248;242m       into a single quote.  For example,[0m
+
+[38;2;248;248;242m              print ''''[0m
+
+[38;2;248;248;242m       outputs  nothing  apart  from  a  newline if RC_QUOTES is not set, but one single[0m
+[38;2;248;248;242m       quote if it is set.[0m
+
+[38;2;248;248;242m       Inside double quotes (""), parameter and  command  substitution  occur,  and  `\'[0m
+[38;2;248;248;242m       quotes  the  characters `\', ``', `"', `$', and the first character of $histchars[0m
+[38;2;248;248;242m       (default `!').[0m
+
+[38;2;248;248;242mREDIRECTION[0m
+[38;2;248;248;242m       If a command is followed by & and job control is not  active,  then  the  default[0m
+[38;2;248;248;242m       standard input for the command is the empty file /dev/null.  Otherwise, the envi‐[0m
+[38;2;248;248;242m       ronment  for  the execution of a command contains the file descriptors of the in‐[0m
+[38;2;248;248;242m       voking shell as modified by input/output specifications.[0m
+
+[38;2;248;248;242m       The following may appear anywhere in a simple command or may precede or follow  a[0m
+[38;2;248;248;242m       complex  command.   Expansion occurs before word or digit is used except as noted[0m
+[38;2;248;248;242m       below.  If the result of substitution on word produces more  than  one  filename,[0m
+[38;2;248;248;242m       redirection occurs for each separate filename in turn.[0m
+
+[38;2;248;248;242m       < word Open  file  word  for reading as standard input.  It is an error to open a[0m
+[38;2;248;248;242m              file in this fashion if it does not exist.[0m
+
+[38;2;248;248;242m       <> word[0m
+[38;2;248;248;242m              Open file word for reading and writing as standard  input.   If  the  file[0m
+[38;2;248;248;242m              does not exist then it is created.[0m
+
+[38;2;248;248;242m       > word Open file word for writing as standard output.  If the file does not exist[0m
+[38;2;248;248;242m              then  it is created.  If the file exists, and the CLOBBER option is unset,[0m
+[38;2;248;248;242m              this causes an error; otherwise, it is truncated to zero length.[0m
+
+[38;2;248;248;242m       >| word[0m
+[38;2;248;248;242m       >! word[0m
+[38;2;248;248;242m              Same as >, except that the file is truncated to zero length if it  exists,[0m
+[38;2;248;248;242m              regardless of CLOBBER.[0m
+
+[38;2;248;248;242m       >> word[0m
+[38;2;248;248;242m              Open file word for writing in append mode as standard output.  If the file[0m
+[38;2;248;248;242m              does  not exist, and the CLOBBER and APPEND_CREATE options are both unset,[0m
+[38;2;248;248;242m              this causes an error; otherwise, the file is created.[0m
+
+[38;2;248;248;242m       >>| word[0m
+[38;2;248;248;242m       >>! word[0m
+[38;2;248;248;242m              Same as >>, except that the file is created if it does not exist,  regard‐[0m
+[38;2;248;248;242m              less of CLOBBER and APPEND_CREATE.[0m
+
+[38;2;248;248;242m       <<[-] word[0m
+[38;2;248;248;242m              The  shell  input  is read up to a line that is the same as word, or to an[0m
+[38;2;248;248;242m              end-of-file.  No parameter expansion,  command  substitution  or  filename[0m
+[38;2;248;248;242m              generation  is  performed  on  word.   The  resulting  document,  called a[0m
+[38;2;248;248;242m              here-document, becomes the standard input.[0m
+
+[38;2;248;248;242m              If any character of word is quoted with single or double quotes or a  `\',[0m
+[38;2;248;248;242m              no  interpretation  is placed upon the characters of the document.  Other‐[0m
+[38;2;248;248;242m              wise, parameter and command substitution occurs, `\' followed by a newline[0m
+[38;2;248;248;242m              is removed, and `\' must be used to quote the characters `\', `$', ``' and[0m
+[38;2;248;248;242m              the first character of word.[0m
+
+[38;2;248;248;242m              Note that word itself does not undergo  shell  expansion.   Backquotes  in[0m
+[38;2;248;248;242m              word do not have their usual effect; instead they behave similarly to dou‐[0m
+[38;2;248;248;242m              ble  quotes,  except that the backquotes themselves are passed through un‐[0m
+[38;2;248;248;242m              changed.  (This information is given for completeness and it is not recom‐[0m
+[38;2;248;248;242m              mended that backquotes be used.)  Quotes in the  form  $'...'  have  their[0m
+[38;2;248;248;242m              standard effect of expanding backslashed references to special characters.[0m
+
+[38;2;248;248;242m              If  <<- is used, then all leading tabs are stripped from word and from the[0m
+[38;2;248;248;242m              document.[0m
+
+[38;2;248;248;242m       <<< word[0m
+[38;2;248;248;242m              Perform shell expansion on word and pass the  result  to  standard  input.[0m
+[38;2;248;248;242m              This is known as a here-string.  Compare the use of word in here-documents[0m
+[38;2;248;248;242m              above,  where word does not undergo shell expansion.  The result will have[0m
+[38;2;248;248;242m              a trailing newline after it.[0m
+
+[38;2;248;248;242m       <& number[0m
+[38;2;248;248;242m       >& number[0m
+[38;2;248;248;242m              The standard input/output is duplicated from file descriptor  number  (see[0m
+[38;2;248;248;242m              dup2(2)).[0m
+
+[38;2;248;248;242m       <& -[0m
+[38;2;248;248;242m       >& -   Close the standard input/output.[0m
+
+[38;2;248;248;242m       <& p[0m
+[38;2;248;248;242m       >& p   The input/output from/to the coprocess is moved to the standard input/out‐[0m
+[38;2;248;248;242m              put.[0m
+
+[38;2;248;248;242m       >& word[0m
+[38;2;248;248;242m       &> word[0m
+[38;2;248;248;242m              (Except where `>& word' matches one of the above syntaxes; `&>' can always[0m
+[38;2;248;248;242m              be  used  to  avoid  this  ambiguity.)  Redirects both standard output and[0m
+[38;2;248;248;242m              standard error (file descriptor 2) in the manner of `> word'.   Note  that[0m
+[38;2;248;248;242m              this  does  not  have  the same effect as `> word 2>&1' in the presence of[0m
+[38;2;248;248;242m              multios (see the section below).[0m
+
+[38;2;248;248;242m       >&| word[0m
+[38;2;248;248;242m       >&! word[0m
+[38;2;248;248;242m       &>| word[0m
+[38;2;248;248;242m       &>! word[0m
+[38;2;248;248;242m              Redirects both standard output and standard error (file descriptor  2)  in[0m
+[38;2;248;248;242m              the manner of `>| word'.[0m
+
+[38;2;248;248;242m       >>& word[0m
+[38;2;248;248;242m       &>> word[0m
+[38;2;248;248;242m              Redirects  both  standard output and standard error (file descriptor 2) in[0m
+[38;2;248;248;242m              the manner of `>> word'.[0m
+
+[38;2;248;248;242m       >>&| word[0m
+[38;2;248;248;242m       >>&! word[0m
+[38;2;248;248;242m       &>>| word[0m
+[38;2;248;248;242m       &>>! word[0m
+[38;2;248;248;242m              Redirects both standard output and standard error (file descriptor  2)  in[0m
+[38;2;248;248;242m              the manner of `>>| word'.[0m
+
+[38;2;248;248;242m       If  one of the above is preceded by a digit, then the file descriptor referred to[0m
+[38;2;248;248;242m       is that specified by the digit instead of the default 0 or 1.  The order in which[0m
+[38;2;248;248;242m       redirections are specified is significant.  The shell evaluates each  redirection[0m
+[38;2;248;248;242m       in  terms  of  the (file descriptor, file) association at the time of evaluation.[0m
+[38;2;248;248;242m       For example:[0m
+
+[38;2;248;248;242m              ... 1>fname 2>&1[0m
+
+[38;2;248;248;242m       first associates file descriptor 1 with file fname.  It then associates file  de‐[0m
+[38;2;248;248;242m       scriptor  2 with the file associated with file descriptor 1 (that is, fname).  If[0m
+[38;2;248;248;242m       the order of redirections were reversed, file descriptor 2  would  be  associated[0m
+[38;2;248;248;242m       with  the terminal (assuming file descriptor 1 had been) and then file descriptor[0m
+[38;2;248;248;242m       1 would be associated with file fname.[0m
+
+[38;2;248;248;242m       The `|&' command separator described in Simple Commands & Pipelines in zshmisc(1)[0m
+[38;2;248;248;242m       is a shorthand for `2>&1 |'.[0m
+
+[38;2;248;248;242m       The various forms of process substitution, `<(list)', and `=(list)' for input and[0m
+[38;2;248;248;242m       `>(list)' for output, are often used together with redirection.  For example,  if[0m
+[38;2;248;248;242m       word  in  an output redirection is of the form `>(list)' then the output is piped[0m
+[38;2;248;248;242m       to the command represented by list.  See Process Substitution in zshexpn(1).[0m
+
+[38;2;248;248;242mOPENING FILE DESCRIPTORS USING PARAMETERS[0m
+[38;2;248;248;242m       When the shell is parsing arguments to  a  command,  and  the  shell  option  IG‐[0m
+[38;2;248;248;242m       NORE_BRACES  is not set, a different form of redirection is allowed: instead of a[0m
+[38;2;248;248;242m       digit before the operator there is a valid shell identifier enclosed  in  braces.[0m
+[38;2;248;248;242m       The  shell  will  open a new file descriptor that is guaranteed to be at least 10[0m
+[38;2;248;248;242m       and set the parameter named by the identifier to the file descriptor opened.   No[0m
+[38;2;248;248;242m       whitespace  is  allowed  between the closing brace and the redirection character.[0m
+[38;2;248;248;242m       For example:[0m
+
+[38;2;248;248;242m              ... {myfd}>&1[0m
+
+[38;2;248;248;242m       This opens a new file descriptor that is a duplicate of  file  descriptor  1  and[0m
+[38;2;248;248;242m       sets  the  parameter  myfd to the number of the file descriptor, which will be at[0m
+[38;2;248;248;242m       least 10.  The new file descriptor can be written to using  the  syntax  >&$myfd.[0m
+[38;2;248;248;242m       The file descriptor remains open in subshells and forked external executables.[0m
+
+[38;2;248;248;242m       The  syntax  {varid}>&-,  for  example {myfd}>&-, may be used to close a file de‐[0m
+[38;2;248;248;242m       scriptor opened in this fashion.  Note that the parameter  given  by  varid  must[0m
+[38;2;248;248;242m       previously be set to a file descriptor in this case.[0m
+
+[38;2;248;248;242m       It  is an error to open or close a file descriptor in this fashion when the para‐[0m
+[38;2;248;248;242m       meter is readonly.  However, it is not an error to read or write a file  descrip‐[0m
+[38;2;248;248;242m       tor using <&$param or >&$param if param is readonly.[0m
+
+[38;2;248;248;242m       If  the option CLOBBER is unset, it is an error to open a file descriptor using a[0m
+[38;2;248;248;242m       parameter that is already set to an open file descriptor previously allocated  by[0m
+[38;2;248;248;242m       this  mechanism.   Unsetting  the parameter before using it for allocating a file[0m
+[38;2;248;248;242m       descriptor avoids the error.[0m
+
+[38;2;248;248;242m       Note that this mechanism merely allocates or closes a file  descriptor;  it  does[0m
+[38;2;248;248;242m       not perform any redirections from or to it.  It is usually convenient to allocate[0m
+[38;2;248;248;242m       a  file  descriptor  prior to use as an argument to exec.  The syntax does not in[0m
+[38;2;248;248;242m       any case work when used around complex commands such as  parenthesised  subshells[0m
+[38;2;248;248;242m       or  loops, where the opening brace is interpreted as part of a command list to be[0m
+[38;2;248;248;242m       executed in the current shell.[0m
+
+[38;2;248;248;242m       The following shows a typical sequence of allocation, use, and closing of a  file[0m
+[38;2;248;248;242m       descriptor:[0m
+
+[38;2;248;248;242m              integer myfd[0m
+[38;2;248;248;242m              exec {myfd}>~/logs/mylogfile.txt[0m
+[38;2;248;248;242m              print This is a log message. >&$myfd[0m
+[38;2;248;248;242m              exec {myfd}>&-[0m
+
+[38;2;248;248;242m       Note  that  the expansion of the variable in the expression >&$myfd occurs at the[0m
+[38;2;248;248;242m       point the redirection is opened.  This is after the expansion  of  command  argu‐[0m
+[38;2;248;248;242m       ments  and  after  any  redirections  to  the  left on the command line have been[0m
+[38;2;248;248;242m       processed.[0m
+
+[38;2;248;248;242mMULTIOS[0m
+[38;2;248;248;242m       If the user tries to open a file descriptor for writing more than once, the shell[0m
+[38;2;248;248;242m       opens the file descriptor as a pipe to a process that copies its input to all the[0m
+[38;2;248;248;242m       specified outputs, similar to tee, provided the MULTIOS option is set, as  it  is[0m
+[38;2;248;248;242m       by default.  Thus:[0m
+
+[38;2;248;248;242m              date >foo >bar[0m
+
+[38;2;248;248;242m       writes  the date to two files, named `foo' and `bar'.  Note that a pipe is an im‐[0m
+[38;2;248;248;242m       plicit redirection; thus[0m
+
+[38;2;248;248;242m              date >foo | cat[0m
+
+[38;2;248;248;242m       writes the date to the file `foo', and also pipes it to cat.[0m
+
+[38;2;248;248;242m       Note that the shell opens all the files to be used in the multio process  immedi‐[0m
+[38;2;248;248;242m       ately, not at the point they are about to be written.[0m
+
+[38;2;248;248;242m       Note  also  that redirections are always expanded in order.  This happens regard‐[0m
+[38;2;248;248;242m       less of the setting of the MULTIOS option, but with the option  in  effect  there[0m
+[38;2;248;248;242m       are  additional consequences. For example, the meaning of the expression >&1 will[0m
+[38;2;248;248;242m       change after a previous redirection:[0m
+
+[38;2;248;248;242m              date >&1 >output[0m
+
+[38;2;248;248;242m       In the case above, the >&1 refers to the standard output  at  the  start  of  the[0m
+[38;2;248;248;242m       line; the result is similar to the tee command.  However, consider:[0m
+
+[38;2;248;248;242m              date >output >&1[0m
+
+[38;2;248;248;242m       As  redirections are evaluated in order, when the >&1 is encountered the standard[0m
+[38;2;248;248;242m       output is set to the file output and another copy of the output is therefore sent[0m
+[38;2;248;248;242m       to that file.  This is unlikely to be what is intended.[0m
+
+[38;2;248;248;242m       If the MULTIOS option is set, the word after a redirection operator is also  sub‐[0m
+[38;2;248;248;242m       jected to filename generation (globbing).  Thus[0m
+
+[38;2;248;248;242m              : > *[0m
+
+[38;2;248;248;242m       will  truncate all files in the current directory, assuming there's at least one.[0m
+[38;2;248;248;242m       (Without the MULTIOS option, it would create an empty file  called  `*'.)   Simi‐[0m
+[38;2;248;248;242m       larly, you can do[0m
+
+[38;2;248;248;242m              echo exit 0 >> *.sh[0m
+
+[38;2;248;248;242m       If the user tries to open a file descriptor for reading more than once, the shell[0m
+[38;2;248;248;242m       opens  the  file  descriptor as a pipe to a process that copies all the specified[0m
+[38;2;248;248;242m       inputs to its output in the order specified, provided the MULTIOS option is  set.[0m
+[38;2;248;248;242m       It  should  be noted that each file is opened immediately, not at the point where[0m
+[38;2;248;248;242m       it is about to be read: this behaviour differs from cat, so if strictly  standard[0m
+[38;2;248;248;242m       behaviour is needed, cat should be used instead.[0m
+
+[38;2;248;248;242m       Thus[0m
+
+[38;2;248;248;242m              sort <foo <fubar[0m
+
+[38;2;248;248;242m       or even[0m
+
+[38;2;248;248;242m              sort <f{oo,ubar}[0m
+
+[38;2;248;248;242m       is equivalent to `cat foo fubar | sort'.[0m
+
+[38;2;248;248;242m       Expansion  of  the  redirection  argument  occurs at the point the redirection is[0m
+[38;2;248;248;242m       opened, at the point described  above  for  the  expansion  of  the  variable  in[0m
+[38;2;248;248;242m       >&$myfd.[0m
+
+[38;2;248;248;242m       Note that a pipe is an implicit redirection; thus[0m
+
+[38;2;248;248;242m              cat bar | sort <foo[0m
+
+[38;2;248;248;242m       is equivalent to `cat bar foo | sort' (note the order of the inputs).[0m
+
+[38;2;248;248;242m       If  the  MULTIOS option is unset, each redirection replaces the previous redirec‐[0m
+[38;2;248;248;242m       tion for that file descriptor.  However, all files  redirected  to  are  actually[0m
+[38;2;248;248;242m       opened, so[0m
+
+[38;2;248;248;242m              echo Hello > bar > baz[0m
+
+[38;2;248;248;242m       when MULTIOS is unset will truncate `bar', and write `Hello' into `baz'.[0m
+
+[38;2;248;248;242m       There  is  a problem when an output multio is attached to an external program.  A[0m
+[38;2;248;248;242m       simple example shows this:[0m
+
+[38;2;248;248;242m              cat file >file1 >file2[0m
+[38;2;248;248;242m              cat file1 file2[0m
+
+[38;2;248;248;242m       Here, it is possible that the second `cat' will not display the full contents  of[0m
+[38;2;248;248;242m       file1 and file2 (i.e. the original contents of file repeated twice).[0m
+
+[38;2;248;248;242m       The  reason  for  this  is  that the multios are spawned after the cat process is[0m
+[38;2;248;248;242m       forked from the parent shell, so the parent shell does not wait for  the  multios[0m
+[38;2;248;248;242m       to  finish  writing  data.  This means the command as shown can exit before file1[0m
+[38;2;248;248;242m       and file2 are completely written.  As a workaround, it is possible to run the cat[0m
+[38;2;248;248;242m       process as part of a job in the current shell:[0m
+
+[38;2;248;248;242m              { cat file } >file >file2[0m
+
+[38;2;248;248;242m       Here, the {...} job will pause to wait for both files to be written.[0m
+
+[38;2;248;248;242mREDIRECTIONS WITH NO COMMAND[0m
+[38;2;248;248;242m       When a simple command consists of one or more redirection operators and  zero  or[0m
+[38;2;248;248;242m       more parameter assignments, but no command name, zsh can behave in several ways.[0m
+
+[38;2;248;248;242m       If the parameter NULLCMD is not set or the option CSH_NULLCMD is set, an error is[0m
+[38;2;248;248;242m       caused.   This is the csh behavior and CSH_NULLCMD is set by default when emulat‐[0m
+[38;2;248;248;242m       ing csh.[0m
+
+[38;2;248;248;242m       If the option SH_NULLCMD is set, the builtin `:' is inserted as  a  command  with[0m
+[38;2;248;248;242m       the given redirections.  This is the default when emulating sh or ksh.[0m
+
+[38;2;248;248;242m       Otherwise,  if  the parameter NULLCMD is set, its value will be used as a command[0m
+[38;2;248;248;242m       with the given redirections.  If both NULLCMD and READNULLCMD are set,  then  the[0m
+[38;2;248;248;242m       value  of the latter will be used instead of that of the former when the redirec‐[0m
+[38;2;248;248;242m       tion is an input.  The default for  NULLCMD  is  `cat'  and  for  READNULLCMD  is[0m
+[38;2;248;248;242m       `more'. Thus[0m
+
+[38;2;248;248;242m              < file[0m
+
+[38;2;248;248;242m       shows the contents of file on standard output, with paging if that is a terminal.[0m
+[38;2;248;248;242m       NULLCMD and READNULLCMD may refer to shell functions.[0m
+
+[38;2;248;248;242mCOMMAND EXECUTION[0m
+[38;2;248;248;242m       If a command name contains no slashes, the shell attempts to locate it.  If there[0m
+[38;2;248;248;242m       exists a shell function by that name, the function is invoked as described in the[0m
+[38;2;248;248;242m       section  `Functions'.   If there exists a shell builtin by that name, the builtin[0m
+[38;2;248;248;242m       is invoked.[0m
+
+[38;2;248;248;242m       Otherwise, the shell searches each element of $path for a directory containing an[0m
+[38;2;248;248;242m       executable file by that name.[0m
+
+[38;2;248;248;242m       If execution fails: an error message is printed, and one of the following  values[0m
+[38;2;248;248;242m       is returned.[0m
+
+[38;2;248;248;242m       127    The  search  was  unsuccessful.   The error message is `command not found:[0m
+[38;2;248;248;242m              cmd'.[0m
+[38;2;248;248;242m       126    The executable file has insufficient permissions, is a directory  or  spe‐[0m
+[38;2;248;248;242m              cial file, or is not a script and is in a format unrecognized by the oper‐[0m
+[38;2;248;248;242m              ating  system.   The exact conditions and error message are operating sys‐[0m
+[38;2;248;248;242m              tem-dependent; see execve(2).[0m
+
+[38;2;248;248;242m       If execution fails because the file is not in executable format, and the file  is[0m
+[38;2;248;248;242m       not  a directory, it is assumed to be a shell script.  /bin/sh is spawned to exe‐[0m
+[38;2;248;248;242m       cute it.  If the program is a file beginning with  `#!',  the  remainder  of  the[0m
+[38;2;248;248;242m       first  line specifies an interpreter for the program.  The shell will execute the[0m
+[38;2;248;248;242m       specified interpreter on operating systems that do  not  handle  this  executable[0m
+[38;2;248;248;242m       format in the kernel.[0m
+
+[38;2;248;248;242m       If  no  external command is found but a function command_not_found_handler exists[0m
+[38;2;248;248;242m       the shell executes this function with all command  line  arguments.   The  return[0m
+[38;2;248;248;242m       status  of the function becomes the status of the command.  Note that the handler[0m
+[38;2;248;248;242m       is executed in a subshell forked to execute an external command, hence changes to[0m
+[38;2;248;248;242m       directories, shell parameters, etc. have no effect on the main shell.[0m
+
+[38;2;248;248;242mFUNCTIONS[0m
+[38;2;248;248;242m       Shell functions are defined with the function reserved word or the special syntax[0m
+[38;2;248;248;242m       `funcname ()'.  Shell functions are read in and stored internally.   Alias  names[0m
+[38;2;248;248;242m       are  resolved  when  the  function is read.  Functions are executed like commands[0m
+[38;2;248;248;242m       with the arguments passed as positional parameters.  (See  the  section  `Command[0m
+[38;2;248;248;242m       Execution'.)[0m
+
+[38;2;248;248;242m       Functions  execute  in  the  same  process  as the caller and share all files and[0m
+[38;2;248;248;242m       present working directory with the caller.  A trap on EXIT set inside a  function[0m
+[38;2;248;248;242m       is executed after the function completes in the environment of the caller.[0m
+
+[38;2;248;248;242m       The return builtin is used to return from function calls.[0m
+
+[38;2;248;248;242m       Function  identifiers can be listed with the functions builtin.  Functions can be[0m
+[38;2;248;248;242m       undefined with the unfunction builtin.[0m
+
+[38;2;248;248;242mAUTOLOADING FUNCTIONS[0m
+[38;2;248;248;242m       A function can be marked as undefined using the autoload builtin  (or  `functions[0m
+[38;2;248;248;242m       -u'  or `typeset -fu').  Such a function has no body.  When the function is first[0m
+[38;2;248;248;242m       executed, the shell searches for its definition using the elements of  the  fpath[0m
+[38;2;248;248;242m       variable.  Thus to define functions for autoloading, a typical sequence is:[0m
+
+[38;2;248;248;242m              fpath=(~/myfuncs $fpath)[0m
+[38;2;248;248;242m              autoload myfunc1 myfunc2 ...[0m
+
+[38;2;248;248;242m       The  usual  alias  expansion  during  reading  will be suppressed if the autoload[0m
+[38;2;248;248;242m       builtin or its equivalent is given the option -U. This is recommended for the use[0m
+[38;2;248;248;242m       of functions supplied with the zsh distribution.  Note that for functions precom‐[0m
+[38;2;248;248;242m       piled with the zcompile builtin command the flag -U must  be  provided  when  the[0m
+[38;2;248;248;242m       .zwc  file is created, as the corresponding information is compiled into the lat‐[0m
+[38;2;248;248;242m       ter.[0m
+
+[38;2;248;248;242m       For each element in fpath, the shell looks for three possible files,  the  newest[0m
+[38;2;248;248;242m       of which is used to load the definition for the function:[0m
+
+[38;2;248;248;242m       element.zwc[0m
+[38;2;248;248;242m              A  file  created  with  the zcompile builtin command, which is expected to[0m
+[38;2;248;248;242m              contain the definitions for all functions in the directory named  element.[0m
+[38;2;248;248;242m              The file is treated in the same manner as a directory containing files for[0m
+[38;2;248;248;242m              functions and is searched for the definition of the function.   If the de‐[0m
+[38;2;248;248;242m              finition is not found, the search for a definition proceeds with the other[0m
+[38;2;248;248;242m              two possibilities described below.[0m
+
+[38;2;248;248;242m              If  element  already includes a .zwc extension (i.e. the extension was ex‐[0m
+[38;2;248;248;242m              plicitly given by the user), element is searched for the definition of the[0m
+[38;2;248;248;242m              function without comparing its age to that of other files; in fact,  there[0m
+[38;2;248;248;242m              does  not need to be any directory named element without the suffix.  Thus[0m
+[38;2;248;248;242m              including an element such as `/usr/local/funcs.zwc' in fpath will speed up[0m
+[38;2;248;248;242m              the search for functions, with the disadvantage  that  functions  included[0m
+[38;2;248;248;242m              must  be  explicitly  recompiled  by  hand  before  the  shell notices any[0m
+[38;2;248;248;242m              changes.[0m
+
+[38;2;248;248;242m       element/function.zwc[0m
+[38;2;248;248;242m              A file created with zcompile, which is expected to contain the  definition[0m
+[38;2;248;248;242m              for  function.   It  may  include  other function definitions as well, but[0m
+[38;2;248;248;242m              those are neither loaded nor  executed;  a  file  found  in  this  way  is[0m
+[38;2;248;248;242m              searched only for the definition of function.[0m
+
+[38;2;248;248;242m       element/function[0m
+[38;2;248;248;242m              A file of zsh command text, taken to be the definition for function.[0m
+
+[38;2;248;248;242m       In  summary,  the  order of searching is, first, in the parents of directories in[0m
+[38;2;248;248;242m       fpath for the newer of either a compiled directory or a directory in fpath;  sec‐[0m
+[38;2;248;248;242m       ond,  if  more  than  one of these contains a definition for the function that is[0m
+[38;2;248;248;242m       sought, the leftmost in the fpath is chosen; and third, within a  directory,  the[0m
+[38;2;248;248;242m       newer of either a compiled function or an ordinary function definition is used.[0m
+
+[38;2;248;248;242m       If  the KSH_AUTOLOAD option is set, or the file contains only a simple definition[0m
+[38;2;248;248;242m       of the function, the file's contents will be executed.  This will normally define[0m
+[38;2;248;248;242m       the function in question, but may also perform initialization, which is  executed[0m
+[38;2;248;248;242m       in  the context of the function execution, and may therefore define local parame‐[0m
+[38;2;248;248;242m       ters.  It is an error if the function is not defined by loading the file.[0m
+
+[38;2;248;248;242m       Otherwise, the function body (with no surrounding `funcname() {...}') is taken to[0m
+[38;2;248;248;242m       be the complete contents of the file.  This form allows the file to be  used  di‐[0m
+[38;2;248;248;242m       rectly  as  an executable shell script.  If processing of the file results in the[0m
+[38;2;248;248;242m       function being re-defined, the function itself is not re-executed.  To force  the[0m
+[38;2;248;248;242m       shell  to  perform  initialization  and  then call the function defined, the file[0m
+[38;2;248;248;242m       should contain initialization code (which will be executed then discarded) in ad‐[0m
+[38;2;248;248;242m       dition to a complete function definition (which will be retained  for  subsequent[0m
+[38;2;248;248;242m       calls  to  the  function),  and a call to the shell function, including any argu‐[0m
+[38;2;248;248;242m       ments, at the end.[0m
+
+[38;2;248;248;242m       For example, suppose the autoload file func contains[0m
+
+[38;2;248;248;242m              func() { print This is func; }[0m
+[38;2;248;248;242m              print func is initialized[0m
+
+[38;2;248;248;242m       then `func; func' with KSH_AUTOLOAD set will produce both messages on  the  first[0m
+[38;2;248;248;242m       call,  but  only  the  message `This is func' on the second and subsequent calls.[0m
+[38;2;248;248;242m       Without KSH_AUTOLOAD set, it will produce the initialization message on the first[0m
+[38;2;248;248;242m       call, and the other message on the second and subsequent calls.[0m
+
+[38;2;248;248;242m       It is also possible to create a function that is not marked  as  autoloaded,  but[0m
+[38;2;248;248;242m       which  loads its own definition by searching fpath, by using `autoload -X' within[0m
+[38;2;248;248;242m       a shell function.  For example, the following are equivalent:[0m
+
+[38;2;248;248;242m              myfunc() {[0m
+[38;2;248;248;242m                autoload -X[0m
+[38;2;248;248;242m              }[0m
+[38;2;248;248;242m              myfunc args...[0m
+
+[38;2;248;248;242m       and[0m
+
+[38;2;248;248;242m              unfunction myfunc   # if myfunc was defined[0m
+[38;2;248;248;242m              autoload myfunc[0m
+[38;2;248;248;242m              myfunc args...[0m
+
+[38;2;248;248;242m       In fact, the functions command outputs `builtin autoload -X' as the  body  of  an[0m
+[38;2;248;248;242m       autoloaded function.  This is done so that[0m
+
+[38;2;248;248;242m              eval "$(functions)"[0m
+
+[38;2;248;248;242m       produces  a  reasonable  result.  A true autoloaded function can be identified by[0m
+[38;2;248;248;242m       the presence of the comment `# undefined' in the body, because all  comments  are[0m
+[38;2;248;248;242m       discarded from defined functions.[0m
+
+[38;2;248;248;242m       To load the definition of an autoloaded function myfunc without executing myfunc,[0m
+[38;2;248;248;242m       use:[0m
+
+[38;2;248;248;242m              autoload +X myfunc[0m
+
+[38;2;248;248;242mANONYMOUS FUNCTIONS[0m
+[38;2;248;248;242m       If  no  name is given for a function, it is `anonymous' and is handled specially.[0m
+[38;2;248;248;242m       Either form of function definition may be used: a `()' with no preceding name, or[0m
+[38;2;248;248;242m       a `function' with an immediately following open brace.  The function is  executed[0m
+[38;2;248;248;242m       immediately  at  the  point  of definition and is not stored for future use.  The[0m
+[38;2;248;248;242m       function name is set to `(anon)'.[0m
+
+[38;2;248;248;242m       Arguments to the function may be specified as words following the  closing  brace[0m
+[38;2;248;248;242m       defining  the  function, hence if there are none no arguments (other than $0) are[0m
+[38;2;248;248;242m       set.  This is a difference from the way other functions are parsed: normal  func‐[0m
+[38;2;248;248;242m       tion  definitions  may  be  followed  by certain keywords such as `else' or `fi',[0m
+[38;2;248;248;242m       which will be treated as arguments to anonymous functions, so that a  newline  or[0m
+[38;2;248;248;242m       semicolon is needed to force keyword interpretation.[0m
+
+[38;2;248;248;242m       Note  also  that  the argument list of any enclosing script or function is hidden[0m
+[38;2;248;248;242m       (as would be the case for any other function called at this point).[0m
+
+[38;2;248;248;242m       Redirections may be applied to the anonymous function in the same manner as to  a[0m
+[38;2;248;248;242m       current-shell  structure enclosed in braces.  The main use of anonymous functions[0m
+[38;2;248;248;242m       is to provide a scope for local variables.  This is  particularly  convenient  in[0m
+[38;2;248;248;242m       start-up files as these do not provide their own local variable scope.[0m
+
+[38;2;248;248;242m       For example,[0m
+
+[38;2;248;248;242m              variable=outside[0m
+[38;2;248;248;242m              function {[0m
+[38;2;248;248;242m                local variable=inside[0m
+[38;2;248;248;242m                print "I am $variable with arguments $*"[0m
+[38;2;248;248;242m              } this and that[0m
+[38;2;248;248;242m              print "I am $variable"[0m
+
+[38;2;248;248;242m       outputs the following:[0m
+
+[38;2;248;248;242m              I am inside with arguments this and that[0m
+[38;2;248;248;242m              I am outside[0m
+
+[38;2;248;248;242m       Note that function definitions with arguments that expand to nothing, for example[0m
+[38;2;248;248;242m       `name=;  function  $name  {  ... }', are not treated as anonymous functions.  In‐[0m
+[38;2;248;248;242m       stead, they are treated as normal function definitions where  the  definition  is[0m
+[38;2;248;248;242m       silently discarded.[0m
+
+[38;2;248;248;242mSPECIAL FUNCTIONS[0m
+[38;2;248;248;242m       Certain functions, if defined, have special meaning to the shell.[0m
+
+[38;2;248;248;242m   Hook Functions[0m
+[38;2;248;248;242m       For the functions below, it is possible to define an array that has the same name[0m
+[38;2;248;248;242m       as  the  function  with  `_functions'  appended.  Any element in such an array is[0m
+[38;2;248;248;242m       taken as the name of a function to execute; it is executed in  the  same  context[0m
+[38;2;248;248;242m       and  with the same arguments and same initial value of $?  as the basic function.[0m
+[38;2;248;248;242m       For example, if $chpwd_functions is an array  containing  the  values  `mychpwd',[0m
+[38;2;248;248;242m       `chpwd_save_dirstack',  then the shell attempts to execute the functions `chpwd',[0m
+[38;2;248;248;242m       `mychpwd' and `chpwd_save_dirstack', in that order.  Any function that  does  not[0m
+[38;2;248;248;242m       exist  is  silently  ignored.   A function found by this mechanism is referred to[0m
+[38;2;248;248;242m       elsewhere as a hook function.  An error in any function causes  subsequent  func‐[0m
+[38;2;248;248;242m       tions not to be run.  Note further that an error in a precmd hook causes an imme‐[0m
+[38;2;248;248;242m       diately following periodic function not to run (though it may run at the next op‐[0m
+[38;2;248;248;242m       portunity).[0m
+
+[38;2;248;248;242m       chpwd  Executed whenever the current working directory is changed.[0m
+
+[38;2;248;248;242m       periodic[0m
+[38;2;248;248;242m              If  the  parameter  PERIOD is set, this function is executed every $PERIOD[0m
+[38;2;248;248;242m              seconds, just before a prompt.  Note that if multiple  functions  are  de‐[0m
+[38;2;248;248;242m              fined using the array periodic_functions only one period is applied to the[0m
+[38;2;248;248;242m              complete set of functions, and the scheduled time is not reset if the list[0m
+[38;2;248;248;242m              of  functions is altered.  Hence the set of functions is always called to‐[0m
+[38;2;248;248;242m              gether.[0m
+
+[38;2;248;248;242m       precmd Executed before each prompt.   Note  that  precommand  functions  are  not[0m
+[38;2;248;248;242m              re-executed  simply  because  the command line is redrawn, as happens, for[0m
+[38;2;248;248;242m              example, when a notification about an exiting job is displayed.[0m
+
+[38;2;248;248;242m       preexec[0m
+[38;2;248;248;242m              Executed just after a command has been read and is about to  be  executed.[0m
+[38;2;248;248;242m              If  the  history  mechanism  is active (regardless of whether the line was[0m
+[38;2;248;248;242m              discarded from the history buffer), the string  that  the  user  typed  is[0m
+[38;2;248;248;242m              passed as the first argument, otherwise it is an empty string.  The actual[0m
+[38;2;248;248;242m              command  that  will  be executed (including expanded aliases) is passed in[0m
+[38;2;248;248;242m              two different forms: the second argument is  a  single-line,  size-limited[0m
+[38;2;248;248;242m              version  of  the  command  (with  things like function bodies elided); the[0m
+[38;2;248;248;242m              third argument contains the full text that is being executed.[0m
+
+[38;2;248;248;242m       zshaddhistory[0m
+[38;2;248;248;242m              Executed when a history line has been read interactively, but before it is[0m
+[38;2;248;248;242m              executed.  The sole argument is the complete history  line  (so  that  any[0m
+[38;2;248;248;242m              terminating newline will still be present).[0m
+
+[38;2;248;248;242m              If any of the hook functions returns status 1 (or any non-zero value other[0m
+[38;2;248;248;242m              than  2,  though  this is not guaranteed for future versions of the shell)[0m
+[38;2;248;248;242m              the history line will not be saved, although it lingers in the history un‐[0m
+[38;2;248;248;242m              til the next line is executed, allowing you to reuse or  edit  it  immedi‐[0m
+[38;2;248;248;242m              ately.[0m
+
+[38;2;248;248;242m              If  any  of  the  hook functions returns status 2 the history line will be[0m
+[38;2;248;248;242m              saved on the internal history list, but not written to the  history  file.[0m
+[38;2;248;248;242m              In case of a conflict, the first non-zero status value is taken.[0m
+
+[38;2;248;248;242m              A hook function may call `fc -p ...' to switch the history context so that[0m
+[38;2;248;248;242m              the  history is saved in a different file from that in the global HISTFILE[0m
+[38;2;248;248;242m              parameter.  This is handled specially: the history  context  is  automati‐[0m
+[38;2;248;248;242m              cally restored after the processing of the history line is finished.[0m
+
+[38;2;248;248;242m              The  following  example  function  works  with  one of the options INC_AP‐[0m
+[38;2;248;248;242m              PEND_HISTORY or SHARE_HISTORY set, in order that the line is  written  out[0m
+[38;2;248;248;242m              immediately  after  the history entry is added.  It first adds the history[0m
+[38;2;248;248;242m              line to the normal history with the newline stripped, which is usually the[0m
+[38;2;248;248;242m              correct behaviour.  Then it switches the history context so that the  line[0m
+[38;2;248;248;242m              will be written to a history file in the current directory.[0m
+
+[38;2;248;248;242m                     zshaddhistory() {[0m
+[38;2;248;248;242m                       print -sr -- ${1%%$'\n'}[0m
+[38;2;248;248;242m                       fc -p .zsh_local_history[0m
+[38;2;248;248;242m                     }[0m
+
+[38;2;248;248;242m       zshexit[0m
+[38;2;248;248;242m              Executed  at  the  point  where  the main shell is about to exit normally.[0m
+[38;2;248;248;242m              This is not called by exiting subshells, nor when the exec precommand mod‐[0m
+[38;2;248;248;242m              ifier is used before an external command.  Also, unlike  TRAPEXIT,  it  is[0m
+[38;2;248;248;242m              not called when functions exit.[0m
+
+[38;2;248;248;242m   Trap Functions[0m
+[38;2;248;248;242m       The  functions below are treated specially but do not have corresponding hook ar‐[0m
+[38;2;248;248;242m       rays.[0m
+
+[38;2;248;248;242m       TRAPNAL[0m
+[38;2;248;248;242m              If defined and non-null, this function will be executed whenever the shell[0m
+[38;2;248;248;242m              catches a signal SIGNAL, where NAL is a signal name as specified  for  the[0m
+[38;2;248;248;242m              kill  builtin.  The signal number will be passed as the first parameter to[0m
+[38;2;248;248;242m              the function.[0m
+
+[38;2;248;248;242m              If a function of this form is defined and null, the  shell  and  processes[0m
+[38;2;248;248;242m              spawned by it will ignore SIGNAL.[0m
+
+[38;2;248;248;242m              The  return status from the function is handled specially.  If it is zero,[0m
+[38;2;248;248;242m              the signal is assumed to have been handled, and execution  continues  nor‐[0m
+[38;2;248;248;242m              mally.   Otherwise,  the  shell will behave as interrupted except that the[0m
+[38;2;248;248;242m              return status of the trap is retained.[0m
+
+[38;2;248;248;242m              Programs terminated by uncaught signals typically return  the  status  128[0m
+[38;2;248;248;242m              plus the signal number.  Hence the following causes the handler for SIGINT[0m
+[38;2;248;248;242m              to print a message, then mimic the usual effect of the signal.[0m
+
+[38;2;248;248;242m                     TRAPINT() {[0m
+[38;2;248;248;242m                       print "Caught SIGINT, aborting."[0m
+[38;2;248;248;242m                       return $(( 128 + $1 ))[0m
+[38;2;248;248;242m                     }[0m
+
+[38;2;248;248;242m              The  functions  TRAPZERR, TRAPDEBUG and TRAPEXIT are never executed inside[0m
+[38;2;248;248;242m              other traps.[0m
+
+[38;2;248;248;242m       TRAPDEBUG[0m
+[38;2;248;248;242m              If the option DEBUG_BEFORE_CMD is set (as it is by default), executed  be‐[0m
+[38;2;248;248;242m              fore  each  command;  otherwise  executed after each command.  See the de‐[0m
+[38;2;248;248;242m              scription of the trap builtin in zshbuiltins(1) for details of  additional[0m
+[38;2;248;248;242m              features provided in debug traps.[0m
+
+[38;2;248;248;242m       TRAPEXIT[0m
+[38;2;248;248;242m              Executed  when  the shell exits, or when the current function exits if de‐[0m
+[38;2;248;248;242m              fined inside a function.  The value of $? at the start of execution is the[0m
+[38;2;248;248;242m              exit status of the shell or the return status of the function exiting.[0m
+
+[38;2;248;248;242m       TRAPZERR[0m
+[38;2;248;248;242m              Executed whenever a command has a  non-zero  exit  status.   However,  the[0m
+[38;2;248;248;242m              function  is not executed if the command occurred in a sublist followed by[0m
+[38;2;248;248;242m              `&&' or `||'; only the final command in a sublist of this type causes  the[0m
+[38;2;248;248;242m              trap  to  be  executed.  The function TRAPERR acts the same as TRAPZERR on[0m
+[38;2;248;248;242m              systems where there is no SIGERR (this is the usual case).[0m
+
+[38;2;248;248;242m       The functions beginning  `TRAP'  may  alternatively  be  defined  with  the  trap[0m
+[38;2;248;248;242m       builtin:  this may be preferable for some uses.  Setting a trap with one form re‐[0m
+[38;2;248;248;242m       moves  any  trap of the other form for the same signal; removing a trap in either[0m
+[38;2;248;248;242m       form removes all traps for the same signal.  The forms[0m
+
+[38;2;248;248;242m              TRAPNAL() {[0m
+[38;2;248;248;242m               # code[0m
+[38;2;248;248;242m              }[0m
+
+[38;2;248;248;242m       ('function traps') and[0m
+
+[38;2;248;248;242m              trap '[0m
+[38;2;248;248;242m               # code[0m
+[38;2;248;248;242m              ' NAL[0m
+
+[38;2;248;248;242m       ('list traps') are equivalent in most ways, the exceptions being the following:[0m
+
+[38;2;248;248;242m       •      Function traps have all the properties of normal functions,  appearing  in[0m
+[38;2;248;248;242m              the  list  of  functions  and being called with their own function context[0m
+[38;2;248;248;242m              rather than the context where the trap was triggered.[0m
+
+[38;2;248;248;242m       •      The return status from function traps is special, whereas a return from  a[0m
+[38;2;248;248;242m              list trap causes the surrounding context to return with the given status.[0m
+
+[38;2;248;248;242m       •      Function  traps are not reset within subshells, in accordance with zsh be‐[0m
+[38;2;248;248;242m              haviour; list traps are reset, in accordance with POSIX behaviour.[0m
+
+[38;2;248;248;242mJOBS[0m
+[38;2;248;248;242m       If the MONITOR option is set, an interactive shell associates  a  job  with  each[0m
+[38;2;248;248;242m       pipeline.  It keeps a table of current jobs, printed by the jobs command, and as‐[0m
+[38;2;248;248;242m       signs them small integer numbers.  When a job is started asynchronously with `&',[0m
+[38;2;248;248;242m       the shell prints a line to standard error which looks like:[0m
+
+[38;2;248;248;242m              [1] 1234[0m
+
+[38;2;248;248;242m       indicating that the job which was started asynchronously was job number 1 and had[0m
+[38;2;248;248;242m       one (top-level) process, whose process ID was 1234.[0m
+
+[38;2;248;248;242m       If  a  job  is  started with `&|' or `&!', then that job is immediately disowned.[0m
+[38;2;248;248;242m       After startup, it does not have a place in the job table, and is not  subject  to[0m
+[38;2;248;248;242m       the job control features described here.[0m
+
+[38;2;248;248;242m       If  you  are  running  a job and wish to do something else you may hit the key ^Z[0m
+[38;2;248;248;242m       (control-Z) which sends a TSTP signal to the current job:  this key may be  rede‐[0m
+[38;2;248;248;242m       fined  by the susp option of the external stty command.  The shell will then nor‐[0m
+[38;2;248;248;242m       mally indicate that the job has been `suspended', and print another prompt.   You[0m
+[38;2;248;248;242m       can  then manipulate the state of this job, putting it in the background with the[0m
+[38;2;248;248;242m       bg command, or run some other commands and then eventually  bring  the  job  back[0m
+[38;2;248;248;242m       into  the  foreground  with the foreground command fg.  A ^Z takes effect immedi‐[0m
+[38;2;248;248;242m       ately and is like an interrupt in that pending output and unread input  are  dis‐[0m
+[38;2;248;248;242m       carded when it is typed.[0m
+
+[38;2;248;248;242m       A  job being run in the background will suspend if it tries to read from the ter‐[0m
+[38;2;248;248;242m       minal.[0m
+
+[38;2;248;248;242m       Note that if the job running in the foreground is a shell function, then suspend‐[0m
+[38;2;248;248;242m       ing it will have the effect of causing the shell to fork.  This is  necessary  to[0m
+[38;2;248;248;242m       separate  the  function's  state from that of the parent shell performing the job[0m
+[38;2;248;248;242m       control, so that the latter can return to the command line prompt.  As a  result,[0m
+[38;2;248;248;242m       even if fg is used to continue the job the function will no longer be part of the[0m
+[38;2;248;248;242m       parent  shell,  and  any variables set by the function will not be visible in the[0m
+[38;2;248;248;242m       parent shell.  Thus the behaviour is different from the case where  the  function[0m
+[38;2;248;248;242m       was never suspended.  Zsh is different from many other shells in this regard.[0m
+
+[38;2;248;248;242m       One additional side effect is that use of disown with a job created by suspending[0m
+[38;2;248;248;242m       shell  code  in  this  fashion  is delayed: the job can only be disowned once any[0m
+[38;2;248;248;242m       process started from the parent shell has terminated.  At that  point,  the  dis‐[0m
+[38;2;248;248;242m       owned job disappears silently from the job list.[0m
+
+[38;2;248;248;242m       The  same  behaviour  is found when the shell is executing code as the right hand[0m
+[38;2;248;248;242m       side of a pipeline or any complex shell construct such as if, for, etc., in order[0m
+[38;2;248;248;242m       that the entire block of code can be managed as a single  job.   Background  jobs[0m
+[38;2;248;248;242m       are  normally  allowed  to produce output, but this can be disabled by giving the[0m
+[38;2;248;248;242m       command `stty tostop'.  If you set this tty option,  then  background  jobs  will[0m
+[38;2;248;248;242m       suspend when they try to produce output like they do when they try to read input.[0m
+
+[38;2;248;248;242m       When a command is suspended and continued later with the fg or wait builtins, zsh[0m
+[38;2;248;248;242m       restores  tty  modes that were in effect when it was suspended.  This (intention‐[0m
+[38;2;248;248;242m       ally) does not apply if the command is continued via `kill -CONT', nor when it is[0m
+[38;2;248;248;242m       continued with bg.[0m
+
+[38;2;248;248;242m       There are several ways to refer to jobs in the shell.  A job can be  referred  to[0m
+[38;2;248;248;242m       by the process ID of any process of the job or by one of the following:[0m
+
+[38;2;248;248;242m       %number[0m
+[38;2;248;248;242m              The job with the given number.[0m
+[38;2;248;248;242m       %string[0m
+[38;2;248;248;242m              The last job whose command line begins with string.[0m
+[38;2;248;248;242m       %?string[0m
+[38;2;248;248;242m              The last job whose command line contains string.[0m
+[38;2;248;248;242m       %%     Current job.[0m
+[38;2;248;248;242m       %+     Equivalent to `%%'.[0m
+[38;2;248;248;242m       %-     Previous job.[0m
+
+[38;2;248;248;242m       The  shell  learns immediately whenever a process changes state.  It normally in‐[0m
+[38;2;248;248;242m       forms you whenever a job becomes blocked so that no further progress is possible.[0m
+[38;2;248;248;242m       If the NOTIFY option is not set, it waits until just before it  prints  a  prompt[0m
+[38;2;248;248;242m       before it informs you.  All such notifications are sent directly to the terminal,[0m
+[38;2;248;248;242m       not to the standard output or standard error.[0m
+
+[38;2;248;248;242m       When the monitor mode is on, each background job that completes triggers any trap[0m
+[38;2;248;248;242m       set for CHLD.[0m
+
+[38;2;248;248;242m       When  you try to leave the shell while jobs are running or suspended, you will be[0m
+[38;2;248;248;242m       warned that `You have suspended (running) jobs'.  You may use the jobs command to[0m
+[38;2;248;248;242m       see what they are.  If you do this or immediately try to exit  again,  the  shell[0m
+[38;2;248;248;242m       will  not  warn you a second time; the suspended jobs will be terminated, and the[0m
+[38;2;248;248;242m       running jobs will be sent a SIGHUP signal, if the HUP option is set.[0m
+
+[38;2;248;248;242m       To avoid having the shell terminate the running jobs,  either  use  the  nohup(1)[0m
+[38;2;248;248;242m       command or the disown builtin.[0m
+
+[38;2;248;248;242mSIGNALS[0m
+[38;2;248;248;242m       The  INT  and  QUIT  signals for an invoked command are ignored if the command is[0m
+[38;2;248;248;242m       followed by `&' and the MONITOR option is not active.  The  shell  itself  always[0m
+[38;2;248;248;242m       ignores  the  QUIT  signal.   Otherwise, signals have the values inherited by the[0m
+[38;2;248;248;242m       shell from its parent (but see the  TRAPNAL  special  functions  in  the  section[0m
+[38;2;248;248;242m       `Functions').[0m
+
+[38;2;248;248;242m       Certain  jobs are run asynchronously by the shell other than those explicitly put[0m
+[38;2;248;248;242m       into the background; even in cases where the shell would usually  wait  for  such[0m
+[38;2;248;248;242m       jobs,  an explicit exit command or exit due to the option ERR_EXIT will cause the[0m
+[38;2;248;248;242m       shell to exit without waiting.  Examples of such asynchronous  jobs  are  process[0m
+[38;2;248;248;242m       substitution, see the section PROCESS SUBSTITUTION in the zshexpn(1) manual page,[0m
+[38;2;248;248;242m       and  the handler processes for multios, see the section MULTIOS in the zshmisc(1)[0m
+[38;2;248;248;242m       manual page.[0m
+
+[38;2;248;248;242mARITHMETIC EVALUATION[0m
+[38;2;248;248;242m       The shell can perform integer and floating point  arithmetic,  either  using  the[0m
+[38;2;248;248;242m       builtin let, or via a substitution of the form $((...)).  For integers, the shell[0m
+[38;2;248;248;242m       is  usually  compiled  to use 8-byte precision where this is available, otherwise[0m
+[38;2;248;248;242m       precision is 4 bytes.  This can be tested, for example,  by  giving  the  command[0m
+[38;2;248;248;242m       `print  -  $(( 12345678901 ))'; if the number appears unchanged, the precision is[0m
+[38;2;248;248;242m       at least 8 bytes.  Floating point arithmetic always uses the `double'  type  with[0m
+[38;2;248;248;242m       whatever corresponding precision is provided by the compiler and the library.[0m
+
+[38;2;248;248;242m       The let builtin command takes arithmetic expressions as arguments; each is evalu‐[0m
+[38;2;248;248;242m       ated  separately.  Since many of the arithmetic operators, as well as spaces, re‐[0m
+[38;2;248;248;242m       quire quoting, an alternative form is provided: for any command which begins with[0m
+[38;2;248;248;242m       a `((', all the characters until a matching `))' are treated as  a  double-quoted[0m
+[38;2;248;248;242m       expression  and  arithmetic  expansion performed as for an argument of let.  More[0m
+[38;2;248;248;242m       precisely, `((...))' is equivalent to `let "..."'.  The return status is 0 if the[0m
+[38;2;248;248;242m       arithmetic value of the expression is non-zero, 1 if it is zero, and 2 if an  er‐[0m
+[38;2;248;248;242m       ror occurred.[0m
+
+[38;2;248;248;242m       For example, the following statement[0m
+
+[38;2;248;248;242m              (( val = 2 + 1 ))[0m
+
+[38;2;248;248;242m       is equivalent to[0m
+
+[38;2;248;248;242m              let "val = 2 + 1"[0m
+
+[38;2;248;248;242m       both assigning the value 3 to the shell variable val and returning a zero status.[0m
+
+[38;2;248;248;242m       Integers can be in bases other than 10.  A leading `0x' or `0X' denotes hexadeci‐[0m
+[38;2;248;248;242m       mal  and  a  leading  `0b'  or  `0B'  binary.   Integers  may also be of the form[0m
+[38;2;248;248;242m       `base#n', where base is a decimal number between two and thirty-six  representing[0m
+[38;2;248;248;242m       the  arithmetic  base and n is a number in that base (for example, `16#ff' is 255[0m
+[38;2;248;248;242m       in hexadecimal).  The base# may also be omitted, in which case base 10  is  used.[0m
+[38;2;248;248;242m       For backwards compatibility the form `[base]n' is also accepted.[0m
+
+[38;2;248;248;242m       An  integer  expression  or  a base given in the form `base#n' may contain under‐[0m
+[38;2;248;248;242m       scores (`_') after the leading digit for visual guidance; these  are  ignored  in[0m
+[38;2;248;248;242m       computation.   Examples  are  1_000_000  or  0xffff_ffff  which are equivalent to[0m
+[38;2;248;248;242m       1000000 and 0xffffffff respectively.[0m
+
+[38;2;248;248;242m       It is also possible to specify  a  base  to  be  used  for  output  in  the  form[0m
+[38;2;248;248;242m       `[#base]',  for  example `[#16]'.  This is used when outputting arithmetical sub‐[0m
+[38;2;248;248;242m       stitutions or when assigning to scalar parameters, but an explicitly defined  in‐[0m
+[38;2;248;248;242m       teger  or  floating point parameter will not be affected.  If an integer variable[0m
+[38;2;248;248;242m       is implicitly defined by an arithmetic expression, any base specified in this way[0m
+[38;2;248;248;242m       will be set as the variable's output arithmetic base as if the option  `-i  base'[0m
+[38;2;248;248;242m       to the typeset builtin had been used.  The expression has no precedence and if it[0m
+[38;2;248;248;242m       occurs more than once in a mathematical expression, the last encountered is used.[0m
+[38;2;248;248;242m       For  clarity  it is recommended that it appear at the beginning of an expression.[0m
+[38;2;248;248;242m       As an example:[0m
+
+[38;2;248;248;242m              typeset -i 16 y[0m
+[38;2;248;248;242m              print $(( [#8] x = 32, y = 32 ))[0m
+[38;2;248;248;242m              print $x $y[0m
+
+[38;2;248;248;242m       outputs first `8#40', the rightmost value in the  given  output  base,  and  then[0m
+[38;2;248;248;242m       `8#40  16#20',  because  y  has  been explicitly declared to have output base 16,[0m
+[38;2;248;248;242m       while x (assuming it does not already exist) is implicitly typed  by  the  arith‐[0m
+[38;2;248;248;242m       metic evaluation, where it acquires the output base 8.[0m
+
+[38;2;248;248;242m       The  base  may be replaced or followed by an underscore, which may itself be fol‐[0m
+[38;2;248;248;242m       lowed by a positive integer (if it is missing the value 3 is used).   This  indi‐[0m
+[38;2;248;248;242m       cates  that  underscores  should be inserted into the output string, grouping the[0m
+[38;2;248;248;242m       number for visual clarity.  The following integer specifies the number of  digits[0m
+[38;2;248;248;242m       to group together.  For example:[0m
+
+[38;2;248;248;242m              setopt cbases[0m
+[38;2;248;248;242m              print $(( [#16_4] 65536 ** 2 ))[0m
+
+[38;2;248;248;242m       outputs `0x1_0000_0000'.[0m
+
+[38;2;248;248;242m       The  feature can be used with floating point numbers, in which case the base must[0m
+[38;2;248;248;242m       be omitted; grouping is away from the decimal point.  For example,[0m
+
+[38;2;248;248;242m              zmodload zsh/mathfunc[0m
+[38;2;248;248;242m              print $(( [#_] sqrt(1e7) ))[0m
+
+[38;2;248;248;242m       outputs `3_162.277_660_168_379_5' (the number of decimal places shown may vary).[0m
+
+[38;2;248;248;242m       If the C_BASES option is set, hexadecimal numbers are output in  the  standard  C[0m
+[38;2;248;248;242m       format, for example `0xFF' instead of the usual `16#FF'.  If the option OCTAL_ZE‐[0m
+[38;2;248;248;242m       ROES  is also set (it is not by default), octal numbers will be treated similarly[0m
+[38;2;248;248;242m       and hence appear as `077' instead of `8#77'.  This option has no  effect  on  the[0m
+[38;2;248;248;242m       output  of  bases  other than hexadecimal and octal, and these formats are always[0m
+[38;2;248;248;242m       understood on input.[0m
+
+[38;2;248;248;242m       When an output base is specified using the `[#base]' syntax, an appropriate  base[0m
+[38;2;248;248;242m       prefix  will be output if necessary, so that the value output is valid syntax for[0m
+[38;2;248;248;242m       input.  If the # is doubled, for example `[##16]', then no base prefix is output.[0m
+
+[38;2;248;248;242m       Floating point constants are recognized by the presence of a decimal point or  an[0m
+[38;2;248;248;242m       exponent.   The decimal point may be the first character of the constant, but the[0m
+[38;2;248;248;242m       exponent character e or E may not, as it will be taken for a parameter name.  All[0m
+[38;2;248;248;242m       numeric parts (before and after the decimal point and in the exponent)  may  con‐[0m
+[38;2;248;248;242m       tain  underscores  after the leading digit for visual guidance; these are ignored[0m
+[38;2;248;248;242m       in computation.[0m
+
+[38;2;248;248;242m       An arithmetic expression uses nearly the same syntax and associativity of expres‐[0m
+[38;2;248;248;242m       sions as in C.[0m
+
+[38;2;248;248;242m       In the native mode of operation, the following operators are supported (listed in[0m
+[38;2;248;248;242m       decreasing order of precedence):[0m
+
+[38;2;248;248;242m       + - ! ~ ++ --[0m
+[38;2;248;248;242m              unary plus/minus, logical NOT, complement, {pre,post}{in,de}crement[0m
+[38;2;248;248;242m       << >>  bitwise shift left, right[0m
+[38;2;248;248;242m       &      bitwise AND[0m
+[38;2;248;248;242m       ^      bitwise XOR[0m
+[38;2;248;248;242m       |      bitwise OR[0m
+[38;2;248;248;242m       **     exponentiation[0m
+[38;2;248;248;242m       * / %  multiplication, division, modulus (remainder)[0m
+[38;2;248;248;242m       + -    addition, subtraction[0m
+[38;2;248;248;242m       < > <= >=[0m
+[38;2;248;248;242m              comparison[0m
+[38;2;248;248;242m       == !=  equality and inequality[0m
+[38;2;248;248;242m       &&     logical AND[0m
+[38;2;248;248;242m       || ^^  logical OR, XOR[0m
+[38;2;248;248;242m       ? :    ternary operator[0m
+[38;2;248;248;242m       = += -= *= /= %= &= ^= |= <<= >>= &&= ||= ^^= **=[0m
+[38;2;248;248;242m              assignment[0m
+[38;2;248;248;242m       ,      comma operator[0m
+
+[38;2;248;248;242m       The operators `&&', `||', `&&=', and `||=' are short-circuiting, and only one  of[0m
+[38;2;248;248;242m       the  latter  two expressions in a ternary operator is evaluated.  Note the prece‐[0m
+[38;2;248;248;242m       dence of the bitwise AND, OR, and XOR operators.[0m
+
+[38;2;248;248;242m       With the option C_PRECEDENCES the precedences (but no other  properties)  of  the[0m
+[38;2;248;248;242m       operators  are  altered to be the same as those in most other languages that sup‐[0m
+[38;2;248;248;242m       port the relevant operators:[0m
+
+[38;2;248;248;242m       + - ! ~ ++ --[0m
+[38;2;248;248;242m              unary plus/minus, logical NOT, complement, {pre,post}{in,de}crement[0m
+[38;2;248;248;242m       **     exponentiation[0m
+[38;2;248;248;242m       * / %  multiplication, division, modulus (remainder)[0m
+[38;2;248;248;242m       + -    addition, subtraction[0m
+[38;2;248;248;242m       << >>  bitwise shift left, right[0m
+[38;2;248;248;242m       < > <= >=[0m
+[38;2;248;248;242m              comparison[0m
+[38;2;248;248;242m       == !=  equality and inequality[0m
+[38;2;248;248;242m       &      bitwise AND[0m
+[38;2;248;248;242m       ^      bitwise XOR[0m
+[38;2;248;248;242m       |      bitwise OR[0m
+[38;2;248;248;242m       &&     logical AND[0m
+[38;2;248;248;242m       ^^     logical XOR[0m
+[38;2;248;248;242m       ||     logical OR[0m
+[38;2;248;248;242m       ? :    ternary operator[0m
+[38;2;248;248;242m       = += -= *= /= %= &= ^= |= <<= >>= &&= ||= ^^= **=[0m
+[38;2;248;248;242m              assignment[0m
+[38;2;248;248;242m       ,      comma operator[0m
+
+[38;2;248;248;242m       Note the precedence of exponentiation in both cases is below that of unary opera‐[0m
+[38;2;248;248;242m       tors, hence `-3**2' evaluates as `9', not `-9'.  Use parentheses where necessary:[0m
+[38;2;248;248;242m       `-(3**2)'.  This is for compatibility with other shells.[0m
+
+[38;2;248;248;242m       Mathematical functions can be called with  the  syntax  `func(args)',  where  the[0m
+[38;2;248;248;242m       function  decides  if  the  args is used as a string or a comma-separated list of[0m
+[38;2;248;248;242m       arithmetic expressions. The shell currently defines no mathematical functions  by[0m
+[38;2;248;248;242m       default,  but  the module zsh/mathfunc may be loaded with the zmodload builtin to[0m
+[38;2;248;248;242m       provide standard floating point mathematical functions.[0m
+
+[38;2;248;248;242m       An expression of the form `##x' where x is any character sequence  such  as  `a',[0m
+[38;2;248;248;242m       `^A',  or  `\M-\C-x'  gives  the value of this character and an expression of the[0m
+[38;2;248;248;242m       form `#name' gives the value of the first character of the contents of the  para‐[0m
+[38;2;248;248;242m       meter name.  Character values are according to the character set used in the cur‐[0m
+[38;2;248;248;242m       rent  locale;  for multibyte character handling the option MULTIBYTE must be set.[0m
+[38;2;248;248;242m       Note that this form is different from `$#name', a standard parameter substitution[0m
+[38;2;248;248;242m       which gives the length of the parameter name.  `#\' is accepted instead of  `##',[0m
+[38;2;248;248;242m       but its use is deprecated.[0m
+
+[38;2;248;248;242m       Named  parameters  and  subscripted  arrays  can  be referenced by name within an[0m
+[38;2;248;248;242m       arithmetic expression without using the parameter expansion syntax.  For example,[0m
+
+[38;2;248;248;242m              ((val2 = val1 * 2))[0m
+
+[38;2;248;248;242m       assigns twice the value of $val1 to the parameter named val2.[0m
+
+[38;2;248;248;242m       An internal integer representation of a named parameter can be specified with the[0m
+[38;2;248;248;242m       integer builtin.  Arithmetic evaluation is performed on the value of each assign‐[0m
+[38;2;248;248;242m       ment to a named parameter declared integer in this manner.  Assigning a  floating[0m
+[38;2;248;248;242m       point number to an integer results in rounding towards zero.[0m
+
+[38;2;248;248;242m       Likewise,  floating  point  numbers can be declared with the float builtin; there[0m
+[38;2;248;248;242m       are two types, differing only in their output format, as described for the  type‐[0m
+[38;2;248;248;242m       set  builtin.  The output format can be bypassed by using arithmetic substitution[0m
+[38;2;248;248;242m       instead of the parameter substitution, i.e. `${float}' uses the  defined  format,[0m
+[38;2;248;248;242m       but `$((float))' uses a generic floating point format.[0m
+
+[38;2;248;248;242m       Promotion  of  integer to floating point values is performed where necessary.  In[0m
+[38;2;248;248;242m       addition, if any operator which requires an integer (`&', `|',  `^',  `<<',  `>>'[0m
+[38;2;248;248;242m       and  their  equivalents  with  assignment) is given a floating point argument, it[0m
+[38;2;248;248;242m       will be silently rounded towards zero except for `~' which rounds down.[0m
+
+[38;2;248;248;242m       Users should beware that, in common with many other programming languages but not[0m
+[38;2;248;248;242m       software designed for calculation, the evaluation of  an  expression  in  zsh  is[0m
+[38;2;248;248;242m       taken a term at a time and promotion of integers to floating point does not occur[0m
+[38;2;248;248;242m       in  terms  only containing integers.  A typical result of this is that a division[0m
+[38;2;248;248;242m       such as 6/8 is truncated, in this being rounded towards 0.  The FORCE_FLOAT shell[0m
+[38;2;248;248;242m       option can be used in scripts or functions where floating point evaluation is re‐[0m
+[38;2;248;248;242m       quired throughout.[0m
+
+[38;2;248;248;242m       Scalar variables can hold integer or floating point values  at  different  times;[0m
+[38;2;248;248;242m       there is no memory of the numeric type in this case.[0m
+
+[38;2;248;248;242m       If a variable is first assigned in a numeric context without previously being de‐[0m
+[38;2;248;248;242m       clared,  it will be implicitly typed as integer or float and retain that type ei‐[0m
+[38;2;248;248;242m       ther until the type is explicitly changed or until the end of  the  scope.   This[0m
+[38;2;248;248;242m       can have unforeseen consequences.  For example, in the loop[0m
+
+[38;2;248;248;242m              for (( f = 0; f < 1; f += 0.1 )); do[0m
+[38;2;248;248;242m              # use $f[0m
+[38;2;248;248;242m              done[0m
+
+[38;2;248;248;242m       if f has not already been declared, the first assignment will cause it to be cre‐[0m
+[38;2;248;248;242m       ated  as  an integer, and consequently the operation `f += 0.1' will always cause[0m
+[38;2;248;248;242m       the result to be truncated to zero, so that the loop will  fail.   A  simple  fix[0m
+[38;2;248;248;242m       would  be to turn the initialization into `f = 0.0'.  It is therefore best to de‐[0m
+[38;2;248;248;242m       clare numeric variables with explicit types.[0m
+
+[38;2;248;248;242mCONDITIONAL EXPRESSIONS[0m
+[38;2;248;248;242m       A conditional expression is used with the [[ compound command to test  attributes[0m
+[38;2;248;248;242m       of  files and to compare strings.  Each expression can be constructed from one or[0m
+[38;2;248;248;242m       more of the following unary or binary expressions:[0m
+
+[38;2;248;248;242m       -a file[0m
+[38;2;248;248;242m              true if file exists.[0m
+
+[38;2;248;248;242m       -b file[0m
+[38;2;248;248;242m              true if file exists and is a block special file.[0m
+
+[38;2;248;248;242m       -c file[0m
+[38;2;248;248;242m              true if file exists and is a character special file.[0m
+
+[38;2;248;248;242m       -d file[0m
+[38;2;248;248;242m              true if file exists and is a directory.[0m
+
+[38;2;248;248;242m       -e file[0m
+[38;2;248;248;242m              true if file exists.[0m
+
+[38;2;248;248;242m       -f file[0m
+[38;2;248;248;242m              true if file exists and is a regular file.[0m
+
+[38;2;248;248;242m       -g file[0m
+[38;2;248;248;242m              true if file exists and has its setgid bit set.[0m
+
+[38;2;248;248;242m       -h file[0m
+[38;2;248;248;242m              true if file exists and is a symbolic link.[0m
+
+[38;2;248;248;242m       -k file[0m
+[38;2;248;248;242m              true if file exists and has its sticky bit set.[0m
+
+[38;2;248;248;242m       -n string[0m
+[38;2;248;248;242m              true if length of string is non-zero.[0m
+
+[38;2;248;248;242m       -o option[0m
+[38;2;248;248;242m              true if option named option is on.  option may be a single  character,  in[0m
+[38;2;248;248;242m              which  case it is a single letter option name.  (See the section `Specify‐[0m
+[38;2;248;248;242m              ing Options'.)[0m
+
+[38;2;248;248;242m              When no option named option exists, and the POSIX_BUILTINS  option  hasn't[0m
+[38;2;248;248;242m              been  set,  return 3 with a warning.  If that option is set, return 1 with[0m
+[38;2;248;248;242m              no warning.[0m
+
+[38;2;248;248;242m       -p file[0m
+[38;2;248;248;242m              true if file exists and is a FIFO special file (named pipe).[0m
+
+[38;2;248;248;242m       -r file[0m
+[38;2;248;248;242m              true if file exists and is readable by current process.[0m
+
+[38;2;248;248;242m       -s file[0m
+[38;2;248;248;242m              true if file exists and has size greater than zero.[0m
+
+[38;2;248;248;242m       -t fd  true if file descriptor number fd is open and associated with  a  terminal[0m
+[38;2;248;248;242m              device.  (note: fd is not optional)[0m
+
+[38;2;248;248;242m       -u file[0m
+[38;2;248;248;242m              true if file exists and has its setuid bit set.[0m
+
+[38;2;248;248;242m       -v varname[0m
+[38;2;248;248;242m              true if shell variable varname is set.[0m
+
+[38;2;248;248;242m       -w file[0m
+[38;2;248;248;242m              true if file exists and is writable by current process.[0m
+
+[38;2;248;248;242m       -x file[0m
+[38;2;248;248;242m              true  if file exists and is executable by current process.  If file exists[0m
+[38;2;248;248;242m              and is a directory, then the current process has permission to  search  in[0m
+[38;2;248;248;242m              the directory.[0m
+
+[38;2;248;248;242m       -z string[0m
+[38;2;248;248;242m              true if length of string is zero.[0m
+
+[38;2;248;248;242m       -L file[0m
+[38;2;248;248;242m              true if file exists and is a symbolic link.[0m
+
+[38;2;248;248;242m       -O file[0m
+[38;2;248;248;242m              true if file exists and is owned by the effective user ID of this process.[0m
+
+[38;2;248;248;242m       -G file[0m
+[38;2;248;248;242m              true  if  file exists and its group matches the effective group ID of this[0m
+[38;2;248;248;242m              process.[0m
+
+[38;2;248;248;242m       -S file[0m
+[38;2;248;248;242m              true if file exists and is a socket.[0m
+
+[38;2;248;248;242m       -N file[0m
+[38;2;248;248;242m              true if file exists and its access time is not newer than its modification[0m
+[38;2;248;248;242m              time.[0m
+
+[38;2;248;248;242m       file1 -nt file2[0m
+[38;2;248;248;242m              true if file1 exists and is newer than file2.[0m
+
+[38;2;248;248;242m       file1 -ot file2[0m
+[38;2;248;248;242m              true if file1 exists and is older than file2.[0m
+
+[38;2;248;248;242m       file1 -ef file2[0m
+[38;2;248;248;242m              true if file1 and file2 exist and refer to the same file.[0m
+
+[38;2;248;248;242m       string = pattern[0m
+[38;2;248;248;242m       string == pattern[0m
+[38;2;248;248;242m              true if string matches pattern.  The two  forms  are  exactly  equivalent.[0m
+[38;2;248;248;242m              The  `=' form is the traditional shell syntax (and hence the only one gen‐[0m
+[38;2;248;248;242m              erally used with the test and [ builtins); the `==' form provides compati‐[0m
+[38;2;248;248;242m              bility with other sorts of computer language.[0m
+
+[38;2;248;248;242m       string != pattern[0m
+[38;2;248;248;242m              true if string does not match pattern.[0m
+
+[38;2;248;248;242m       string =~ regexp[0m
+[38;2;248;248;242m              true if string matches the  regular  expression  regexp.   If  the  option[0m
+[38;2;248;248;242m              RE_MATCH_PCRE  is  set regexp is tested as a PCRE regular expression using[0m
+[38;2;248;248;242m              the zsh/pcre module, else it is tested as a POSIX extended regular expres‐[0m
+[38;2;248;248;242m              sion using the zsh/regex module.  Upon successful  match,  some  variables[0m
+[38;2;248;248;242m              will be updated; no variables are changed if the matching fails.[0m
+
+[38;2;248;248;242m              If the option BASH_REMATCH is not set the scalar parameter MATCH is set to[0m
+[38;2;248;248;242m              the  substring  that matched the pattern and the integer parameters MBEGIN[0m
+[38;2;248;248;242m              and MEND to the index of the start and end, respectively, of the match  in[0m
+[38;2;248;248;242m              string,  such  that  if string is contained in variable var the expression[0m
+[38;2;248;248;242m              `${var[$MBEGIN,$MEND]}' is identical to `$MATCH'.  The setting of the  op‐[0m
+[38;2;248;248;242m              tion  KSH_ARRAYS  is  respected.   Likewise, the array match is set to the[0m
+[38;2;248;248;242m              substrings that matched parenthesised subexpressions and the arrays mbegin[0m
+[38;2;248;248;242m              and mend to the indices of the start and end positions,  respectively,  of[0m
+[38;2;248;248;242m              the  substrings  within  string.   The arrays are not set if there were no[0m
+[38;2;248;248;242m              parenthesised subexpressions.  For example, if the string `a short string'[0m
+[38;2;248;248;242m              is matched against the regular expression `s(...)t',  then  (assuming  the[0m
+[38;2;248;248;242m              option KSH_ARRAYS is not set) MATCH, MBEGIN and MEND are `short', 3 and 7,[0m
+[38;2;248;248;242m              respectively,  while  match,  mbegin and mend are single entry arrays con‐[0m
+[38;2;248;248;242m              taining the strings `hor', `4' and `6', respectively.[0m
+
+[38;2;248;248;242m              If the option BASH_REMATCH is set the array BASH_REMATCH  is  set  to  the[0m
+[38;2;248;248;242m              substring that matched the pattern followed by the substrings that matched[0m
+[38;2;248;248;242m              parenthesised subexpressions within the pattern.[0m
+
+[38;2;248;248;242m       string1 < string2[0m
+[38;2;248;248;242m              true if string1 comes before string2 based on ASCII value of their charac‐[0m
+[38;2;248;248;242m              ters.[0m
+
+[38;2;248;248;242m       string1 > string2[0m
+[38;2;248;248;242m              true  if string1 comes after string2 based on ASCII value of their charac‐[0m
+[38;2;248;248;242m              ters.[0m
+
+[38;2;248;248;242m       exp1 -eq exp2[0m
+[38;2;248;248;242m              true if exp1 is numerically equal to exp2.  Note that for  purely  numeric[0m
+[38;2;248;248;242m              comparisons  use  of  the ((...)) builtin described in the section `ARITH‐[0m
+[38;2;248;248;242m              METIC EVALUATION' is more convenient than conditional expressions.[0m
+
+[38;2;248;248;242m       exp1 -ne exp2[0m
+[38;2;248;248;242m              true if exp1 is numerically not equal to exp2.[0m
+
+[38;2;248;248;242m       exp1 -lt exp2[0m
+[38;2;248;248;242m              true if exp1 is numerically less than exp2.[0m
+
+[38;2;248;248;242m       exp1 -gt exp2[0m
+[38;2;248;248;242m              true if exp1 is numerically greater than exp2.[0m
+
+[38;2;248;248;242m       exp1 -le exp2[0m
+[38;2;248;248;242m              true if exp1 is numerically less than or equal to exp2.[0m
+
+[38;2;248;248;242m       exp1 -ge exp2[0m
+[38;2;248;248;242m              true if exp1 is numerically greater than or equal to exp2.[0m
+
+[38;2;248;248;242m       ( exp )[0m
+[38;2;248;248;242m              true if exp is true.[0m
+
+[38;2;248;248;242m       ! exp  true if exp is false.[0m
+
+[38;2;248;248;242m       exp1 && exp2[0m
+[38;2;248;248;242m              true if exp1 and exp2 are both true.[0m
+
+[38;2;248;248;242m       exp1 || exp2[0m
+[38;2;248;248;242m              true if either exp1 or exp2 is true.[0m
+
+[38;2;248;248;242m       For compatibility, if there is a single argument that is not  syntactically  sig‐[0m
+[38;2;248;248;242m       nificant,  typically  a  variable, the condition is treated as a test for whether[0m
+[38;2;248;248;242m       the expression expands as a string of non-zero length.  In other words,  [[  $var[0m
+[38;2;248;248;242m       ]]  is  the  same as [[ -n $var ]].  It is recommended that the second, explicit,[0m
+[38;2;248;248;242m       form be used where possible.[0m
+
+[38;2;248;248;242m       Normal shell expansion is performed on the file, string  and  pattern  arguments,[0m
+[38;2;248;248;242m       but  the  result of each expansion is constrained to be a single word, similar to[0m
+[38;2;248;248;242m       the effect of double quotes.[0m
+
+[38;2;248;248;242m       Filename generation is not performed on any form of argument to conditions.  How‐[0m
+[38;2;248;248;242m       ever, it can be forced in any case where normal shell expansion is valid and when[0m
+[38;2;248;248;242m       the option EXTENDED_GLOB is in effect by using an explicit glob qualifier of  the[0m
+[38;2;248;248;242m       form  (#q)  at the end of the string.  A normal glob qualifier expression may ap‐[0m
+[38;2;248;248;242m       pear between the `q' and the closing parenthesis; if none appears the  expression[0m
+[38;2;248;248;242m       has no effect beyond causing filename generation.  The results of filename gener‐[0m
+[38;2;248;248;242m       ation  are  joined  together  to form a single word, as with the results of other[0m
+[38;2;248;248;242m       forms of expansion.[0m
+
+[38;2;248;248;242m       This special use of filename generation is only available with the [[ syntax.  If[0m
+[38;2;248;248;242m       the condition occurs within the [ or test builtin commands then  globbing  occurs[0m
+[38;2;248;248;242m       instead  as  part of normal command line expansion before the condition is evalu‐[0m
+[38;2;248;248;242m       ated.  In this case it may generate multiple words which are  likely  to  confuse[0m
+[38;2;248;248;242m       the syntax of the test command.[0m
+
+[38;2;248;248;242m       For example,[0m
+
+[38;2;248;248;242m              [[ -n file*(#qN) ]][0m
+
+[38;2;248;248;242m       produces status zero if and only if there is at least one file in the current di‐[0m
+[38;2;248;248;242m       rectory  beginning with the string `file'.  The globbing qualifier N ensures that[0m
+[38;2;248;248;242m       the expression is empty if there is no matching file.[0m
+
+[38;2;248;248;242m       Pattern metacharacters are active for the pattern arguments; the patterns are the[0m
+[38;2;248;248;242m       same as those used for filename generation, see zshexpn(1), but there is no  spe‐[0m
+[38;2;248;248;242m       cial behaviour of `/' nor initial dots, and no glob qualifiers are allowed.[0m
+
+[38;2;248;248;242m       In  each of the above expressions, if file is of the form `/dev/fd/n', where n is[0m
+[38;2;248;248;242m       an integer, then the test applied to the open file whose descriptor number is  n,[0m
+[38;2;248;248;242m       even if the underlying system does not support the /dev/fd directory.[0m
+
+[38;2;248;248;242m       In  the forms which do numeric comparison, the expressions exp undergo arithmetic[0m
+[38;2;248;248;242m       expansion as if they were enclosed in $((...)).[0m
+
+[38;2;248;248;242m       For example, the following:[0m
+
+[38;2;248;248;242m              [[ ( -f foo || -f bar ) && $report = y* ]] && print File exists.[0m
+
+[38;2;248;248;242m       tests if either file foo or file bar exists, and if so, if the value of the para‐[0m
+[38;2;248;248;242m       meter report begins with `y'; if the complete  condition  is  true,  the  message[0m
+[38;2;248;248;242m       `File exists.' is printed.[0m
+
+[38;2;248;248;242mEXPANSION OF PROMPT SEQUENCES[0m
+[38;2;248;248;242m       Prompt  sequences undergo a special form of expansion.  This type of expansion is[0m
+[38;2;248;248;242m       also available using the -P option to the print builtin.[0m
+
+[38;2;248;248;242m       If the PROMPT_SUBST option is set, the prompt string is first subjected to  para‐[0m
+[38;2;248;248;242m       meter expansion, command substitution and arithmetic expansion.  See zshexpn(1).[0m
+
+[38;2;248;248;242m       Certain escape sequences may be recognised in the prompt string.[0m
+
+[38;2;248;248;242m       If  the PROMPT_BANG option is set, a `!' in the prompt is replaced by the current[0m
+[38;2;248;248;242m       history event number.  A literal `!' may then be represented as `!!'.[0m
+
+[38;2;248;248;242m       If the PROMPT_PERCENT option is set, certain escape sequences that start with `%'[0m
+[38;2;248;248;242m       are expanded.  Many escapes are followed by a single character, although some  of[0m
+[38;2;248;248;242m       these  take  an  optional integer argument that should appear between the `%' and[0m
+[38;2;248;248;242m       the next character of the sequence.  More complicated escape sequences are avail‐[0m
+[38;2;248;248;242m       able to provide conditional expansion.[0m
+
+[38;2;248;248;242mSIMPLE PROMPT ESCAPES[0m
+[38;2;248;248;242m   Special characters[0m
+[38;2;248;248;242m       %%     A `%'.[0m
+
+[38;2;248;248;242m       %)     A `)'.[0m
+
+[38;2;248;248;242m   Login information[0m
+[38;2;248;248;242m       %l     The line (tty) the user is logged in on, without `/dev/' prefix.   If  the[0m
+[38;2;248;248;242m              name starts with `/dev/tty', that prefix is stripped.[0m
+
+[38;2;248;248;242m       %M     The full machine hostname.[0m
+
+[38;2;248;248;242m       %m     The  hostname up to the first `.'.  An integer may follow the `%' to spec‐[0m
+[38;2;248;248;242m              ify how many components of the hostname are desired.  With a negative  in‐[0m
+[38;2;248;248;242m              teger, trailing components of the hostname are shown.[0m
+
+[38;2;248;248;242m       %n     $USERNAME.[0m
+
+[38;2;248;248;242m       %y     The  line  (tty)  the  user is logged in on, without `/dev/' prefix.  This[0m
+[38;2;248;248;242m              does not treat `/dev/tty' names specially.[0m
+
+[38;2;248;248;242m   Shell state[0m
+[38;2;248;248;242m       %#     A `#' if the shell is running with privileges, a `%' if  not.   Equivalent[0m
+[38;2;248;248;242m              to  `%(!.#.%%)'.   The  definition of `privileged', for these purposes, is[0m
+[38;2;248;248;242m              that either the effective user ID is zero, or,  if  POSIX.1e  capabilities[0m
+[38;2;248;248;242m              are supported, that at least one capability is raised in either the Effec‐[0m
+[38;2;248;248;242m              tive or Inheritable capability vectors.[0m
+
+[38;2;248;248;242m       %?     The return status of the last command executed just before the prompt.[0m
+
+[38;2;248;248;242m       %_     The  status of the parser, i.e. the shell constructs (like `if' and `for')[0m
+[38;2;248;248;242m              that have been started on the command line. If  given  an  integer  number[0m
+[38;2;248;248;242m              that  many  strings  will be printed; zero or negative or no integer means[0m
+[38;2;248;248;242m              print as many as there are.  This is most useful in prompts PS2  for  con‐[0m
+[38;2;248;248;242m              tinuation  lines and PS4 for debugging with the XTRACE option; in the lat‐[0m
+[38;2;248;248;242m              ter case it will also work non-interactively.[0m
+
+[38;2;248;248;242m       %^     The status of the parser in reverse. This is the same as `%_'  other  than[0m
+[38;2;248;248;242m              the order of strings.  It is often used in RPS2.[0m
+
+[38;2;248;248;242m       %d[0m
+[38;2;248;248;242m       %/     Current  working directory.  If an integer follows the `%', it specifies a[0m
+[38;2;248;248;242m              number of trailing components of the current working  directory  to  show;[0m
+[38;2;248;248;242m              zero  means  the  whole path.  A negative integer specifies leading compo‐[0m
+[38;2;248;248;242m              nents, i.e. %-1d specifies the first component.[0m
+
+[38;2;248;248;242m       %~     As %d and %/, but if the current working directory starts with $HOME, that[0m
+[38;2;248;248;242m              part is replaced by a `~'. Furthermore, if it has a named directory as its[0m
+[38;2;248;248;242m              prefix, that part is replaced by a `~' followed by the name of the  direc‐[0m
+[38;2;248;248;242m              tory,  but  only  if the result is shorter than the full path; see Dynamic[0m
+[38;2;248;248;242m              and Static named directories in zshexpn(1).[0m
+
+[38;2;248;248;242m       %e     Evaluation depth of the current sourced file,  shell  function,  or  eval.[0m
+[38;2;248;248;242m              This  is  incremented  or decremented every time the value of %N is set or[0m
+[38;2;248;248;242m              reverted to a previous value, respectively.  This is most useful  for  de‐[0m
+[38;2;248;248;242m              bugging as part of $PS4.[0m
+
+[38;2;248;248;242m       %h[0m
+[38;2;248;248;242m       %!     Current history event number.[0m
+
+[38;2;248;248;242m       %i     The  line  number currently being executed in the script, sourced file, or[0m
+[38;2;248;248;242m              shell function given by %N.  This is most useful for debugging as part  of[0m
+[38;2;248;248;242m              $PS4.[0m
+
+[38;2;248;248;242m       %I     The  line number currently being executed in the file %x.  This is similar[0m
+[38;2;248;248;242m              to %i, but the line number is always a line number in the file  where  the[0m
+[38;2;248;248;242m              code was defined, even if the code is a shell function.[0m
+
+[38;2;248;248;242m       %j     The number of jobs.[0m
+
+[38;2;248;248;242m       %L     The current value of $SHLVL.[0m
+
+[38;2;248;248;242m       %N     The  name  of the script, sourced file, or shell function that zsh is cur‐[0m
+[38;2;248;248;242m              rently executing, whichever was started most recently.  If there is  none,[0m
+[38;2;248;248;242m              this  is equivalent to the parameter $0.  An integer may follow the `%' to[0m
+[38;2;248;248;242m              specify a number of trailing path components to show; zero means the  full[0m
+[38;2;248;248;242m              path.  A negative integer specifies leading components.[0m
+
+[38;2;248;248;242m       %x     The  name of the file containing the source code currently being executed.[0m
+[38;2;248;248;242m              This behaves as %N except that function and eval  command  names  are  not[0m
+[38;2;248;248;242m              shown, instead the file where they were defined.[0m
+
+[38;2;248;248;242m       %c[0m
+[38;2;248;248;242m       %.[0m
+[38;2;248;248;242m       %C     Trailing  component of the current working directory.  An integer may fol‐[0m
+[38;2;248;248;242m              low the `%' to get more than one component.  Unless `%C'  is  used,  tilde[0m
+[38;2;248;248;242m              contraction  is  performed  first.   These are deprecated as %c and %C are[0m
+[38;2;248;248;242m              equivalent to %1~ and %1/, respectively, while explicit positive  integers[0m
+[38;2;248;248;242m              have the same effect as for the latter two sequences.[0m
+
+[38;2;248;248;242m   Date and time[0m
+[38;2;248;248;242m       %D     The date in yy-mm-dd format.[0m
+
+[38;2;248;248;242m       %T     Current time of day, in 24-hour format.[0m
+
+[38;2;248;248;242m       %t[0m
+[38;2;248;248;242m       %@     Current time of day, in 12-hour, am/pm format.[0m
+
+[38;2;248;248;242m       %*     Current time of day in 24-hour format, with seconds.[0m
+
+[38;2;248;248;242m       %w     The date in day-dd format.[0m
+
+[38;2;248;248;242m       %W     The date in mm/dd/yy format.[0m
+
+[38;2;248;248;242m       %D{string}[0m
+[38;2;248;248;242m              string is formatted using the strftime function.  See strftime(3) for more[0m
+[38;2;248;248;242m              details.   Various  zsh extensions provide numbers with no leading zero or[0m
+[38;2;248;248;242m              space if the number is a single digit:[0m
+
+[38;2;248;248;242m              %f     a day of the month[0m
+[38;2;248;248;242m              %K     the hour of the day on the 24-hour clock[0m
+[38;2;248;248;242m              %L     the hour of the day on the 12-hour clock[0m
+
+[38;2;248;248;242m              In addition, if the system supports the POSIX gettimeofday system call, %.[0m
+[38;2;248;248;242m              provides decimal fractions of a second since the epoch  with  leading  ze‐[0m
+[38;2;248;248;242m              roes.   By default three decimal places are provided, but a number of dig‐[0m
+[38;2;248;248;242m              its up to 9 may be given following the %; hence %6.  outputs microseconds,[0m
+[38;2;248;248;242m              and %9. outputs nanoseconds.  (The latter requires a  nanosecond-precision[0m
+[38;2;248;248;242m              clock_gettime;  systems lacking this will return a value multiplied by the[0m
+[38;2;248;248;242m              appropriate power of 10.)   A  typical  example  of  this  is  the  format[0m
+[38;2;248;248;242m              `%D{%H:%M:%S.%.}'.[0m
+
+[38;2;248;248;242m              The GNU extension %N is handled as a synonym for %9..[0m
+
+[38;2;248;248;242m              Additionally,  the  GNU  extension that a `-' between the % and the format[0m
+[38;2;248;248;242m              character causes a leading zero or space to be  stripped  is  handled  di‐[0m
+[38;2;248;248;242m              rectly  by  the shell for the format characters d, f, H, k, l, m, M, S and[0m
+[38;2;248;248;242m              y; any other format characters are provided to  the  system's  strftime(3)[0m
+[38;2;248;248;242m              with  any  leading `-' present, so the handling is system dependent.  Fur‐[0m
+[38;2;248;248;242m              ther GNU (or other) extensions are also passed to strftime(3) and may work[0m
+[38;2;248;248;242m              if the system supports them.[0m
+
+[38;2;248;248;242m   Visual effects[0m
+[38;2;248;248;242m       %B (%b)[0m
+[38;2;248;248;242m              Start (stop) boldface mode.[0m
+
+[38;2;248;248;242m       %E     Clear to end of line.[0m
+
+[38;2;248;248;242m       %U (%u)[0m
+[38;2;248;248;242m              Start (stop) underline mode.[0m
+
+[38;2;248;248;242m       %S (%s)[0m
+[38;2;248;248;242m              Start (stop) standout mode.[0m
+
+[38;2;248;248;242m       %F (%f)[0m
+[38;2;248;248;242m              Start (stop) using a different foreground colour, if supported by the ter‐[0m
+[38;2;248;248;242m              minal.  The colour may be specified two ways: either as  a  numeric  argu‐[0m
+[38;2;248;248;242m              ment,  as normal, or by a sequence in braces following the %F, for example[0m
+[38;2;248;248;242m              %F{red}.  In the latter case the values allowed are as described  for  the[0m
+[38;2;248;248;242m              fg zle_highlight attribute; see Character Highlighting in zshzle(1).  This[0m
+[38;2;248;248;242m              means that numeric colours are allowed in the second format also.[0m
+
+[38;2;248;248;242m       %K (%k)[0m
+[38;2;248;248;242m              Start (stop) using a different bacKground colour.  The syntax is identical[0m
+[38;2;248;248;242m              to that for %F and %f.[0m
+
+[38;2;248;248;242m       %{...%}[0m
+[38;2;248;248;242m              Include  a  string  as  a  literal escape sequence.  The string within the[0m
+[38;2;248;248;242m              braces should not change the cursor position.  Brace pairs can nest.[0m
+
+[38;2;248;248;242m              A positive numeric argument between the % and the  {  is  treated  as  de‐[0m
+[38;2;248;248;242m              scribed for %G below.[0m
+
+[38;2;248;248;242m       %G     Within a %{...%} sequence, include a `glitch': that is, assume that a sin‐[0m
+[38;2;248;248;242m              gle  character width will be output.  This is useful when outputting char‐[0m
+[38;2;248;248;242m              acters that otherwise cannot be correctly handled by the  shell,  such  as[0m
+[38;2;248;248;242m              the alternate character set on some terminals.  The characters in question[0m
+[38;2;248;248;242m              can  be  included  within a %{...%} sequence together with the appropriate[0m
+[38;2;248;248;242m              number of %G sequences to indicate the correct width.  An integer  between[0m
+[38;2;248;248;242m              the  `%'  and  `G'  indicates  a  character  width  other than one.  Hence[0m
+[38;2;248;248;242m              %{seq%2G%} outputs seq and assumes it takes up the width of  two  standard[0m
+[38;2;248;248;242m              characters.[0m
+
+[38;2;248;248;242m              Multiple uses of %G accumulate in the obvious fashion; the position of the[0m
+[38;2;248;248;242m              %G is unimportant.  Negative integers are not handled.[0m
+
+[38;2;248;248;242m              Note  that  when  prompt truncation is in use it is advisable to divide up[0m
+[38;2;248;248;242m              output into single characters within each %{...%} group so that  the  cor‐[0m
+[38;2;248;248;242m              rect truncation point can be found.[0m
+
+[38;2;248;248;242mCONDITIONAL SUBSTRINGS IN PROMPTS[0m
+[38;2;248;248;242m       %v     The  value  of  the first element of the psvar array parameter.  Following[0m
+[38;2;248;248;242m              the `%' with an integer gives that element of the array.   Negative  inte‐[0m
+[38;2;248;248;242m              gers count from the end of the array.[0m
+
+[38;2;248;248;242m       %(x.true-text.false-text)[0m
+[38;2;248;248;242m              Specifies  a  ternary  expression.  The character following the x is arbi‐[0m
+[38;2;248;248;242m              trary; the same character is used to separate the text for the `true'  re‐[0m
+[38;2;248;248;242m              sult  from  that for the `false' result.  This separator may not appear in[0m
+[38;2;248;248;242m              the true-text, except as part of a %-escape sequence.  A `)' may appear in[0m
+[38;2;248;248;242m              the false-text as `%)'.  true-text and false-text may both  contain  arbi‐[0m
+[38;2;248;248;242m              trarily-nested escape sequences, including further ternary expressions.[0m
+
+[38;2;248;248;242m              The  left parenthesis may be preceded or followed by a positive integer n,[0m
+[38;2;248;248;242m              which defaults to zero.  A negative integer will be multiplied by -1,  ex‐[0m
+[38;2;248;248;242m              cept  as noted below for `l'.  The test character x may be any of the fol‐[0m
+[38;2;248;248;242m              lowing:[0m
+
+[38;2;248;248;242m              !      True if the shell is running with privileges.[0m
+[38;2;248;248;242m              #      True if the effective uid of the current process is n.[0m
+[38;2;248;248;242m              ?      True if the exit status of the last command was n.[0m
+[38;2;248;248;242m              _      True if at least n shell constructs were started.[0m
+[38;2;248;248;242m              C[0m
+[38;2;248;248;242m              /      True if the current absolute path has at least n elements  relative[0m
+[38;2;248;248;242m                     to the root directory, hence / is counted as 0 elements.[0m
+[38;2;248;248;242m              c[0m
+[38;2;248;248;242m              .[0m
+[38;2;248;248;242m              ~      True  if  the current path, with prefix replacement, has at least n[0m
+[38;2;248;248;242m                     elements relative to the root directory, hence / is  counted  as  0[0m
+[38;2;248;248;242m                     elements.[0m
+[38;2;248;248;242m              D      True if the month is equal to n (January = 0).[0m
+[38;2;248;248;242m              d      True if the day of the month is equal to n.[0m
+[38;2;248;248;242m              e      True if the evaluation depth is at least n.[0m
+[38;2;248;248;242m              g      True if the effective gid of the current process is n.[0m
+[38;2;248;248;242m              j      True if the number of jobs is at least n.[0m
+[38;2;248;248;242m              L      True if the SHLVL parameter is at least n.[0m
+[38;2;248;248;242m              l      True if at least n characters have already been printed on the cur‐[0m
+[38;2;248;248;242m                     rent  line.  When n is negative, true if at least abs(n) characters[0m
+[38;2;248;248;242m                     remain before  the  opposite  margin  (thus  the  left  margin  for[0m
+[38;2;248;248;242m                     RPROMPT).[0m
+[38;2;248;248;242m              S      True if the SECONDS parameter is at least n.[0m
+[38;2;248;248;242m              T      True if the time in hours is equal to n.[0m
+[38;2;248;248;242m              t      True if the time in minutes is equal to n.[0m
+[38;2;248;248;242m              v      True if the array psvar has at least n elements.[0m
+[38;2;248;248;242m              V      True if element n of the array psvar is set and non-empty.[0m
+[38;2;248;248;242m              w      True if the day of the week is equal to n (Sunday = 0).[0m
+
+[38;2;248;248;242m       %<string<[0m
+[38;2;248;248;242m       %>string>[0m
+[38;2;248;248;242m       %[xstring][0m
+[38;2;248;248;242m              Specifies  truncation  behaviour  for  the remainder of the prompt string.[0m
+[38;2;248;248;242m              The third, deprecated, form is equivalent to `%xstringx', i.e.  x  may  be[0m
+[38;2;248;248;242m              `<'  or  `>'.  The string will be displayed in place of the truncated por‐[0m
+[38;2;248;248;242m              tion of any string; note this does not undergo prompt expansion.[0m
+
+[38;2;248;248;242m              The numeric argument, which in the third form may appear immediately after[0m
+[38;2;248;248;242m              the `[', specifies the maximum permitted length  of  the  various  strings[0m
+[38;2;248;248;242m              that can be displayed in the prompt.  In the first two forms, this numeric[0m
+[38;2;248;248;242m              argument  may  be  negative, in which case the truncation length is deter‐[0m
+[38;2;248;248;242m              mined by subtracting the absolute value of the numeric argument  from  the[0m
+[38;2;248;248;242m              number  of  character  positions remaining on the current prompt line.  If[0m
+[38;2;248;248;242m              this results in a zero or negative length, a length  of  1  is  used.   In[0m
+[38;2;248;248;242m              other words, a negative argument arranges that after truncation at least n[0m
+[38;2;248;248;242m              characters remain before the right margin (left margin for RPROMPT).[0m
+
+[38;2;248;248;242m              The  forms with `<' truncate at the left of the string, and the forms with[0m
+[38;2;248;248;242m              `>' truncate at the right of the string.  For example, if the current  di‐[0m
+[38;2;248;248;242m              rectory  is `/home/pike', the prompt `%8<..<%/' will expand to `..e/pike'.[0m
+[38;2;248;248;242m              In this string, the terminating character (`<', `>' or `]'),  or  in  fact[0m
+[38;2;248;248;242m              any character, may be quoted by a preceding `\'; note when using print -P,[0m
+[38;2;248;248;242m              however,  that this must be doubled as the string is also subject to stan‐[0m
+[38;2;248;248;242m              dard print processing, in addition to any backslashes removed by a  double[0m
+[38;2;248;248;242m              quoted string:  the worst case is therefore `print -P "%<\\\\<<..."'.[0m
+
+[38;2;248;248;242m              If  the string is longer than the specified truncation length, it will ap‐[0m
+[38;2;248;248;242m              pear in full, completely replacing the truncated string.[0m
+
+[38;2;248;248;242m              The part of the prompt string to be truncated  runs  to  the  end  of  the[0m
+[38;2;248;248;242m              string,  or  to the end of the next enclosing group of the `%(' construct,[0m
+[38;2;248;248;242m              or to the next truncation encountered at the  same  grouping  level  (i.e.[0m
+[38;2;248;248;242m              truncations  inside a `%(' are separate), which ever comes first.  In par‐[0m
+[38;2;248;248;242m              ticular, a truncation with argument zero (e.g., `%<<') marks  the  end  of[0m
+[38;2;248;248;242m              the  range of the string to be truncated while turning off truncation from[0m
+[38;2;248;248;242m              there on. For example, the prompt `%10<...<%~%<<%# ' will  print  a  trun‐[0m
+[38;2;248;248;242m              cated  representation  of the current directory, followed by a `%' or `#',[0m
+[38;2;248;248;242m              followed by a space.  Without the `%<<', those two characters would be in‐[0m
+[38;2;248;248;242m              cluded in the string to be truncated.  Note that `%-0<<' is not equivalent[0m
+[38;2;248;248;242m              to `%<<' but specifies that the prompt is truncated at the right margin.[0m
+
+[38;2;248;248;242m              Truncation applies only within each individual line of the prompt, as  de‐[0m
+[38;2;248;248;242m              limited by embedded newlines (if any).  If the total length of any line of[0m
+[38;2;248;248;242m              the  prompt after truncation is greater than the terminal width, or if the[0m
+[38;2;248;248;242m              part to be truncated contains embedded newlines,  truncation  behavior  is[0m
+[38;2;248;248;242m              undefined  and  may  change  in  a  future  version  of  the  shell.   Use[0m
+[38;2;248;248;242m              `%-n(l.true-text.false-text)' to remove  parts  of  the  prompt  when  the[0m
+[38;2;248;248;242m              available space is less than n.[0m
+
+[38;2;248;248;242mzsh 5.9                               May 14, 2022                            ZSHMISC(1)[0m

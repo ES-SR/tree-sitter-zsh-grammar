@@ -1,0 +1,1701 @@
+1 0 ZSHMISC(1)                  General Commands Manual                  ZSHMISC(1)
+1 0 NAME
+3 5 zshmisc - everything and then some
+1 0 SIMPLE COMMANDS & PIPELINES
+3 5 A simple command is a sequence of optional parameter assignments followed
+3 5 by blank-separated words, with optional redirections interspersed.  For a
+3 5 description of assignment, see the beginning of zshparam(1).
+3 5 The first word is the command to be executed, and the remaining words, if
+3 5 any, are arguments to the command.  If a command name is given, the
+3 5 parameter assignments modify the environment of the command when it is
+3 5 executed.  The value of a simple command is its exit status, or 128 plus
+3 5 the signal number if terminated by a signal.  For example,
+4 12 echo foo
+3 5 is a simple command with arguments.
+3 5 A pipeline is either a simple command, or a sequence of two or more simple
+3 5 commands where each command is separated from the next by ‘|' or ‘|&'.
+3 5 Where commands are separated by ‘|', the standard output of the first
+3 5 command is connected to the standard input of the next.  ‘|&' is shorthand
+3 5 for ‘2>&1 |', which connects both the standard output and the standard
+3 5 error of the command to the standard input of the next.  The value of a
+3 5 pipeline is the value of the last command, unless the pipeline is preceded
+3 5 by ‘!' in which case the value is the logical inverse of the value of the
+3 5 last command.  For example,
+4 12 echo foo | sed 's/foo/bar/'
+3 5 is a pipeline, where the output (‘foo' plus a newline) of the first
+3 5 command will be passed to the input of the second.
+3 5 If a pipeline is preceded by ‘coproc', it is executed as a coprocess; a
+3 5 two-way pipe is established between it and the parent shell.  The shell
+3 5 can read from or write to the coprocess by means of the ‘>&p' and ‘<&p'
+3 5 redirection operators or with ‘print -p' and ‘read -p'.  A pipeline cannot
+3 5 be preceded by both ‘coproc' and ‘!'.  If job control is active, the
+3 5 coprocess can be treated in other than input and output as an ordinary
+3 5 background job.
+3 5 A sublist is either a single pipeline, or a sequence of two or more
+3 5 pipelines separated by ‘&&' or ‘||'.  If two pipelines are separated by
+3 5 ‘&&', the second pipeline is executed only if the first succeeds (returns
+3 5 a zero status).  If two pipelines are separated by ‘||', the second is
+3 5 executed only if the first fails (returns a nonzero status).  Both
+3 5 operators have equal precedence and are left associative.  The value of
+3 5 the sublist is the value of the last pipeline executed.  For example,
+4 12 dmesg | grep panic && print yes
+3 5 is a sublist consisting of two pipelines, the second just a simple command
+3 5 which will be executed if and only if the grep command returns a zero
+3 5 status.  If it does not, the value of the sublist is that return status,
+3 5 else it is the status returned by the print (almost certainly zero).
+3 5 A list is a sequence of zero or more sublists, in which each sublist is
+3 5 terminated by ‘;', ‘&', ‘&|', ‘&!', or a newline.  This terminator may
+3 5 optionally be omitted from the last sublist in the list when the list
+3 5 appears as a complex command inside ‘(...)' or ‘{...}'.  When a sublist is
+3 5 terminated by ‘;' or newline, the shell waits for it to finish before
+3 5 executing the next sublist.  If a sublist is terminated by a ‘&', ‘&|', or
+3 5 ‘&!', the shell executes the last pipeline in it in the background, and
+3 5 does not wait for it to finish (note the difference from other shells
+3 5 which execute the whole sublist in the background).  A backgrounded
+3 5 pipeline returns a status of zero.
+3 5 More generally, a list can be seen as a set of any shell commands
+3 5 whatsoever, including the complex commands below; this is implied wherever
+3 5 the word ‘list' appears in later descriptions.  For example, the commands
+3 5 in a shell function form a special sort of list.
+1 0 PRECOMMAND MODIFIERS
+3 5 A simple command may be preceded by a precommand modifier, which will
+3 5 alter how the command is interpreted.  These modifiers are shell builtin
+3 5 commands with the exception of nocorrect which is a reserved word.
+3 5 -      The command is executed with a ‘-' prepended to its argv[0] string.
+3 5 builtin
+4 12 The command word is taken to be the name of a builtin command,
+4 12 rather than a shell function or external command.
+3 5 command [ -pvV ]
+4 12 The command word is taken to be the name of an external command,
+4 12 rather than a shell function or builtin.   If the POSIX_BUILTINS
+4 12 option is set, builtins will also be executed but certain special
+4 12 properties of them are suppressed. The -p flag causes a default
+4 12 path to be searched instead of that in $path. With the -v flag,
+4 12 command is similar to whence and with -V, it is equivalent to
+4 12 whence -v.
+3 5 exec [ -cl ] [ -a argv0 ]
+4 12 The following command together with any arguments is run in place
+4 12 of the current process, rather than as a sub-process.  The shell
+4 12 does not fork and is replaced.  The shell does not invoke TRAPEXIT,
+4 12 nor does it source zlogout files.  The options are provided for
+4 12 compatibility with other shells.
+4 12 The -c option clears the environment.
+4 12 The -l option is equivalent to the - precommand modifier, to treat
+4 12 the replacement command as a login shell; the command is executed
+4 12 with a - prepended to its argv[0] string.  This flag has no effect
+4 12 if used together with the -a option.
+4 12 The -a option is used to specify explicitly the argv[0] string (the
+4 12 name of the command as seen by the process itself) to be used by
+4 12 the replacement command and is directly equivalent to setting a
+4 12 value for the ARGV0 environment variable.
+3 5 nocorrect
+4 12 Spelling correction is not done on any of the words.  This must
+4 12 appear before any other precommand modifier, as it is interpreted
+4 12 immediately, before any parsing is done.  It has no effect in
+4 12 non-interactive shells.
+3 5 noglob
+4 12 Filename generation (globbing) is not performed on any of the
+4 12 words.
+1 0 COMPLEX COMMANDS
+3 5 A complex command in zsh is one of the following:
+3 5 if list then list [ elif list then list ] ... [ else list ] fi
+4 12 The if list is executed, and if it returns a zero exit status, the
+4 12 then list is executed.  Otherwise, the elif list is executed and if
+4 12 its status is zero, the then list is executed.  If each elif list
+4 12 returns nonzero status, the else list is executed.
+3 5 for name ... [ in word ... ] term do list done
+4 12 Expand the list of words, and set the parameter name to each of
+4 12 them in turn, executing list each time.  If the ‘in word' is
+4 12 omitted, use the positional parameters instead of the words.
+4 12 The term consists of one or more newline or ; which terminate the
+4 12 words, and are optional when the ‘in word' is omitted.
+4 12 More than one parameter name can appear before the list of words.
+4 12 If N names are given, then on each execution of the loop the next N
+4 12 words are assigned to the corresponding parameters.  If there are
+4 12 more names than remaining words, the remaining parameters are each
+4 12 set to the empty string.  Execution of the loop ends when there is
+4 12 no remaining word to assign to the first name.  It is only possible
+4 12 for in to appear as the first name in the list, else it will be
+4 12 treated as marking the end of the list.
+3 5 for (( [expr1] ; [expr2] ; [expr3] )) do list done
+4 12 The arithmetic expression expr1 is evaluated first (see the section
+4 12 ‘Arithmetic Evaluation').  The arithmetic expression expr2 is
+4 12 repeatedly evaluated until it evaluates to zero and when non-zero,
+4 12 list is executed and the arithmetic expression expr3 evaluated.  If
+4 12 any expression is omitted, then it behaves as if it evaluated to 1.
+3 5 while list do list done
+4 12 Execute the do list as long as the while list returns a zero exit
+4 12 status.
+3 5 until list do list done
+4 12 Execute the do list as long as until list returns a nonzero exit
+4 12 status.
+3 5 repeat word do list done
+4 12 word is expanded and treated as an arithmetic expression, which
+4 12 must evaluate to a number n.  list is then executed n times.
+4 12 The repeat syntax is disabled by default when the shell starts in a
+4 12 mode emulating another shell.  It can be enabled with the command
+4 12 ‘enable -r repeat'
+3 5 case word in [ [(] pattern [ | pattern ] ... ) list (;;|;&|;|) ] ... esac
+4 12 Execute the list associated with the first pattern that matches
+4 12 word, if any.  The form of the patterns is the same as that used
+4 12 for filename generation.  See the section ‘Filename Generation'.
+4 12 Note further that, unless the SH_GLOB option is set, the whole
+4 12 pattern with alternatives is treated by the shell as equivalent to
+4 12 a group of patterns within parentheses, although white space may
+4 12 appear about the parentheses and the vertical bar and will be
+4 12 stripped from the pattern at those points.  White space may appear
+4 12 elsewhere in the pattern; this is not stripped.  If the SH_GLOB
+4 12 option is set, so that an opening parenthesis can be unambiguously
+4 12 treated as part of the case syntax, the expression is parsed into
+4 12 separate words and these are treated as strict alternatives (as in
+4 12 other shells).
+4 12 If the list that is executed is terminated with ;& rather than ;;,
+4 12 the following list is also executed.  The rule for the terminator
+4 12 of the following list ;;, ;& or ;| is applied unless the esac is
+4 12 reached.
+4 12 If the list that is executed is terminated with ;| the shell
+4 12 continues to scan the patterns looking for the next match,
+4 12 executing the corresponding list, and applying the rule for the
+4 12 corresponding terminator ;;, ;& or ;|.  Note that word is not
+4 12 re-expanded; all applicable patterns are tested with the same word.
+3 5 select name [ in word ... term ] do list done
+4 12 where term is one or more newline or ; to terminate the words.
+4 12 Print the set of words, each preceded by a number.  If the in word
+4 12 is omitted, use the positional parameters.  The PROMPT3 prompt is
+4 12 printed and a line is read from the line editor if the shell is
+4 12 interactive and that is active, or else standard input.  If this
+4 12 line consists of the number of one of the listed words, then the
+4 12 parameter name is set to the word corresponding to this number.  If
+4 12 this line is empty, the selection list is printed again.
+4 12 Otherwise, the value of the parameter name is set to null.  The
+4 12 contents of the line read from standard input is saved in the
+4 12 parameter REPLY.  list is executed for each selection until a break
+4 12 or end-of-file is encountered.
+3 5 ( list )
+4 12 Execute list in a subshell.  Traps set by the trap builtin are
+4 12 reset to their default values while executing list; an exception is
+4 12 that ignored signals will continue to be ignored if the option
+4 12 POSIXTRAPS is set.
+3 5 { list }
+4 12 Execute list.
+3 5 { try-list } always { always-list }
+4 12 First execute try-list.  Regardless of errors, or break or continue
+4 12 commands encountered within try-list, execute always-list.
+4 12 Execution then continues from the result of the execution of
+4 12 try-list; in other words, any error, or break or continue command
+4 12 is treated in the normal way, as if always-list were not present.
+4 12 The two chunks of code are referred to as the ‘try block' and the
+4 12 ‘always block'.
+4 12 Optional newlines or semicolons may appear after the always; note,
+4 12 however, that they may not appear between the preceding closing
+4 12 brace and the always.
+4 12 An ‘error' in this context is a condition such as a syntax error
+4 12 which causes the shell to abort execution of the current function,
+4 12 script, or list.  Syntax errors encountered while the shell is
+4 12 parsing the code do not cause the always-list to be executed.  For
+4 12 example, an erroneously constructed if block in try-list would
+4 12 cause the shell to abort during parsing, so that always-list would
+4 12 not be executed, while an erroneous substitution such as ${*foo*}
+4 12 would cause a run-time error, after which always-list would be
+4 12 executed.
+4 12 An error condition can be tested and reset with the special integer
+4 12 variable TRY_BLOCK_ERROR.  Outside an always-list the value is
+4 12 irrelevant, but it is initialised to -1.  Inside always-list, the
+4 12 value is 1 if an error occurred in the try-list, else 0.  If
+4 12 TRY_BLOCK_ERROR is set to 0 during the always-list, the error
+4 12 condition caused by the try-list is reset, and shell execution
+4 12 continues normally after the end of always-list.  Altering the
+4 12 value during the try-list is not useful (unless this forms part of
+4 12 an enclosing always block).
+4 12 Regardless of TRY_BLOCK_ERROR, after the end of always-list the
+4 12 normal shell status $? is the value returned from try-list.  This
+4 12 will be non-zero if there was an error, even if TRY_BLOCK_ERROR was
+4 12 set to zero.
+4 12 The following executes the given code, ignoring any errors it
+4 12 causes.  This is an alternative to the usual convention of
+4 12 protecting code by executing it in a subshell.
+7 19 {
+9 23 # code which may cause an error
+8 21 } always {
+9 23 # This code is executed regardless of the error.
+9 23 (( TRY_BLOCK_ERROR = 0 ))
+7 19 }
+7 19 # The error condition has been reset.
+4 12 When a try block occurs outside of any function, a return or a exit
+4 12 encountered in try-list does not cause the execution of
+4 12 always-list.  Instead, the shell exits immediately after any EXIT
+4 12 trap has been executed.  Otherwise, a return command encountered in
+4 12 try-list will cause the execution of always-list, just like break
+4 12 and continue.
+3 5 function [ -T ] word ... [ () ] [ term ] { list }
+3 5 word ... () [ term ] { list }
+3 5 word ... () [ term ] command
+4 12 where term is one or more newline or ;.  Define a function which is
+4 12 referenced by any one of word.  Normally, only one word is
+4 12 provided; multiple words are usually only useful for setting traps.
+4 12 The body of the function is the list between the { and }.  See the
+4 12 section ‘Functions'.
+4 12 The options of function have the following meanings:
+4 12 -T     Enable tracing for this function, as though with functions
+7 19 -T.  See the documentation of the -f option to the typeset
+7 19 builtin, in zshbuiltins(1).
+4 12 If the option SH_GLOB is set for compatibility with other shells,
+4 12 then whitespace may appear between the left and right parentheses
+4 12 when there is a single word;  otherwise, the parentheses will be
+4 12 treated as forming a globbing pattern in that case.
+4 12 In any of the forms above, a redirection may appear outside the
+4 12 function body, for example
+7 19 func() { ... } 2>&1
+4 12 The redirection is stored with the function and applied whenever
+4 12 the function is executed.  Any variables in the redirection are
+4 12 expanded at the point the function is executed, but outside the
+4 12 function scope.
+3 5 time [ pipeline ]
+4 12 The pipeline is executed, and timing statistics are reported on the
+4 12 standard error in the form specified by the TIMEFMT parameter.  If
+4 12 pipeline is omitted, print statistics about the shell process and
+4 12 its children.
+3 5 [[ exp ]]
+4 12 Evaluates the conditional expression exp and return a zero exit
+4 12 status if it is true.  See the section ‘Conditional Expressions'
+4 12 for a description of exp.
+1 0 ALTERNATE FORMS FOR COMPLEX COMMANDS
+3 5 Many of zsh's complex commands have alternate forms.  These are
+3 5 non-standard and are likely not to be obvious even to seasoned shell
+3 5 programmers; they should not be used anywhere that portability of shell
+3 5 code is a concern.
+3 5 The short versions below only work if sublist is of the form ‘{ list }' or
+3 5 if the SHORT_LOOPS option is set.  For the if, while and until commands,
+3 5 in both these cases the test part of the loop must also be suitably
+3 5 delimited, such as by ‘[[ ... ]]' or ‘(( ... ))', else the end of the test
+3 5 will not be recognized.  For the for, repeat, case and select commands no
+3 5 such special form for the arguments is necessary, but the other condition
+3 5 (the special form of sublist or use of the SHORT_LOOPS option) still
+3 5 applies.  The SHORT_REPEAT option is available to enable the short version
+3 5 only for the repeat command.
+3 5 if list { list } [ elif list { list } ] ... [ else { list } ]
+4 12 An alternate form of if.  The rules mean that
+7 19 if [[ -o ignorebraces ]] {
+8 21 print yes
+7 19 }
+4 12 works, but
+7 19 if true {  # Does not work!
+8 21 print yes
+7 19 }
+4 12 does not, since the test is not suitably delimited.
+3 5 if list sublist
+4 12 A short form of the alternate if.  The same limitations on the form
+4 12 of list apply as for the previous form.
+3 5 for name ... ( word ... ) sublist
+4 12 A short form of for.
+3 5 for name ... [ in word ... ] term sublist
+4 12 where term is at least one newline or ;.  Another short form of
+4 12 for.
+3 5 for (( [expr1] ; [expr2] ; [expr3] )) sublist
+4 12 A short form of the arithmetic for command.
+3 5 foreach name ... ( word ... ) list end
+4 12 Another form of for.
+3 5 while list { list }
+4 12 An alternative form of while.  Note the limitations on the form of
+4 12 list mentioned above.
+3 5 until list { list }
+4 12 An alternative form of until.  Note the limitations on the form of
+4 12 list mentioned above.
+3 5 repeat word sublist
+4 12 This is a short form of repeat.
+3 5 case word { [ [(] pattern [ | pattern ] ... ) list (;;|;&|;|) ] ... }
+4 12 An alternative form of case.
+3 5 select name [ in word ... term ] sublist
+4 12 where term is at least one newline or ;.  A short form of select.
+3 5 function word ... [ () ] [ term ] sublist
+4 12 This is a short form of function.
+1 0 RESERVED WORDS
+3 5 The following words are recognized as reserved words when used as the
+3 5 first word of a command unless quoted or disabled using disable -r:
+3 5 do done esac then elif else fi for case if while function repeat time
+3 5 until select coproc nocorrect foreach end ! [[ { } declare export float
+3 5 integer local readonly typeset
+3 5 Additionally, ‘}' is recognized in any position if neither the
+3 5 IGNORE_BRACES option nor the IGNORE_CLOSE_BRACES option is set.
+1 0 ERRORS
+3 5 Certain errors are treated as fatal by the shell: in an interactive shell,
+3 5 they cause control to return to the command line, and in a non-interactive
+3 5 shell they cause the shell to be aborted.  In older versions of zsh, a
+3 5 non-interactive shell running a script would not abort completely, but
+3 5 would resume execution at the next command to be read from the script,
+3 5 skipping the remainder of any functions or shell constructs such as loops
+3 5 or conditions; this somewhat illogical behaviour can be recovered by
+3 5 setting the option CONTINUE_ON_ERROR.
+3 5 Fatal errors found in non-interactive shells include:
+3 5 •      Failure to parse shell options passed when invoking the shell
+3 5 •      Failure to change options with the set builtin
+3 5 •      Parse errors of all sorts, including failures to parse mathematical
+4 12 expressions
+3 5 •      Failures to set or modify variable behaviour with typeset, local,
+4 12 declare, export, integer, float
+3 5 •      Execution of incorrectly positioned loop control structures
+4 12 (continue, break)
+3 5 •      Attempts to use regular expression with no regular expression
+4 12 module available
+3 5 •      Disallowed operations when the RESTRICTED options is set
+3 5 •      Failure to create a pipe needed for a pipeline
+3 5 •      Failure to create a multio
+3 5 •      Failure to autoload a module needed for a declared shell feature
+3 5 •      Errors creating command or process substitutions
+3 5 •      Syntax errors in glob qualifiers
+3 5 •      File generation errors where not caught by the option BAD_PATTERN
+3 5 •      All bad patterns used for matching within case statements
+3 5 •      File generation failures where not caused by NOMATCH or similar
+4 12 options
+3 5 •      All file generation errors where the pattern was used to create a
+4 12 multio
+3 5 •      Memory errors where detected by the shell
+3 5 •      Invalid subscripts to shell variables
+3 5 •      Attempts to assign read-only variables
+3 5 •      Logical errors with variables such as assignment to the wrong type
+3 5 •      Use of invalid variable names
+3 5 •      Errors in variable substitution syntax
+3 5 •      Failure to convert characters in $'...' expressions
+3 5 If the POSIX_BUILTINS option is set, more errors associated with shell
+3 5 builtin commands are treated as fatal, as specified by the POSIX standard.
+1 0 COMMENTS
+3 5 In non-interactive shells, or in interactive shells with the
+3 5 INTERACTIVE_COMMENTS option set, a word beginning with the third character
+3 5 of the histchars parameter (‘#' by default) causes that word and all the
+3 5 following characters up to a newline to be ignored.
+1 0 ALIASING
+3 5 Every eligible word in the shell input is checked to see if there is an
+3 5 alias defined for it.  If so, it is replaced by the text of the alias if
+3 5 it is in command position (if it could be the first word of a simple
+3 5 command), or if the alias is global.  If the replacement text ends with a
+3 5 space, the next word in the shell input is always eligible for purposes of
+3 5 alias expansion.
+3 5 It is an error for the function name, word, in the sh-compatible function
+3 5 definition syntax ‘word () ...' to be a word that resulted from alias
+3 5 expansion, unless the ALIAS_FUNC_DEF option is set.
+3 5 An alias is defined using the alias builtin; global aliases may be defined
+3 5 using the -g option to that builtin.
+3 5 A word is defined as:
+3 5 •      Any plain string or glob pattern
+3 5 •      Any quoted string, using any quoting method (note that the quotes
+4 12 must be part of the alias definition for this to be eligible)
+3 5 •      Any parameter reference or command substitution
+3 5 •      Any series of the foregoing, concatenated without whitespace or
+4 12 other tokens between them
+3 5 •      Any reserved word (case, do, else, etc.)
+3 5 •      With global aliasing, any command separator, any redirection
+4 12 operator, and ‘(' or ‘)' when not part of a glob pattern
+3 5 Alias expansion is done on the shell input before any other expansion
+3 5 except history expansion.  Therefore, if an alias is defined for the word
+3 5 foo, alias expansion may be avoided by quoting part of the word, e.g.
+3 5 \foo.  Any form of quoting works, although there is nothing to prevent an
+3 5 alias being defined for the quoted form such as \foo as well.
+3 5 In particular, note that quoting must be used when using unalias to remove
+3 5 global aliases:
+4 12 % alias -g foo=bar
+4 12 % unalias foo
+4 12 unalias: no such hash table element: bar
+4 12 % unalias \foo
+4 12 %
+3 5 When POSIX_ALIASES is set, only plain unquoted strings are eligible for
+3 5 aliasing.  The alias builtin does not reject ineligible aliases, but they
+3 5 are not expanded.
+3 5 For use with completion, which would remove an initial backslash followed
+3 5 by a character that isn't special, it may be more convenient to quote the
+3 5 word by starting with a single quote, i.e. 'foo; completion will
+3 5 automatically add the trailing single quote.
+2 3 Alias difficulties
+3 5 Although aliases can be used in ways that bend normal shell syntax, not
+3 5 every string of non-white-space characters can be used as an alias.
+3 5 Any set of characters not listed as a word above is not a word, hence no
+3 5 attempt is made to expand it as an alias, no matter how it is defined
+3 5 (i.e. via the builtin or the special parameter aliases described in the
+3 5 section THE ZSH/PARAMETER MODULE in zshmodules(1)).  However, as noted in
+3 5 the case of POSIX_ALIASES above, the shell does not attempt to deduce
+3 5 whether the string corresponds to a word at the time the alias is created.
+3 5 For example, an expression containing an = at the start of a command line
+3 5 is an assignment and cannot be expanded as an alias; a lone = is not an
+3 5 assignment but can only be set as an alias using the parameter, as
+3 5 otherwise the = is taken part of the syntax of the builtin command.
+3 5 It is not presently possible to alias the ‘((' token that introduces
+3 5 arithmetic expressions, because until a full statement has been parsed, it
+3 5 cannot be distinguished from two consecutive ‘(' tokens introducing nested
+3 5 subshells.  Also, if a separator such as && is aliased, \&& turns into the
+3 5 two tokens \& and &, each of which may have been aliased separately.
+3 5 Similarly for \<<, \>|, etc.
+3 5 There is a commonly encountered problem with aliases illustrated by the
+3 5 following code:
+4 12 alias echobar='echo bar'; echobar
+3 5 This prints a message that the command echobar could not be found.  This
+3 5 happens because aliases are expanded when the code is read in; the entire
+3 5 line is read in one go, so that when echobar is executed it is too late to
+3 5 expand the newly defined alias.  This is often a problem in shell scripts,
+3 5 functions, and code executed with ‘source' or ‘.'.  Consequently, use of
+3 5 functions rather than aliases is recommended in non-interactive code.
+1 0 QUOTING
+3 5 A character may be quoted (that is, made to stand for itself) by preceding
+3 5 it with a ‘\'.  ‘\' followed by a newline is ignored.
+3 5 A string enclosed between ‘$'' and ‘'' is processed the same way as the
+3 5 string arguments of the print builtin, and the resulting string is
+3 5 considered to be entirely quoted.  A literal ‘'' character can be included
+3 5 in the string by using the ‘\'' escape.
+3 5 All characters enclosed between a pair of single quotes ('') that is not
+3 5 preceded by a ‘$' are quoted.  A single quote cannot appear within single
+3 5 quotes unless the option RC_QUOTES is set, in which case a pair of single
+3 5 quotes are turned into a single quote.  For example,
+4 12 print ''''
+3 5 outputs nothing apart from a newline if RC_QUOTES is not set, but one
+3 5 single quote if it is set.
+3 5 Inside double quotes (""), parameter and command substitution occur, and
+3 5 ‘\' quotes the characters ‘\', ‘‘', ‘"', ‘$', and the first character of
+3 5 $histchars (default ‘!').
+1 0 REDIRECTION
+3 5 If a command is followed by & and job control is not active, then the
+3 5 default standard input for the command is the empty file /dev/null.
+3 5 Otherwise, the environment for the execution of a command contains the
+3 5 file descriptors of the invoking shell as modified by input/output
+3 5 specifications.
+3 5 The following may appear anywhere in a simple command or may precede or
+3 5 follow a complex command.  Expansion occurs before word or digit is used
+3 5 except as noted below.  If the result of substitution on word produces
+3 5 more than one filename, redirection occurs for each separate filename in
+3 5 turn.
+3 5 < word
+4 12 Open file word for reading as standard input.  It is an error to
+4 12 open a file in this fashion if it does not exist.
+3 5 <> word
+4 12 Open file word for reading and writing as standard input.  If the
+4 12 file does not exist then it is created.
+3 5 > word
+4 12 Open file word for writing as standard output.  If the file does
+4 12 not exist then it is created.  If the file exists, and the CLOBBER
+4 12 option is unset, this causes an error; otherwise, it is truncated
+4 12 to zero length.
+3 5 >| word
+3 5 >! word
+4 12 Same as >, except that the file is truncated to zero length if it
+4 12 exists, regardless of CLOBBER.
+3 5 >> word
+4 12 Open file word for writing in append mode as standard output.  If
+4 12 the file does not exist, and the CLOBBER and APPEND_CREATE options
+4 12 are both unset, this causes an error; otherwise, the file is
+4 12 created.
+3 5 >>| word
+3 5 >>! word
+4 12 Same as >>, except that the file is created if it does not exist,
+4 12 regardless of CLOBBER and APPEND_CREATE.
+3 5 <<[-] word
+4 12 The shell input is read up to a line that is the same as word, or
+4 12 to an end-of-file.  No parameter expansion, command substitution or
+4 12 filename generation is performed on word.  The resulting document,
+4 12 called a here-document, becomes the standard input.
+4 12 If any character of word is quoted with single or double quotes or
+4 12 a ‘\', no interpretation is placed upon the characters of the
+4 12 document.  Otherwise, parameter and command substitution occurs,
+4 12 ‘\' followed by a newline is removed, and ‘\' must be used to quote
+4 12 the characters ‘\', ‘$', ‘‘' and the first character of word.
+4 12 Note that word itself does not undergo shell expansion.  Backquotes
+4 12 in word do not have their usual effect; instead they behave
+4 12 similarly to double quotes, except that the backquotes themselves
+4 12 are passed through unchanged.  (This information is given for
+4 12 completeness and it is not recommended that backquotes be used.)
+4 12 Quotes in the form $'...' have their standard effect of expanding
+4 12 backslashed references to special characters.
+4 12 If <<- is used, then all leading tabs are stripped from word and
+4 12 from the document.
+3 5 <<< word
+4 12 Perform shell expansion on word and pass the result to standard
+4 12 input.  This is known as a here-string.  Compare the use of word in
+4 12 here-documents above, where word does not undergo shell expansion.
+4 12 The result will have a trailing newline after it.
+3 5 <& number
+3 5 >& number
+4 12 The standard input/output is duplicated from file descriptor number
+4 12 (see dup2(2)).
+3 5 <& -
+3 5 >& -   Close the standard input/output.
+3 5 <& p
+3 5 >& p   The input/output from/to the coprocess is moved to the standard
+4 12 input/output.
+3 5 >& word
+3 5 &> word
+4 12 (Except where ‘>& word' matches one of the above syntaxes; ‘&>' can
+4 12 always be used to avoid this ambiguity.)  Redirects both standard
+4 12 output and standard error (file descriptor 2) in the manner of ‘>
+4 12 word'.  Note that this does not have the same effect as ‘> word
+4 12 2>&1' in the presence of multios (see the section below).
+3 5 >&| word
+3 5 >&! word
+3 5 &>| word
+3 5 &>! word
+4 12 Redirects both standard output and standard error (file descriptor
+4 12 2) in the manner of ‘>| word'.
+3 5 >>& word
+3 5 &>> word
+4 12 Redirects both standard output and standard error (file descriptor
+4 12 2) in the manner of ‘>> word'.
+3 5 >>&| word
+3 5 >>&! word
+3 5 &>>| word
+3 5 &>>! word
+4 12 Redirects both standard output and standard error (file descriptor
+4 12 2) in the manner of ‘>>| word'.
+3 5 If one of the above is preceded by a digit, then the file descriptor
+3 5 referred to is that specified by the digit instead of the default 0 or 1.
+3 5 The order in which redirections are specified is significant.  The shell
+3 5 evaluates each redirection in terms of the (file descriptor, file)
+3 5 association at the time of evaluation.  For example:
+4 12 ... 1>fname 2>&1
+3 5 first associates file descriptor 1 with file fname.  It then associates
+3 5 file descriptor 2 with the file associated with file descriptor 1 (that
+3 5 is, fname).  If the order of redirections were reversed, file descriptor 2
+3 5 would be associated with the terminal (assuming file descriptor 1 had
+3 5 been) and then file descriptor 1 would be associated with file fname.
+3 5 The ‘|&' command separator described in Simple Commands & Pipelines in
+3 5 zshmisc(1) is a shorthand for ‘2>&1 |'.
+3 5 The various forms of process substitution, ‘<(list)', and ‘=(list)' for
+3 5 input and ‘>(list)' for output, are often used together with redirection.
+3 5 For example, if word in an output redirection is of the form ‘>(list)'
+3 5 then the output is piped to the command represented by list.  See Process
+3 5 Substitution in zshexpn(1).
+1 0 OPENING FILE DESCRIPTORS USING PARAMETERS
+3 5 When the shell is parsing arguments to a command, and the shell option
+3 5 IGNORE_BRACES is not set, a different form of redirection is allowed:
+3 5 instead of a digit before the operator there is a valid shell identifier
+3 5 enclosed in braces.  The shell will open a new file descriptor that is
+3 5 guaranteed to be at least 10 and set the parameter named by the identifier
+3 5 to the file descriptor opened.  No whitespace is allowed between the
+3 5 closing brace and the redirection character.  For example:
+4 12 ... {myfd}>&1
+3 5 This opens a new file descriptor that is a duplicate of file descriptor 1
+3 5 and sets the parameter myfd to the number of the file descriptor, which
+3 5 will be at least 10.  The new file descriptor can be written to using the
+3 5 syntax >&$myfd.  The file descriptor remains open in subshells and forked
+3 5 external executables.
+3 5 The syntax {varid}>&-, for example {myfd}>&-, may be used to close a file
+3 5 descriptor opened in this fashion.  Note that the parameter given by varid
+3 5 must previously be set to a file descriptor in this case.
+3 5 It is an error to open or close a file descriptor in this fashion when the
+3 5 parameter is readonly.  However, it is not an error to read or write a
+3 5 file descriptor using <&$param or >&$param if param is readonly.
+3 5 If the option CLOBBER is unset, it is an error to open a file descriptor
+3 5 using a parameter that is already set to an open file descriptor
+3 5 previously allocated by this mechanism.  Unsetting the parameter before
+3 5 using it for allocating a file descriptor avoids the error.
+3 5 Note that this mechanism merely allocates or closes a file descriptor; it
+3 5 does not perform any redirections from or to it.  It is usually convenient
+3 5 to allocate a file descriptor prior to use as an argument to exec.  The
+3 5 syntax does not in any case work when used around complex commands such as
+3 5 parenthesised subshells or loops, where the opening brace is interpreted
+3 5 as part of a command list to be executed in the current shell.
+3 5 The following shows a typical sequence of allocation, use, and closing of
+3 5 a file descriptor:
+4 12 integer myfd
+4 12 exec {myfd}>~/logs/mylogfile.txt
+4 12 print This is a log message. >&$myfd
+4 12 exec {myfd}>&-
+3 5 Note that the expansion of the variable in the expression >&$myfd occurs
+3 5 at the point the redirection is opened.  This is after the expansion of
+3 5 command arguments and after any redirections to the left on the command
+3 5 line have been processed.
+1 0 MULTIOS
+3 5 If the user tries to open a file descriptor for writing more than once,
+3 5 the shell opens the file descriptor as a pipe to a process that copies its
+3 5 input to all the specified outputs, similar to tee, provided the MULTIOS
+3 5 option is set, as it is by default.  Thus:
+4 12 date >foo >bar
+3 5 writes the date to two files, named ‘foo' and ‘bar'.  Note that a pipe is
+3 5 an implicit redirection; thus
+4 12 date >foo | cat
+3 5 writes the date to the file ‘foo', and also pipes it to cat.
+3 5 Note that the shell opens all the files to be used in the multio process
+3 5 immediately, not at the point they are about to be written.
+3 5 Note also that redirections are always expanded in order.  This happens
+3 5 regardless of the setting of the MULTIOS option, but with the option in
+3 5 effect there are additional consequences. For example, the meaning of the
+3 5 expression >&1 will change after a previous redirection:
+4 12 date >&1 >output
+3 5 In the case above, the >&1 refers to the standard output at the start of
+3 5 the line; the result is similar to the tee command.  However, consider:
+4 12 date >output >&1
+3 5 As redirections are evaluated in order, when the >&1 is encountered the
+3 5 standard output is set to the file output and another copy of the output
+3 5 is therefore sent to that file.  This is unlikely to be what is intended.
+3 5 If the MULTIOS option is set, the word after a redirection operator is
+3 5 also subjected to filename generation (globbing).  Thus
+4 12 : > *
+3 5 will truncate all files in the current directory, assuming there's at
+3 5 least one.  (Without the MULTIOS option, it would create an empty file
+3 5 called ‘*'.)  Similarly, you can do
+4 12 echo exit 0 >> *.sh
+3 5 If the user tries to open a file descriptor for reading more than once,
+3 5 the shell opens the file descriptor as a pipe to a process that copies all
+3 5 the specified inputs to its output in the order specified, provided the
+3 5 MULTIOS option is set.  It should be noted that each file is opened
+3 5 immediately, not at the point where it is about to be read: this behaviour
+3 5 differs from cat, so if strictly standard behaviour is needed, cat should
+3 5 be used instead.
+3 5 Thus
+4 12 sort <foo <fubar
+3 5 or even
+4 12 sort <f{oo,ubar}
+3 5 is equivalent to ‘cat foo fubar | sort'.
+3 5 Expansion of the redirection argument occurs at the point the redirection
+3 5 is opened, at the point described above for the expansion of the variable
+3 5 in >&$myfd.
+3 5 Note that a pipe is an implicit redirection; thus
+4 12 cat bar | sort <foo
+3 5 is equivalent to ‘cat bar foo | sort' (note the order of the inputs).
+3 5 If the MULTIOS option is unset, each redirection replaces the previous
+3 5 redirection for that file descriptor.  However, all files redirected to
+3 5 are actually opened, so
+4 12 echo Hello > bar > baz
+3 5 when MULTIOS is unset will truncate ‘bar', and write ‘Hello' into ‘baz'.
+3 5 There is a problem when an output multio is attached to an external
+3 5 program.  A simple example shows this:
+4 12 cat file >file1 >file2
+4 12 cat file1 file2
+3 5 Here, it is possible that the second ‘cat' will not display the full
+3 5 contents of file1 and file2 (i.e. the original contents of file repeated
+3 5 twice).
+3 5 The reason for this is that the multios are spawned after the cat process
+3 5 is forked from the parent shell, so the parent shell does not wait for the
+3 5 multios to finish writing data.  This means the command as shown can exit
+3 5 before file1 and file2 are completely written.  As a workaround, it is
+3 5 possible to run the cat process as part of a job in the current shell:
+4 12 { cat file } >file >file2
+3 5 Here, the {...} job will pause to wait for both files to be written.
+1 0 REDIRECTIONS WITH NO COMMAND
+3 5 When a simple command consists of one or more redirection operators and
+3 5 zero or more parameter assignments, but no command name, zsh can behave in
+3 5 several ways.
+3 5 If the parameter NULLCMD is not set or the option CSH_NULLCMD is set, an
+3 5 error is caused.  This is the csh behavior and CSH_NULLCMD is set by
+3 5 default when emulating csh.
+3 5 If the option SH_NULLCMD is set, the builtin ‘:' is inserted as a command
+3 5 with the given redirections.  This is the default when emulating sh or
+3 5 ksh.
+3 5 Otherwise, if the parameter NULLCMD is set, its value will be used as a
+3 5 command with the given redirections.  If both NULLCMD and READNULLCMD are
+3 5 set, then the value of the latter will be used instead of that of the
+3 5 former when the redirection is an input.  The default for NULLCMD is ‘cat'
+3 5 and for READNULLCMD is ‘more'. Thus
+4 12 < file
+3 5 shows the contents of file on standard output, with paging if that is a
+3 5 terminal.  NULLCMD and READNULLCMD may refer to shell functions.
+1 0 COMMAND EXECUTION
+3 5 If a command name contains no slashes, the shell attempts to locate it.
+3 5 If there exists a shell function by that name, the function is invoked as
+3 5 described in the section ‘Functions'.  If there exists a shell builtin by
+3 5 that name, the builtin is invoked.
+3 5 Otherwise, the shell searches each element of $path for a directory
+3 5 containing an executable file by that name.
+3 5 If execution fails: an error message is printed, and one of the following
+3 5 values is returned.
+3 5 127    The search was unsuccessful.  The error message is ‘command not
+4 12 found: cmd'.
+3 5 126    The executable file has insufficient permissions, is a directory or
+4 12 special file, or is not a script and is in a format unrecognized by
+4 12 the operating system.  The exact conditions and error message are
+4 12 operating system-dependent; see execve(2).
+3 5 If execution fails because the file is not in executable format, and the
+3 5 file is not a directory, it is assumed to be a shell script.  /bin/sh is
+3 5 spawned to execute it.  If the program is a file beginning with ‘#!', the
+3 5 remainder of the first line specifies an interpreter for the program.  The
+3 5 shell will execute the specified interpreter on operating systems that do
+3 5 not handle this executable format in the kernel.
+3 5 If no external command is found but a function command_not_found_handler
+3 5 exists the shell executes this function with all command line arguments.
+3 5 The return status of the function becomes the status of the command.  Note
+3 5 that the handler is executed in a subshell forked to execute an external
+3 5 command, hence changes to directories, shell parameters, etc. have no
+3 5 effect on the main shell.
+1 0 FUNCTIONS
+3 5 Shell functions are defined with the function reserved word or the special
+3 5 syntax ‘funcname ()'.  Shell functions are read in and stored internally.
+3 5 Alias names are resolved when the function is read.  Functions are
+3 5 executed like commands with the arguments passed as positional parameters.
+3 5 (See the section ‘Command Execution'.)
+3 5 Functions execute in the same process as the caller and share all files
+3 5 and present working directory with the caller.  A trap on EXIT set inside
+3 5 a function is executed after the function completes in the environment of
+3 5 the caller.
+3 5 The return builtin is used to return from function calls.
+3 5 Function identifiers can be listed with the functions builtin.  Functions
+3 5 can be undefined with the unfunction builtin.
+1 0 AUTOLOADING FUNCTIONS
+3 5 A function can be marked as undefined using the autoload builtin (or
+3 5 ‘functions -u' or ‘typeset -fu').  Such a function has no body.  When the
+3 5 function is first executed, the shell searches for its definition using
+3 5 the elements of the fpath variable.  Thus to define functions for
+3 5 autoloading, a typical sequence is:
+4 12 fpath=(~/myfuncs $fpath)
+4 12 autoload myfunc1 myfunc2 ...
+3 5 The usual alias expansion during reading will be suppressed if the
+3 5 autoload builtin or its equivalent is given the option -U. This is
+3 5 recommended for the use of functions supplied with the zsh distribution.
+3 5 Note that for functions precompiled with the zcompile builtin command the
+3 5 flag -U must be provided when the .zwc file is created, as the
+3 5 corresponding information is compiled into the latter.
+3 5 For each element in fpath, the shell looks for three possible files, the
+3 5 newest of which is used to load the definition for the function:
+3 5 element.zwc
+4 12 A file created with the zcompile builtin command, which is expected
+4 12 to contain the definitions for all functions in the directory named
+4 12 element.  The file is treated in the same manner as a directory
+4 12 containing files for functions and is searched for the definition
+4 12 of the function.   If the definition is not found, the search for a
+4 12 definition proceeds with the other two possibilities described
+4 12 below.
+4 12 If element already includes a .zwc extension (i.e. the extension
+4 12 was explicitly given by the user), element is searched for the
+4 12 definition of the function without comparing its age to that of
+4 12 other files; in fact, there does not need to be any directory named
+4 12 element without the suffix.  Thus including an element such as
+4 12 ‘/usr/local/funcs.zwc' in fpath will speed up the search for
+4 12 functions, with the disadvantage that functions included must be
+4 12 explicitly recompiled by hand before the shell notices any changes.
+3 5 element/function.zwc
+4 12 A file created with zcompile, which is expected to contain the
+4 12 definition for function.  It may include other function definitions
+4 12 as well, but those are neither loaded nor executed; a file found in
+4 12 this way is searched only for the definition of function.
+3 5 element/function
+4 12 A file of zsh command text, taken to be the definition for
+4 12 function.
+3 5 In summary, the order of searching is, first, in the parents of
+3 5 directories in fpath for the newer of either a compiled directory or a
+3 5 directory in fpath; second, if more than one of these contains a
+3 5 definition for the function that is sought, the leftmost in the fpath is
+3 5 chosen; and third, within a directory, the newer of either a compiled
+3 5 function or an ordinary function definition is used.
+3 5 If the KSH_AUTOLOAD option is set, or the file contains only a simple
+3 5 definition of the function, the file's contents will be executed.  This
+3 5 will normally define the function in question, but may also perform
+3 5 initialization, which is executed in the context of the function
+3 5 execution, and may therefore define local parameters.  It is an error if
+3 5 the function is not defined by loading the file.
+3 5 Otherwise, the function body (with no surrounding ‘funcname() {...}') is
+3 5 taken to be the complete contents of the file.  This form allows the file
+3 5 to be used directly as an executable shell script.  If processing of the
+3 5 file results in the function being re-defined, the function itself is not
+3 5 re-executed.  To force the shell to perform initialization and then call
+3 5 the function defined, the file should contain initialization code (which
+3 5 will be executed then discarded) in addition to a complete function
+3 5 definition (which will be retained for subsequent calls to the function),
+3 5 and a call to the shell function, including any arguments, at the end.
+3 5 For example, suppose the autoload file func contains
+4 12 func() { print This is func; }
+4 12 print func is initialized
+3 5 then ‘func; func' with KSH_AUTOLOAD set will produce both messages on the
+3 5 first call, but only the message ‘This is func' on the second and
+3 5 subsequent calls.  Without KSH_AUTOLOAD set, it will produce the
+3 5 initialization message on the first call, and the other message on the
+3 5 second and subsequent calls.
+3 5 It is also possible to create a function that is not marked as autoloaded,
+3 5 but which loads its own definition by searching fpath, by using ‘autoload
+3 5 -X' within a shell function.  For example, the following are equivalent:
+4 12 myfunc() {
+6 14 autoload -X
+4 12 }
+4 12 myfunc args...
+3 5 and
+4 12 unfunction myfunc   # if myfunc was defined
+4 12 autoload myfunc
+4 12 myfunc args...
+3 5 In fact, the functions command outputs ‘builtin autoload -X' as the body
+3 5 of an autoloaded function.  This is done so that
+4 12 eval "$(functions)"
+3 5 produces a reasonable result.  A true autoloaded function can be
+3 5 identified by the presence of the comment ‘# undefined' in the body,
+3 5 because all comments are discarded from defined functions.
+3 5 To load the definition of an autoloaded function myfunc without executing
+3 5 myfunc, use:
+4 12 autoload +X myfunc
+1 0 ANONYMOUS FUNCTIONS
+3 5 If no name is given for a function, it is ‘anonymous' and is handled
+3 5 specially.  Either form of function definition may be used: a ‘()' with no
+3 5 preceding name, or a ‘function' with an immediately following open brace.
+3 5 The function is executed immediately at the point of definition and is not
+3 5 stored for future use.  The function name is set to ‘(anon)'.
+3 5 Arguments to the function may be specified as words following the closing
+3 5 brace defining the function, hence if there are none no arguments (other
+3 5 than $0) are set.  This is a difference from the way other functions are
+3 5 parsed: normal function definitions may be followed by certain keywords
+3 5 such as ‘else' or ‘fi', which will be treated as arguments to anonymous
+3 5 functions, so that a newline or semicolon is needed to force keyword
+3 5 interpretation.
+3 5 Note also that the argument list of any enclosing script or function is
+3 5 hidden (as would be the case for any other function called at this point).
+3 5 Redirections may be applied to the anonymous function in the same manner
+3 5 as to a current-shell structure enclosed in braces.  The main use of
+3 5 anonymous functions is to provide a scope for local variables.  This is
+3 5 particularly convenient in start-up files as these do not provide their
+3 5 own local variable scope.
+3 5 For example,
+4 12 variable=outside
+4 12 function {
+6 14 local variable=inside
+6 14 print "I am $variable with arguments $*"
+4 12 } this and that
+4 12 print "I am $variable"
+3 5 outputs the following:
+4 12 I am inside with arguments this and that
+4 12 I am outside
+3 5 Note that function definitions with arguments that expand to nothing, for
+3 5 example ‘name=; function $name { ... }', are not treated as anonymous
+3 5 functions.  Instead, they are treated as normal function definitions where
+3 5 the definition is silently discarded.
+1 0 SPECIAL FUNCTIONS
+3 5 Certain functions, if defined, have special meaning to the shell.
+2 3 Hook Functions
+3 5 For the functions below, it is possible to define an array that has the
+3 5 same name as the function with ‘_functions' appended.  Any element in such
+3 5 an array is taken as the name of a function to execute; it is executed in
+3 5 the same context and with the same arguments and same initial value of $?
+3 5 as the basic function.  For example, if $chpwd_functions is an array
+3 5 containing the values ‘mychpwd', ‘chpwd_save_dirstack', then the shell
+3 5 attempts to execute the functions ‘chpwd', ‘mychpwd' and
+3 5 ‘chpwd_save_dirstack', in that order.  Any function that does not exist is
+3 5 silently ignored.  A function found by this mechanism is referred to
+3 5 elsewhere as a hook function.  An error in any function causes subsequent
+3 5 functions not to be run.  Note further that an error in a precmd hook
+3 5 causes an immediately following periodic function not to run (though it
+3 5 may run at the next opportunity).
+3 5 chpwd  Executed whenever the current working directory is changed.
+3 5 periodic
+4 12 If the parameter PERIOD is set, this function is executed every
+4 12 $PERIOD seconds, just before a prompt.  Note that if multiple
+4 12 functions are defined using the array periodic_functions only one
+4 12 period is applied to the complete set of functions, and the
+4 12 scheduled time is not reset if the list of functions is altered.
+4 12 Hence the set of functions is always called together.
+3 5 precmd
+4 12 Executed before each prompt.  Note that precommand functions are
+4 12 not re-executed simply because the command line is redrawn, as
+4 12 happens, for example, when a notification about an exiting job is
+4 12 displayed.
+3 5 preexec
+4 12 Executed just after a command has been read and is about to be
+4 12 executed.  If the history mechanism is active (regardless of
+4 12 whether the line was discarded from the history buffer), the string
+4 12 that the user typed is passed as the first argument, otherwise it
+4 12 is an empty string.  The actual command that will be executed
+4 12 (including expanded aliases) is passed in two different forms: the
+4 12 second argument is a single-line, size-limited version of the
+4 12 command (with things like function bodies elided); the third
+4 12 argument contains the full text that is being executed.
+3 5 zshaddhistory
+4 12 Executed when a history line has been read interactively, but
+4 12 before it is executed.  The sole argument is the complete history
+4 12 line (so that any terminating newline will still be present).
+4 12 If any of the hook functions returns status 1 (or any non-zero
+4 12 value other than 2, though this is not guaranteed for future
+4 12 versions of the shell) the history line will not be saved, although
+4 12 it lingers in the history until the next line is executed, allowing
+4 12 you to reuse or edit it immediately.
+4 12 If any of the hook functions returns status 2 the history line will
+4 12 be saved on the internal history list, but not written to the
+4 12 history file.  In case of a conflict, the first non-zero status
+4 12 value is taken.
+4 12 A hook function may call ‘fc -p ...' to switch the history context
+4 12 so that the history is saved in a different file from that in the
+4 12 global HISTFILE parameter.  This is handled specially: the history
+4 12 context is automatically restored after the processing of the
+4 12 history line is finished.
+4 12 The following example function works with one of the options
+4 12 INC_APPEND_HISTORY or SHARE_HISTORY set, in order that the line is
+4 12 written out immediately after the history entry is added.  It first
+4 12 adds the history line to the normal history with the newline
+4 12 stripped, which is usually the correct behaviour.  Then it switches
+4 12 the history context so that the line will be written to a history
+4 12 file in the current directory.
+7 19 zshaddhistory() {
+8 21 print -sr -- ${1%%$'\n'}
+8 21 fc -p .zsh_local_history
+7 19 }
+3 5 zshexit
+4 12 Executed at the point where the main shell is about to exit
+4 12 normally.  This is not called by exiting subshells, nor when the
+4 12 exec precommand modifier is used before an external command.  Also,
+4 12 unlike TRAPEXIT, it is not called when functions exit.
+2 3 Trap Functions
+3 5 The functions below are treated specially but do not have corresponding
+3 5 hook arrays.
+3 5 TRAPNAL
+4 12 If defined and non-null, this function will be executed whenever
+4 12 the shell catches a signal SIGNAL, where NAL is a signal name as
+4 12 specified for the kill builtin.  The signal number will be passed
+4 12 as the first parameter to the function.
+4 12 If a function of this form is defined and null, the shell and
+4 12 processes spawned by it will ignore SIGNAL.
+4 12 The return status from the function is handled specially.  If it is
+4 12 zero, the signal is assumed to have been handled, and execution
+4 12 continues normally.  Otherwise, the shell will behave as
+4 12 interrupted except that the return status of the trap is retained.
+4 12 Programs terminated by uncaught signals typically return the status
+4 12 128 plus the signal number.  Hence the following causes the handler
+4 12 for SIGINT to print a message, then mimic the usual effect of the
+4 12 signal.
+7 19 TRAPINT() {
+8 21 print "Caught SIGINT, aborting."
+8 21 return $(( 128 + $1 ))
+7 19 }
+4 12 The functions TRAPZERR, TRAPDEBUG and TRAPEXIT are never executed
+4 12 inside other traps.
+3 5 TRAPDEBUG
+4 12 If the option DEBUG_BEFORE_CMD is set (as it is by default),
+4 12 executed before each command; otherwise executed after each
+4 12 command.  See the description of the trap builtin in zshbuiltins(1)
+4 12 for details of additional features provided in debug traps.
+3 5 TRAPEXIT
+4 12 Executed when the shell exits, or when the current function exits
+4 12 if defined inside a function.  The value of $? at the start of
+4 12 execution is the exit status of the shell or the return status of
+4 12 the function exiting.
+3 5 TRAPZERR
+4 12 Executed whenever a command has a non-zero exit status.  However,
+4 12 the function is not executed if the command occurred in a sublist
+4 12 followed by ‘&&' or ‘||'; only the final command in a sublist of
+4 12 this type causes the trap to be executed.  The function TRAPERR
+4 12 acts the same as TRAPZERR on systems where there is no SIGERR (this
+4 12 is the usual case).
+3 5 The functions beginning ‘TRAP' may alternatively be defined with the trap
+3 5 builtin:  this may be preferable for some uses.  Setting a trap with one
+3 5 form removes any trap of the other form for the same signal; removing a
+3 5 trap in either form removes all traps for the same signal.  The forms
+4 12 TRAPNAL() {
+5 13 # code
+4 12 }
+3 5 ('function traps') and
+4 12 trap '
+5 13 # code
+4 12 ' NAL
+3 5 ('list traps') are equivalent in most ways, the exceptions being the
+3 5 following:
+3 5 •      Function traps have all the properties of normal functions,
+4 12 appearing in the list of functions and being called with their own
+4 12 function context rather than the context where the trap was
+4 12 triggered.
+3 5 •      The return status from function traps is special, whereas a return
+4 12 from a list trap causes the surrounding context to return with the
+4 12 given status.
+3 5 •      Function traps are not reset within subshells, in accordance with
+4 12 zsh behaviour; list traps are reset, in accordance with POSIX
+4 12 behaviour.
+1 0 JOBS
+3 5 If the MONITOR option is set, an interactive shell associates a job with
+3 5 each pipeline.  It keeps a table of current jobs, printed by the jobs
+3 5 command, and assigns them small integer numbers.  When a job is started
+3 5 asynchronously with ‘&', the shell prints a line to standard error which
+3 5 looks like:
+4 12 [1] 1234
+3 5 indicating that the job which was started asynchronously was job number 1
+3 5 and had one (top-level) process, whose process ID was 1234.
+3 5 If a job is started with ‘&|' or ‘&!', then that job is immediately
+3 5 disowned.  After startup, it does not have a place in the job table, and
+3 5 is not subject to the job control features described here.
+3 5 If you are running a job and wish to do something else you may hit the key
+3 5 ^Z (control-Z) which sends a TSTP signal to the current job:  this key may
+3 5 be redefined by the susp option of the external stty command.  The shell
+3 5 will then normally indicate that the job has been ‘suspended', and print
+3 5 another prompt.  You can then manipulate the state of this job, putting it
+3 5 in the background with the bg command, or run some other commands and then
+3 5 eventually bring the job back into the foreground with the foreground
+3 5 command fg.  A ^Z takes effect immediately and is like an interrupt in
+3 5 that pending output and unread input are discarded when it is typed.
+3 5 A job being run in the background will suspend if it tries to read from
+3 5 the terminal.
+3 5 Note that if the job running in the foreground is a shell function, then
+3 5 suspending it will have the effect of causing the shell to fork.  This is
+3 5 necessary to separate the function's state from that of the parent shell
+3 5 performing the job control, so that the latter can return to the command
+3 5 line prompt.  As a result, even if fg is used to continue the job the
+3 5 function will no longer be part of the parent shell, and any variables set
+3 5 by the function will not be visible in the parent shell.  Thus the
+3 5 behaviour is different from the case where the function was never
+3 5 suspended.  Zsh is different from many other shells in this regard.
+3 5 One additional side effect is that use of disown with a job created by
+3 5 suspending shell code in this fashion is delayed: the job can only be
+3 5 disowned once any process started from the parent shell has terminated.
+3 5 At that point, the disowned job disappears silently from the job list.
+3 5 The same behaviour is found when the shell is executing code as the right
+3 5 hand side of a pipeline or any complex shell construct such as if, for,
+3 5 etc., in order that the entire block of code can be managed as a single
+3 5 job.  Background jobs are normally allowed to produce output, but this can
+3 5 be disabled by giving the command ‘stty tostop'.  If you set this tty
+3 5 option, then background jobs will suspend when they try to produce output
+3 5 like they do when they try to read input.
+3 5 When a command is suspended and continued later with the fg or wait
+3 5 builtins, zsh restores tty modes that were in effect when it was
+3 5 suspended.  This (intentionally) does not apply if the command is
+3 5 continued via ‘kill -CONT', nor when it is continued with bg.
+3 5 There are several ways to refer to jobs in the shell.  A job can be
+3 5 referred to by the process ID of any process of the job or by one of the
+3 5 following:
+3 5 %number
+4 12 The job with the given number.
+3 5 %string
+4 12 The last job whose command line begins with string.
+3 5 %?string
+4 12 The last job whose command line contains string.
+3 5 %%     Current job.
+3 5 %+     Equivalent to ‘%%'.
+3 5 %-     Previous job.
+3 5 The shell learns immediately whenever a process changes state.  It
+3 5 normally informs you whenever a job becomes blocked so that no further
+3 5 progress is possible.  If the NOTIFY option is not set, it waits until
+3 5 just before it prints a prompt before it informs you.  All such
+3 5 notifications are sent directly to the terminal, not to the standard
+3 5 output or standard error.
+3 5 When the monitor mode is on, each background job that completes triggers
+3 5 any trap set for CHLD.
+3 5 When you try to leave the shell while jobs are running or suspended, you
+3 5 will be warned that ‘You have suspended (running) jobs'.  You may use the
+3 5 jobs command to see what they are.  If you do this or immediately try to
+3 5 exit again, the shell will not warn you a second time; the suspended jobs
+3 5 will be terminated, and the running jobs will be sent a SIGHUP signal, if
+3 5 the HUP option is set.
+3 5 To avoid having the shell terminate the running jobs, either use the
+3 5 nohup(1) command or the disown builtin.
+1 0 SIGNALS
+3 5 The INT and QUIT signals for an invoked command are ignored if the command
+3 5 is followed by ‘&' and the MONITOR option is not active.  The shell itself
+3 5 always ignores the QUIT signal.  Otherwise, signals have the values
+3 5 inherited by the shell from its parent (but see the TRAPNAL special
+3 5 functions in the section ‘Functions').
+3 5 Certain jobs are run asynchronously by the shell other than those
+3 5 explicitly put into the background; even in cases where the shell would
+3 5 usually wait for such jobs, an explicit exit command or exit due to the
+3 5 option ERR_EXIT will cause the shell to exit without waiting.  Examples of
+3 5 such asynchronous jobs are process substitution, see the section PROCESS
+3 5 SUBSTITUTION in the zshexpn(1) manual page, and the handler processes for
+3 5 multios, see the section MULTIOS in the zshmisc(1) manual page.
+1 0 ARITHMETIC EVALUATION
+3 5 The shell can perform integer and floating point arithmetic, either using
+3 5 the builtin let, or via a substitution of the form $((...)).  For
+3 5 integers, the shell is usually compiled to use 8-byte precision where this
+3 5 is available, otherwise precision is 4 bytes.  This can be tested, for
+3 5 example, by giving the command ‘print - $(( 12345678901 ))'; if the number
+3 5 appears unchanged, the precision is at least 8 bytes.  Floating point
+3 5 arithmetic always uses the ‘double' type with whatever corresponding
+3 5 precision is provided by the compiler and the library.
+3 5 The let builtin command takes arithmetic expressions as arguments; each is
+3 5 evaluated separately.  Since many of the arithmetic operators, as well as
+3 5 spaces, require quoting, an alternative form is provided: for any command
+3 5 which begins with a ‘((', all the characters until a matching ‘))' are
+3 5 treated as a double-quoted expression and arithmetic expansion performed
+3 5 as for an argument of let.  More precisely, ‘((...))' is equivalent to
+3 5 ‘let "..."'.  The return status is 0 if the arithmetic value of the
+3 5 expression is non-zero, 1 if it is zero, and 2 if an error occurred.
+3 5 For example, the following statement
+4 12 (( val = 2 + 1 ))
+3 5 is equivalent to
+4 12 let "val = 2 + 1"
+3 5 both assigning the value 3 to the shell variable val and returning a zero
+3 5 status.
+3 5 Integers can be in bases other than 10.  A leading ‘0x' or ‘0X' denotes
+3 5 hexadecimal and a leading ‘0b' or ‘0B' binary.  Integers may also be of
+3 5 the form ‘base#n', where base is a decimal number between two and
+3 5 thirty-six representing the arithmetic base and n is a number in that base
+3 5 (for example, ‘16#ff' is 255 in hexadecimal).  The base# may also be
+3 5 omitted, in which case base 10 is used.  For backwards compatibility the
+3 5 form ‘[base]n' is also accepted.
+3 5 An integer expression or a base given in the form ‘base#n' may contain
+3 5 underscores (‘_') after the leading digit for visual guidance; these are
+3 5 ignored in computation.  Examples are 1_000_000 or 0xffff_ffff which are
+3 5 equivalent to 1000000 and 0xffffffff respectively.
+3 5 It is also possible to specify a base to be used for output in the form
+3 5 ‘[#base]', for example ‘[#16]'.  This is used when outputting arithmetical
+3 5 substitutions or when assigning to scalar parameters, but an explicitly
+3 5 defined integer or floating point parameter will not be affected.  If an
+3 5 integer variable is implicitly defined by an arithmetic expression, any
+3 5 base specified in this way will be set as the variable's output arithmetic
+3 5 base as if the option ‘-i base' to the typeset builtin had been used.  The
+3 5 expression has no precedence and if it occurs more than once in a
+3 5 mathematical expression, the last encountered is used.  For clarity it is
+3 5 recommended that it appear at the beginning of an expression.  As an
+3 5 example:
+4 12 typeset -i 16 y
+4 12 print $(( [#8] x = 32, y = 32 ))
+4 12 print $x $y
+3 5 outputs first ‘8#40', the rightmost value in the given output base, and
+3 5 then ‘8#40 16#20', because y has been explicitly declared to have output
+3 5 base 16, while x (assuming it does not already exist) is implicitly typed
+3 5 by the arithmetic evaluation, where it acquires the output base 8.
+3 5 The base may be replaced or followed by an underscore, which may itself be
+3 5 followed by a positive integer (if it is missing the value 3 is used).
+3 5 This indicates that underscores should be inserted into the output string,
+3 5 grouping the number for visual clarity.  The following integer specifies
+3 5 the number of digits to group together.  For example:
+4 12 setopt cbases
+4 12 print $(( [#16_4] 65536 ** 2 ))
+3 5 outputs ‘0x1_0000_0000'.
+3 5 The feature can be used with floating point numbers, in which case the
+3 5 base must be omitted; grouping is away from the decimal point.  For
+3 5 example,
+4 12 zmodload zsh/mathfunc
+4 12 print $(( [#_] sqrt(1e7) ))
+3 5 outputs ‘3_162.277_660_168_379_5' (the number of decimal places shown may
+3 5 vary).
+3 5 If the C_BASES option is set, hexadecimal numbers are output in the
+3 5 standard C format, for example ‘0xFF' instead of the usual ‘16#FF'.  If
+3 5 the option OCTAL_ZEROES is also set (it is not by default), octal numbers
+3 5 will be treated similarly and hence appear as ‘077' instead of ‘8#77'.
+3 5 This option has no effect on the output of bases other than hexadecimal
+3 5 and octal, and these formats are always understood on input.
+3 5 When an output base is specified using the ‘[#base]' syntax, an
+3 5 appropriate base prefix will be output if necessary, so that the value
+3 5 output is valid syntax for input.  If the # is doubled, for example
+3 5 ‘[##16]', then no base prefix is output.
+3 5 Floating point constants are recognized by the presence of a decimal point
+3 5 or an exponent.  The decimal point may be the first character of the
+3 5 constant, but the exponent character e or E may not, as it will be taken
+3 5 for a parameter name.  All numeric parts (before and after the decimal
+3 5 point and in the exponent) may contain underscores after the leading digit
+3 5 for visual guidance; these are ignored in computation.
+3 5 An arithmetic expression uses nearly the same syntax and associativity of
+3 5 expressions as in C.
+3 5 In the native mode of operation, the following operators are supported
+3 5 (listed in decreasing order of precedence):
+3 5 + - ! ~ ++ --
+4 12 unary plus/minus, logical NOT, complement, {pre,post}{in,de}crement
+3 5 << >>  bitwise shift left, right
+3 5 &      bitwise AND
+3 5 ^      bitwise XOR
+3 5 |      bitwise OR
+3 5 **     exponentiation
+3 5 * / %  multiplication, division, modulus (remainder)
+3 5 + -    addition, subtraction
+3 5 < > <= >=
+4 12 comparison
+3 5 == !=  equality and inequality
+3 5 &&     logical AND
+3 5 || ^^  logical OR, XOR
+3 5 ? :    ternary operator
+3 5 = += -= *= /= %= &= ^= |= <<= >>= &&= ||= ^^= **=
+4 12 assignment
+3 5 ,      comma operator
+3 5 The operators ‘&&', ‘||', ‘&&=', and ‘||=' are short-circuiting, and only
+3 5 one of the latter two expressions in a ternary operator is evaluated.
+3 5 Note the precedence of the bitwise AND, OR, and XOR operators.
+3 5 With the option C_PRECEDENCES the precedences (but no other properties) of
+3 5 the operators are altered to be the same as those in most other languages
+3 5 that support the relevant operators:
+3 5 + - ! ~ ++ --
+4 12 unary plus/minus, logical NOT, complement, {pre,post}{in,de}crement
+3 5 **     exponentiation
+3 5 * / %  multiplication, division, modulus (remainder)
+3 5 + -    addition, subtraction
+3 5 << >>  bitwise shift left, right
+3 5 < > <= >=
+4 12 comparison
+3 5 == !=  equality and inequality
+3 5 &      bitwise AND
+3 5 ^      bitwise XOR
+3 5 |      bitwise OR
+3 5 &&     logical AND
+3 5 ^^     logical XOR
+3 5 ||     logical OR
+3 5 ? :    ternary operator
+3 5 = += -= *= /= %= &= ^= |= <<= >>= &&= ||= ^^= **=
+4 12 assignment
+3 5 ,      comma operator
+3 5 Note the precedence of exponentiation in both cases is below that of unary
+3 5 operators, hence ‘-3**2' evaluates as ‘9', not ‘-9'.  Use parentheses
+3 5 where necessary: ‘-(3**2)'.  This is for compatibility with other shells.
+3 5 Mathematical functions can be called with the syntax ‘func(args)', where
+3 5 the function decides if the args is used as a string or a comma-separated
+3 5 list of arithmetic expressions. The shell currently defines no
+3 5 mathematical functions by default, but the module zsh/mathfunc may be
+3 5 loaded with the zmodload builtin to provide standard floating point
+3 5 mathematical functions.
+3 5 An expression of the form ‘##x' where x is any character sequence such as
+3 5 ‘a', ‘^A', or ‘\M-\C-x' gives the value of this character and an
+3 5 expression of the form ‘#name' gives the value of the first character of
+3 5 the contents of the parameter name.  Character values are according to the
+3 5 character set used in the current locale; for multibyte character handling
+3 5 the option MULTIBYTE must be set.  Note that this form is different from
+3 5 ‘$#name', a standard parameter substitution which gives the length of the
+3 5 parameter name.  ‘#\' is accepted instead of ‘##', but its use is
+3 5 deprecated.
+3 5 Named parameters and subscripted arrays can be referenced by name within
+3 5 an arithmetic expression without using the parameter expansion syntax.
+3 5 For example,
+4 12 ((val2 = val1 * 2))
+3 5 assigns twice the value of $val1 to the parameter named val2.
+3 5 An internal integer representation of a named parameter can be specified
+3 5 with the integer builtin.  Arithmetic evaluation is performed on the value
+3 5 of each assignment to a named parameter declared integer in this manner.
+3 5 Assigning a floating point number to an integer results in rounding
+3 5 towards zero.
+3 5 Likewise, floating point numbers can be declared with the float builtin;
+3 5 there are two types, differing only in their output format, as described
+3 5 for the typeset builtin.  The output format can be bypassed by using
+3 5 arithmetic substitution instead of the parameter substitution, i.e.
+3 5 ‘${float}' uses the defined format, but ‘$((float))' uses a generic
+3 5 floating point format.
+3 5 Promotion of integer to floating point values is performed where
+3 5 necessary.  In addition, if any operator which requires an integer (‘&',
+3 5 ‘|', ‘^', ‘<<', ‘>>' and their equivalents with assignment) is given a
+3 5 floating point argument, it will be silently rounded towards zero except
+3 5 for ‘~' which rounds down.
+3 5 Users should beware that, in common with many other programming languages
+3 5 but not software designed for calculation, the evaluation of an expression
+3 5 in zsh is taken a term at a time and promotion of integers to floating
+3 5 point does not occur in terms only containing integers.  A typical result
+3 5 of this is that a division such as 6/8 is truncated, in this being rounded
+3 5 towards 0.  The FORCE_FLOAT shell option can be used in scripts or
+3 5 functions where floating point evaluation is required throughout.
+3 5 Scalar variables can hold integer or floating point values at different
+3 5 times; there is no memory of the numeric type in this case.
+3 5 If a variable is first assigned in a numeric context without previously
+3 5 being declared, it will be implicitly typed as integer or float and retain
+3 5 that type either until the type is explicitly changed or until the end of
+3 5 the scope.  This can have unforeseen consequences.  For example, in the
+3 5 loop
+4 12 for (( f = 0; f < 1; f += 0.1 )); do
+4 12 # use $f
+4 12 done
+3 5 if f has not already been declared, the first assignment will cause it to
+3 5 be created as an integer, and consequently the operation ‘f += 0.1' will
+3 5 always cause the result to be truncated to zero, so that the loop will
+3 5 fail.  A simple fix would be to turn the initialization into ‘f = 0.0'.
+3 5 It is therefore best to declare numeric variables with explicit types.
+1 0 CONDITIONAL EXPRESSIONS
+3 5 A conditional expression is used with the [[ compound command to test
+3 5 attributes of files and to compare strings.  Each expression can be
+3 5 constructed from one or more of the following unary or binary expressions:
+3 5 -a file
+4 12 true if file exists.
+3 5 -b file
+4 12 true if file exists and is a block special file.
+3 5 -c file
+4 12 true if file exists and is a character special file.
+3 5 -d file
+4 12 true if file exists and is a directory.
+3 5 -e file
+4 12 true if file exists.
+3 5 -f file
+4 12 true if file exists and is a regular file.
+3 5 -g file
+4 12 true if file exists and has its setgid bit set.
+3 5 -h file
+4 12 true if file exists and is a symbolic link.
+3 5 -k file
+4 12 true if file exists and has its sticky bit set.
+3 5 -n string
+4 12 true if length of string is non-zero.
+3 5 -o option
+4 12 true if option named option is on.  option may be a single
+4 12 character, in which case it is a single letter option name.  (See
+4 12 the section ‘Specifying Options'.)
+4 12 When no option named option exists, and the POSIX_BUILTINS option
+4 12 hasn't been set, return 3 with a warning.  If that option is set,
+4 12 return 1 with no warning.
+3 5 -p file
+4 12 true if file exists and is a FIFO special file (named pipe).
+3 5 -r file
+4 12 true if file exists and is readable by current process.
+3 5 -s file
+4 12 true if file exists and has size greater than zero.
+3 5 -t fd  true if file descriptor number fd is open and associated with a
+4 12 terminal device.  (note: fd is not optional)
+3 5 -u file
+4 12 true if file exists and has its setuid bit set.
+3 5 -v varname
+4 12 true if shell variable varname is set.
+3 5 -w file
+4 12 true if file exists and is writable by current process.
+3 5 -x file
+4 12 true if file exists and is executable by current process.  If file
+4 12 exists and is a directory, then the current process has permission
+4 12 to search in the directory.
+3 5 -z string
+4 12 true if length of string is zero.
+3 5 -L file
+4 12 true if file exists and is a symbolic link.
+3 5 -O file
+4 12 true if file exists and is owned by the effective user ID of this
+4 12 process.
+3 5 -G file
+4 12 true if file exists and its group matches the effective group ID of
+4 12 this process.
+3 5 -S file
+4 12 true if file exists and is a socket.
+3 5 -N file
+4 12 true if file exists and its access time is not newer than its
+4 12 modification time.
+3 5 file1 -nt file2
+4 12 true if file1 exists and is newer than file2.
+3 5 file1 -ot file2
+4 12 true if file1 exists and is older than file2.
+3 5 file1 -ef file2
+4 12 true if file1 and file2 exist and refer to the same file.
+3 5 string = pattern
+3 5 string == pattern
+4 12 true if string matches pattern.  The two forms are exactly
+4 12 equivalent.  The ‘=' form is the traditional shell syntax (and
+4 12 hence the only one generally used with the test and [ builtins);
+4 12 the ‘==' form provides compatibility with other sorts of computer
+4 12 language.
+3 5 string != pattern
+4 12 true if string does not match pattern.
+3 5 string =~ regexp
+4 12 true if string matches the regular expression regexp.  If the
+4 12 option RE_MATCH_PCRE is set regexp is tested as a PCRE regular
+4 12 expression using the zsh/pcre module, else it is tested as a POSIX
+4 12 extended regular expression using the zsh/regex module.  Upon
+4 12 successful match, some variables will be updated; no variables are
+4 12 changed if the matching fails.
+4 12 If the option BASH_REMATCH is not set the scalar parameter MATCH is
+4 12 set to the substring that matched the pattern and the integer
+4 12 parameters MBEGIN and MEND to the index of the start and end,
+4 12 respectively, of the match in string, such that if string is
+4 12 contained in variable var the expression ‘${var[$MBEGIN,$MEND]}' is
+4 12 identical to ‘$MATCH'.  The setting of the option KSH_ARRAYS is
+4 12 respected.  Likewise, the array match is set to the substrings that
+4 12 matched parenthesised subexpressions and the arrays mbegin and mend
+4 12 to the indices of the start and end positions, respectively, of the
+4 12 substrings within string.  The arrays are not set if there were no
+4 12 parenthesised subexpressions.  For example, if the string ‘a short
+4 12 string' is matched against the regular expression ‘s(...)t', then
+4 12 (assuming the option KSH_ARRAYS is not set) MATCH, MBEGIN and MEND
+4 12 are ‘short', 3 and 7, respectively, while match, mbegin and mend
+4 12 are single entry arrays containing the strings ‘hor', ‘4' and ‘6',
+4 12 respectively.
+4 12 If the option BASH_REMATCH is set the array BASH_REMATCH is set to
+4 12 the substring that matched the pattern followed by the substrings
+4 12 that matched parenthesised subexpressions within the pattern.
+3 5 string1 < string2
+4 12 true if string1 comes before string2 based on ASCII value of their
+4 12 characters.
+3 5 string1 > string2
+4 12 true if string1 comes after string2 based on ASCII value of their
+4 12 characters.
+3 5 exp1 -eq exp2
+4 12 true if exp1 is numerically equal to exp2.  Note that for purely
+4 12 numeric comparisons use of the ((...)) builtin described in the
+4 12 section ‘ARITHMETIC EVALUATION' is more convenient than conditional
+4 12 expressions.
+3 5 exp1 -ne exp2
+4 12 true if exp1 is numerically not equal to exp2.
+3 5 exp1 -lt exp2
+4 12 true if exp1 is numerically less than exp2.
+3 5 exp1 -gt exp2
+4 12 true if exp1 is numerically greater than exp2.
+3 5 exp1 -le exp2
+4 12 true if exp1 is numerically less than or equal to exp2.
+3 5 exp1 -ge exp2
+4 12 true if exp1 is numerically greater than or equal to exp2.
+3 5 ( exp )
+4 12 true if exp is true.
+3 5 ! exp  true if exp is false.
+3 5 exp1 && exp2
+4 12 true if exp1 and exp2 are both true.
+3 5 exp1 || exp2
+4 12 true if either exp1 or exp2 is true.
+3 5 For compatibility, if there is a single argument that is not syntactically
+3 5 significant, typically a variable, the condition is treated as a test for
+3 5 whether the expression expands as a string of non-zero length.  In other
+3 5 words, [[ $var ]] is the same as [[ -n $var ]].  It is recommended that
+3 5 the second, explicit, form be used where possible.
+3 5 Normal shell expansion is performed on the file, string and pattern
+3 5 arguments, but the result of each expansion is constrained to be a single
+3 5 word, similar to the effect of double quotes.
+3 5 Filename generation is not performed on any form of argument to
+3 5 conditions.  However, it can be forced in any case where normal shell
+3 5 expansion is valid and when the option EXTENDED_GLOB is in effect by using
+3 5 an explicit glob qualifier of the form (#q) at the end of the string.  A
+3 5 normal glob qualifier expression may appear between the ‘q' and the
+3 5 closing parenthesis; if none appears the expression has no effect beyond
+3 5 causing filename generation.  The results of filename generation are
+3 5 joined together to form a single word, as with the results of other forms
+3 5 of expansion.
+3 5 This special use of filename generation is only available with the [[
+3 5 syntax.  If the condition occurs within the [ or test builtin commands
+3 5 then globbing occurs instead as part of normal command line expansion
+3 5 before the condition is evaluated.  In this case it may generate multiple
+3 5 words which are likely to confuse the syntax of the test command.
+3 5 For example,
+4 12 [[ -n file*(#qN) ]]
+3 5 produces status zero if and only if there is at least one file in the
+3 5 current directory beginning with the string ‘file'.  The globbing
+3 5 qualifier N ensures that the expression is empty if there is no matching
+3 5 file.
+3 5 Pattern metacharacters are active for the pattern arguments; the patterns
+3 5 are the same as those used for filename generation, see zshexpn(1), but
+3 5 there is no special behaviour of ‘/' nor initial dots, and no glob
+3 5 qualifiers are allowed.
+3 5 In each of the above expressions, if file is of the form ‘/dev/fd/n',
+3 5 where n is an integer, then the test applied to the open file whose
+3 5 descriptor number is n, even if the underlying system does not support the
+3 5 /dev/fd directory.
+3 5 In the forms which do numeric comparison, the expressions exp undergo
+3 5 arithmetic expansion as if they were enclosed in $((...)).
+3 5 For example, the following:
+4 12 [[ ( -f foo || -f bar ) && $report = y* ]] && print File exists.
+3 5 tests if either file foo or file bar exists, and if so, if the value of
+3 5 the parameter report begins with ‘y'; if the complete condition is true,
+3 5 the message ‘File exists.' is printed.
+1 0 EXPANSION OF PROMPT SEQUENCES
+3 5 Prompt sequences undergo a special form of expansion.  This type of
+3 5 expansion is also available using the -P option to the print builtin.
+3 5 If the PROMPT_SUBST option is set, the prompt string is first subjected to
+3 5 parameter expansion, command substitution and arithmetic expansion.  See
+3 5 zshexpn(1).
+3 5 Certain escape sequences may be recognised in the prompt string.
+3 5 If the PROMPT_BANG option is set, a ‘!' in the prompt is replaced by the
+3 5 current history event number.  A literal ‘!' may then be represented as
+3 5 ‘!!'.
+3 5 If the PROMPT_PERCENT option is set, certain escape sequences that start
+3 5 with ‘%' are expanded.  Many escapes are followed by a single character,
+3 5 although some of these take an optional integer argument that should
+3 5 appear between the ‘%' and the next character of the sequence.  More
+3 5 complicated escape sequences are available to provide conditional
+3 5 expansion.
+1 0 SIMPLE PROMPT ESCAPES
+2 3 Special characters
+3 5 %%     A ‘%'.
+3 5 %)     A ‘)'.
+2 3 Login information
+3 5 %l     The line (tty) the user is logged in on, without ‘/dev/' prefix.
+4 12 If the name starts with ‘/dev/tty', that prefix is stripped.
+3 5 %M     The full machine hostname.
+3 5 %m     The hostname up to the first ‘.'.  An integer may follow the ‘%' to
+4 12 specify how many components of the hostname are desired.  With a
+4 12 negative integer, trailing components of the hostname are shown.
+3 5 %n     $USERNAME.
+3 5 %y     The line (tty) the user is logged in on, without ‘/dev/' prefix.
+4 12 This does not treat ‘/dev/tty' names specially.
+2 3 Shell state
+3 5 %#     A ‘#' if the shell is running with privileges, a ‘%' if not.
+4 12 Equivalent to ‘%(!.#.%%)'.  The definition of ‘privileged', for
+4 12 these purposes, is that either the effective user ID is zero, or,
+4 12 if POSIX.1e capabilities are supported, that at least one
+4 12 capability is raised in either the Effective or Inheritable
+4 12 capability vectors.
+3 5 %?     The return status of the last command executed just before the
+4 12 prompt.
+3 5 %_     The status of the parser, i.e. the shell constructs (like ‘if' and
+4 12 ‘for') that have been started on the command line. If given an
+4 12 integer number that many strings will be printed; zero or negative
+4 12 or no integer means print as many as there are.  This is most
+4 12 useful in prompts PS2 for continuation lines and PS4 for debugging
+4 12 with the XTRACE option; in the latter case it will also work
+4 12 non-interactively.
+3 5 %^     The status of the parser in reverse. This is the same as ‘%_' other
+4 12 than the order of strings.  It is often used in RPS2.
+3 5 %d
+3 5 %/     Current working directory.  If an integer follows the ‘%', it
+4 12 specifies a number of trailing components of the current working
+4 12 directory to show; zero means the whole path.  A negative integer
+4 12 specifies leading components, i.e. %-1d specifies the first
+4 12 component.
+3 5 %~     As %d and %/, but if the current working directory starts with
+4 12 $HOME, that part is replaced by a ‘~'. Furthermore, if it has a
+4 12 named directory as its prefix, that part is replaced by a ‘~'
+4 12 followed by the name of the directory, but only if the result is
+4 12 shorter than the full path; see Dynamic and Static named
+4 12 directories in zshexpn(1).
+3 5 %e     Evaluation depth of the current sourced file, shell function, or
+4 12 eval.  This is incremented or decremented every time the value of
+4 12 %N is set or reverted to a previous value, respectively.  This is
+4 12 most useful for debugging as part of $PS4.
+3 5 %h
+3 5 %!     Current history event number.
+3 5 %i     The line number currently being executed in the script, sourced
+4 12 file, or shell function given by %N.  This is most useful for
+4 12 debugging as part of $PS4.
+3 5 %I     The line number currently being executed in the file %x.  This is
+4 12 similar to %i, but the line number is always a line number in the
+4 12 file where the code was defined, even if the code is a shell
+4 12 function.
+3 5 %j     The number of jobs.
+3 5 %L     The current value of $SHLVL.
+3 5 %N     The name of the script, sourced file, or shell function that zsh is
+4 12 currently executing, whichever was started most recently.  If there
+4 12 is none, this is equivalent to the parameter $0.  An integer may
+4 12 follow the ‘%' to specify a number of trailing path components to
+4 12 show; zero means the full path.  A negative integer specifies
+4 12 leading components.
+3 5 %x     The name of the file containing the source code currently being
+4 12 executed.  This behaves as %N except that function and eval command
+4 12 names are not shown, instead the file where they were defined.
+3 5 %c
+3 5 %.
+3 5 %C     Trailing component of the current working directory.  An integer
+4 12 may follow the ‘%' to get more than one component.  Unless ‘%C' is
+4 12 used, tilde contraction is performed first.  These are deprecated
+4 12 as %c and %C are equivalent to %1~ and %1/, respectively, while
+4 12 explicit positive integers have the same effect as for the latter
+4 12 two sequences.
+2 3 Date and time
+3 5 %D     The date in yy-mm-dd format.
+3 5 %T     Current time of day, in 24-hour format.
+3 5 %t
+3 5 %@     Current time of day, in 12-hour, am/pm format.
+3 5 %*     Current time of day in 24-hour format, with seconds.
+3 5 %w     The date in day-dd format.
+3 5 %W     The date in mm/dd/yy format.
+3 5 %D{string}
+4 12 string is formatted using the strftime function.  See strftime(3)
+4 12 for more details.  Various zsh extensions provide numbers with no
+4 12 leading zero or space if the number is a single digit:
+4 12 %f     a day of the month
+4 12 %K     the hour of the day on the 24-hour clock
+4 12 %L     the hour of the day on the 12-hour clock
+4 12 In addition, if the system supports the POSIX gettimeofday system
+4 12 call, %. provides decimal fractions of a second since the epoch
+4 12 with leading zeroes.  By default three decimal places are provided,
+4 12 but a number of digits up to 9 may be given following the %; hence
+4 12 %6.  outputs microseconds, and %9. outputs nanoseconds.  (The
+4 12 latter requires a nanosecond-precision clock_gettime; systems
+4 12 lacking this will return a value multiplied by the appropriate
+4 12 power of 10.)  A typical example of this is the format
+4 12 ‘%D{%H:%M:%S.%.}'.
+4 12 The GNU extension %N is handled as a synonym for %9..
+4 12 Additionally, the GNU extension that a ‘-' between the % and the
+4 12 format character causes a leading zero or space to be stripped is
+4 12 handled directly by the shell for the format characters d, f, H, k,
+4 12 l, m, M, S and y; any other format characters are provided to the
+4 12 system's strftime(3) with any leading ‘-' present, so the handling
+4 12 is system dependent.  Further GNU (or other) extensions are also
+4 12 passed to strftime(3) and may work if the system supports them.
+2 3 Visual effects
+3 5 %B (%b)
+4 12 Start (stop) boldface mode.
+3 5 %E     Clear to end of line.
+3 5 %U (%u)
+4 12 Start (stop) underline mode.
+3 5 %S (%s)
+4 12 Start (stop) standout mode.
+3 5 %F (%f)
+4 12 Start (stop) using a different foreground colour, if supported by
+4 12 the terminal.  The colour may be specified two ways: either as a
+4 12 numeric argument, as normal, or by a sequence in braces following
+4 12 the %F, for example %F{red}.  In the latter case the values allowed
+4 12 are as described for the fg zle_highlight attribute; see Character
+4 12 Highlighting in zshzle(1).  This means that numeric colours are
+4 12 allowed in the second format also.
+3 5 %K (%k)
+4 12 Start (stop) using a different bacKground colour.  The syntax is
+4 12 identical to that for %F and %f.
+3 5 %{...%}
+4 12 Include a string as a literal escape sequence.  The string within
+4 12 the braces should not change the cursor position.  Brace pairs can
+4 12 nest.
+4 12 A positive numeric argument between the % and the { is treated as
+4 12 described for %G below.
+3 5 %G     Within a %{...%} sequence, include a ‘glitch': that is, assume that
+4 12 a single character width will be output.  This is useful when
+4 12 outputting characters that otherwise cannot be correctly handled by
+4 12 the shell, such as the alternate character set on some terminals.
+4 12 The characters in question can be included within a %{...%}
+4 12 sequence together with the appropriate number of %G sequences to
+4 12 indicate the correct width.  An integer between the ‘%' and ‘G'
+4 12 indicates a character width other than one.  Hence %{seq%2G%}
+4 12 outputs seq and assumes it takes up the width of two standard
+4 12 characters.
+4 12 Multiple uses of %G accumulate in the obvious fashion; the position
+4 12 of the %G is unimportant.  Negative integers are not handled.
+4 12 Note that when prompt truncation is in use it is advisable to
+4 12 divide up output into single characters within each %{...%} group
+4 12 so that the correct truncation point can be found.
+1 0 CONDITIONAL SUBSTRINGS IN PROMPTS
+3 5 %v     The value of the first element of the psvar array parameter.
+4 12 Following the ‘%' with an integer gives that element of the array.
+4 12 Negative integers count from the end of the array.
+3 5 %(x.true-text.false-text)
+4 12 Specifies a ternary expression.  The character following the x is
+4 12 arbitrary; the same character is used to separate the text for the
+4 12 ‘true' result from that for the ‘false' result.  This separator may
+4 12 not appear in the true-text, except as part of a %-escape sequence.
+4 12 A ‘)' may appear in the false-text as ‘%)'.  true-text and
+4 12 false-text may both contain arbitrarily-nested escape sequences,
+4 12 including further ternary expressions.
+4 12 The left parenthesis may be preceded or followed by a positive
+4 12 integer n, which defaults to zero.  A negative integer will be
+4 12 multiplied by -1, except as noted below for ‘l'.  The test
+4 12 character x may be any of the following:
+4 12 !      True if the shell is running with privileges.
+4 12 #      True if the effective uid of the current process is n.
+4 12 ?      True if the exit status of the last command was n.
+4 12 _      True if at least n shell constructs were started.
+4 12 C
+4 12 /      True if the current absolute path has at least n elements
+7 19 relative to the root directory, hence / is counted as 0
+7 19 elements.
+4 12 c
+4 12 .
+4 12 ~      True if the current path, with prefix replacement, has at
+7 19 least n elements relative to the root directory, hence / is
+7 19 counted as 0 elements.
+4 12 D      True if the month is equal to n (January = 0).
+4 12 d      True if the day of the month is equal to n.
+4 12 e      True if the evaluation depth is at least n.
+4 12 g      True if the effective gid of the current process is n.
+4 12 j      True if the number of jobs is at least n.
+4 12 L      True if the SHLVL parameter is at least n.
+4 12 l      True if at least n characters have already been printed on
+7 19 the current line.  When n is negative, true if at least
+7 19 abs(n) characters remain before the opposite margin (thus
+7 19 the left margin for RPROMPT).
+4 12 S      True if the SECONDS parameter is at least n.
+4 12 T      True if the time in hours is equal to n.
+4 12 t      True if the time in minutes is equal to n.
+4 12 v      True if the array psvar has at least n elements.
+4 12 V      True if element n of the array psvar is set and non-empty.
+4 12 w      True if the day of the week is equal to n (Sunday = 0).
+3 5 %<string<
+3 5 %>string>
+3 5 %[xstring]
+4 12 Specifies truncation behaviour for the remainder of the prompt
+4 12 string.  The third, deprecated, form is equivalent to ‘%xstringx',
+4 12 i.e. x may be ‘<' or ‘>'.  The string will be displayed in place of
+4 12 the truncated portion of any string; note this does not undergo
+4 12 prompt expansion.
+4 12 The numeric argument, which in the third form may appear
+4 12 immediately after the ‘[', specifies the maximum permitted length
+4 12 of the various strings that can be displayed in the prompt.  In the
+4 12 first two forms, this numeric argument may be negative, in which
+4 12 case the truncation length is determined by subtracting the
+4 12 absolute value of the numeric argument from the number of character
+4 12 positions remaining on the current prompt line.  If this results in
+4 12 a zero or negative length, a length of 1 is used.  In other words,
+4 12 a negative argument arranges that after truncation at least n
+4 12 characters remain before the right margin (left margin for
+4 12 RPROMPT).
+4 12 The forms with ‘<' truncate at the left of the string, and the
+4 12 forms with ‘>' truncate at the right of the string.  For example,
+4 12 if the current directory is ‘/home/pike', the prompt ‘%8<..<%/'
+4 12 will expand to ‘..e/pike'.  In this string, the terminating
+4 12 character (‘<', ‘>' or ‘]'), or in fact any character, may be
+4 12 quoted by a preceding ‘\'; note when using print -P, however, that
+4 12 this must be doubled as the string is also subject to standard
+4 12 print processing, in addition to any backslashes removed by a
+4 12 double quoted string:  the worst case is therefore ‘print -P
+4 12 "%<\\\\<<..."'.
+4 12 If the string is longer than the specified truncation length, it
+4 12 will appear in full, completely replacing the truncated string.
+4 12 The part of the prompt string to be truncated runs to the end of
+4 12 the string, or to the end of the next enclosing group of the ‘%('
+4 12 construct, or to the next truncation encountered at the same
+4 12 grouping level (i.e. truncations inside a ‘%(' are separate), which
+4 12 ever comes first.  In particular, a truncation with argument zero
+4 12 (e.g., ‘%<<') marks the end of the range of the string to be
+4 12 truncated while turning off truncation from there on. For example,
+4 12 the prompt ‘%10<...<%~%<<%# ' will print a truncated representation
+4 12 of the current directory, followed by a ‘%' or ‘#', followed by a
+4 12 space.  Without the ‘%<<', those two characters would be included
+4 12 in the string to be truncated.  Note that ‘%-0<<' is not equivalent
+4 12 to ‘%<<' but specifies that the prompt is truncated at the right
+4 12 margin.
+4 12 Truncation applies only within each individual line of the prompt,
+4 12 as delimited by embedded newlines (if any).  If the total length of
+4 12 any line of the prompt after truncation is greater than the
+4 12 terminal width, or if the part to be truncated contains embedded
+4 12 newlines, truncation behavior is undefined and may change in a
+4 12 future version of the shell.  Use ‘%-n(l.true-text.false-text)' to
+4 12 remove parts of the prompt when the available space is less than n.
+1 0 zsh 5.9.1                         May 31, 2026                       ZSHMISC(1)

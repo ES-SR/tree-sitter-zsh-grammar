@@ -1,0 +1,429 @@
+ARRAY PARAMETERS
+     To assign an array value, write one of:
+
+            set -A name value ...
+            name=(value ...)
+            name=([key]=value ...)
+
+     If no parameter name exists, an ordinary array parameter is created.  If
+     the parameter name exists and is a scalar, it is replaced by a new array.
+
+     In the third form, key is an expression that will be evaluated in
+     arithmetic context (in its simplest form, an integer) that gives the index
+     of the element to be assigned with value.  In this form any elements not
+     explicitly mentioned that come before the largest index to which a value
+     is assigned are assigned an empty string.  The indices may be in any
+     order.  Note that this syntax is strict: [ and ]= must not be quoted, and
+     key may not consist of the unquoted string ]=, but is otherwise treated as
+     a simple string.  The enhanced forms of subscript expression that may be
+     used when directly subscripting a variable name, described in the section
+     ‘Array Subscripts' below, are not available.
+
+     The syntaxes with and without the explicit key may be mixed.  An implicit
+     key is deduced by incrementing the index from the previously assigned
+     element.  Note that it is not treated as an error if latter assignments in
+     this form overwrite earlier assignments.
+
+     For example, assuming the option KSH_ARRAYS is not set, the following:
+
+            array=(one [3]=three four)
+
+     causes the array variable array to contain four elements one, an empty
+     string, three and four, in that order.
+
+     In the forms where only value is specified, full command line expansion is
+     performed.
+
+     In the [key]=value form, both key and value undergo all forms of expansion
+     allowed for single word shell expansions (this does not include filename
+     generation); these are as performed by the parameter expansion flag (e) as
+     described in zshexpn(1).  Nested parentheses may surround value and are
+     included as part of the value, which is joined into a plain string; this
+     differs from ksh which allows the values themselves to be arrays.  A
+     future version of zsh may support that.  To cause the brackets to be
+     interpreted as a character class for filename generation, and therefore to
+     treat the resulting list of files as a set of values, quote the equal sign
+     using any form of quoting.  Example:
+
+            name=([a-z]'='*)
+
+     To append to an array without changing the existing values, use one of the
+     following:
+
+            name+=(value ...)
+            name+=([key]=value ...)
+
+     In the second form key may specify an existing index as well as an index
+     off the end of the old array; any existing value is overwritten by value.
+     Also, it is possible to use [key]+=value to append to the existing value
+     at that index.
+
+     Within the parentheses on the right hand side of either form of the
+     assignment, newlines and semicolons are treated the same as white space,
+     separating individual values.  Any consecutive sequence of such characters
+     has the same effect.
+
+     Ordinary array parameters may also be explicitly declared with:
+
+            typeset -a name
+
+     Associative arrays must be declared before assignment, by using:
+
+            typeset -A name
+
+     When name refers to an associative array, the list in an assignment is
+     interpreted as alternating keys and values:
+
+            set -A name key value ...
+            name=(key value ...)
+            name=([key]=value ...)
+
+     Note that only one of the two syntaxes above may be used in any given
+     assignment; the forms may not be mixed.  This is unlike the case of
+     numerically indexed arrays.
+
+     Every key must have a value in this case.  Note that this assigns to the
+     entire array, deleting any elements that do not appear in the list.  The
+     append syntax may also be used with an associative array:
+
+            name+=(key value ...)
+            name+=([key]=value ...)
+
+     This adds a new key/value pair if the key is not already present, and
+     replaces the value for the existing key if it is.  In the second form it
+     is also possible to use [key]+=value to append to the existing value at
+     that key.  Expansion is performed identically to the corresponding forms
+     for normal arrays, as described above.
+
+     To create an empty array (including associative arrays), use one of:
+
+            set -A name
+            name=()
+
+   Array Subscripts
+     Individual elements of an array may be selected using a subscript.  A
+     subscript of the form ‘[exp]' selects the single element exp, where exp is
+     an arithmetic expression which will be subject to arithmetic expansion as
+     if it were surrounded by ‘$((...))'.  The elements are numbered beginning
+     with 1, unless the KSH_ARRAYS option is set in which case they are
+     numbered from zero.
+
+     Subscripts may be used inside braces used to delimit a parameter name,
+     thus ‘${foo[2]}' is equivalent to ‘$foo[2]'.  If the KSH_ARRAYS option is
+     set, the braced form is the only one that works, as bracketed expressions
+     otherwise are not treated as subscripts.
+
+     If the KSH_ARRAYS option is not set, then by default accesses to an array
+     element with a subscript that evaluates to zero return an empty string,
+     while an attempt to write such an element is treated as an error.  For
+     backward compatibility the KSH_ZERO_SUBSCRIPT option can be set to cause
+     subscript values 0 and 1 to be equivalent; see the description of the
+     option in zshoptions(1).
+
+     The same subscripting syntax is used for associative arrays, except that
+     no arithmetic expansion is applied to exp.  However, the parsing rules for
+     arithmetic expressions still apply, which affects the way that certain
+     special characters must be protected from interpretation.  See Subscript
+     Parsing below for details.
+
+     A subscript of the form ‘[*]' or ‘[@]' evaluates to all elements of an
+     array; there is no difference between the two except when they appear
+     within double quotes.  ‘"$foo[*]"' evaluates to ‘"$foo[1] $foo[2] ..."',
+     whereas ‘"$foo[@]"' evaluates to ‘"$foo[1]" "$foo[2]" ...'.  For
+     associative arrays, ‘[*]' or ‘[@]' evaluate to all the values, in no
+     particular order.  Note that this does not substitute the keys; see the
+     documentation for the ‘k' flag under Parameter Expansion Flags in
+     zshexpn(1) for complete details.  When an array parameter is referenced as
+     ‘$name' (with no subscript) it evaluates to ‘$name[*]', unless the
+     KSH_ARRAYS option is set in which case it evaluates to ‘${name[0]}' (for
+     an associative array, this means the value of the key ‘0', which may not
+     exist even if there are values for other keys).
+
+     A subscript of the form ‘[exp1,exp2]' selects all elements in the range
+     exp1 to exp2, inclusive. (Associative arrays are unordered, and so do not
+     support ranges.) If one of the subscripts evaluates to a negative number,
+     say -n, then the nth element from the end of the array is used.  Thus
+     ‘$foo[-3]' is the third element from the end of the array foo, and
+     ‘$foo[1,-1]' is the same as ‘$foo[*]'.
+
+     Subscripting may also be performed on non-array values, in which case the
+     subscripts specify a substring to be extracted.  For example, if FOO is
+     set to ‘foobar', then ‘echo $FOO[2,5]' prints ‘ooba'.  Note that some
+     forms of subscripting described below perform pattern matching, and in
+     that case the substring extends from the start of the match of the first
+     subscript to the end of the match of the second subscript.  For example,
+
+            string="abcdefghijklm"
+            print ${string[(r)d?,(r)h?]}
+
+     prints ‘defghi'.  This is an obvious generalisation of the rule for
+     single-character matches.  For a single subscript, only a single character
+     is referenced (not the range of characters covered by the match).
+
+     Note that in substring operations the second subscript is handled
+     differently by the r and R subscript flags: the former takes the shortest
+     match as the length and the latter the longest match.  Hence in the former
+     case a * at the end is redundant while in the latter case it matches the
+     whole remainder of the string.  This does not affect the result of the
+     single subscript case as here the length of the match is irrelevant.
+
+   Array Element Assignment
+     A subscript may be used on the left side of an assignment like so:
+
+            name[exp]=value
+
+     In this form of assignment the element or range specified by exp is
+     replaced by the expression on the right side.  An array (but not an
+     associative array) may be created by assignment to a range or element.
+     Arrays do not nest, so assigning a parenthesized list of values to an
+     element or range changes the number of elements in the array, shifting the
+     other elements to accommodate the new values.  (This is not supported for
+     associative arrays.)
+
+     This syntax also works as an argument to the typeset command:
+
+            typeset "name[exp]"=value
+
+     The value may not be a parenthesized list in this case; only
+     single-element assignments may be made with typeset.  Note that quotes are
+     necessary in this case to prevent the brackets from being interpreted as
+     filename generation operators.  The noglob precommand modifier could be
+     used instead.
+
+     To delete an element of an ordinary array, assign ‘()' to that element.
+     To delete an element of an associative array, use the unset command:
+
+            unset "name[exp]"
+
+   Subscript Flags
+     If the opening bracket, or the comma in a range, in any subscript
+     expression is directly followed by an opening parenthesis, the string up
+     to the matching closing one is considered to be a list of flags, as in
+     ‘name[(flags)exp]'.
+
+     The flags s, n and b take an argument; the delimiter is shown below as
+     ‘:', but any character, or the matching pairs ‘(...)', ‘{...}', ‘[...]',
+     or ‘<...>', may be used, but note that ‘<...>' can only be used if the
+     subscript is inside a double quoted expression or a parameter substitution
+     enclosed in braces as otherwise the expression is interpreted as a
+     redirection.
+
+     The flags currently understood are:
+
+     w      If the parameter subscripted is a scalar then this flag makes
+            subscripting work on words instead of characters.  The default word
+            separator is whitespace.  When combined with the i or I flag, the
+            effect is to produce the index of the first character of the
+            first/last word which matches the given pattern; note that a failed
+            match in this case always yields 0.
+
+     s:string:
+            This gives the string that separates words (for use with the w
+            flag).  The delimiter character : is arbitrary; see above.
+
+     p      Recognize the same escape sequences as the print builtin in the
+            string argument of a subsequent ‘s' flag.
+
+     f      If the parameter subscripted is a scalar then this flag makes
+            subscripting work on lines instead of characters, i.e. with
+            elements separated by newlines.  This is a shorthand for ‘pws:\n:'.
+
+     r      Reverse subscripting: if this flag is given, the exp is taken as a
+            pattern and the result is the first matching array element,
+            substring or word (if the parameter is an array, if it is a scalar,
+            or if it is a scalar and the ‘w' flag is given, respectively).  The
+            subscript used is the number of the matching element, so that pairs
+            of subscripts such as ‘$foo[(r)??,3]' and ‘$foo[(r)??,(r)f*]' are
+            possible if the parameter is not an associative array.  If the
+            parameter is an associative array, only the value part of each pair
+            is compared to the pattern, and the result is that value.
+
+            If a search through an ordinary array failed, the search sets the
+            subscript to one past the end of the array, and hence
+            ${array[(r)pattern]} will substitute the empty string.  Thus the
+            success of a search can be tested by using the (i) flag, for
+            example (assuming the option KSH_ARRAYS is not in effect):
+
+                   [[ ${array[(i)pattern]} -le ${#array} ]]
+
+            If KSH_ARRAYS is in effect, the -le should be replaced by -lt.
+
+     R      Like ‘r', but gives the last match.  For associative arrays, gives
+            all possible matches. May be used for assigning to ordinary array
+            elements, but not for assigning to associative arrays.  On failure,
+            for normal arrays this has the effect of returning the element
+            corresponding to subscript 0; this is empty unless one of the
+            options KSH_ARRAYS or KSH_ZERO_SUBSCRIPT is in effect.
+
+            Note that in subscripts with both ‘r' and ‘R' pattern characters
+            are active even if they were substituted for a parameter
+            (regardless of the setting of GLOB_SUBST which controls this
+            feature in normal pattern matching).  The flag ‘e' can be added to
+            inhibit pattern matching.  As this flag does not inhibit other
+            forms of substitution, care is still required; using a parameter to
+            hold the key has the desired effect:
+
+                   key2='original key'
+                   print ${array[(Re)$key2]}
+
+     i      Like ‘r', but gives the index of the match instead; this may not be
+            combined with a second argument.  On the left side of an
+            assignment, behaves like ‘r'.  For associative arrays, the key part
+            of each pair is compared to the pattern, and the first matching key
+            found is the result.  On failure substitutes the length of the
+            array plus one, as discussed under the description of ‘r', or the
+            empty string for an associative array.
+
+            Note: Although ‘i' may be applied to a scalar substitution to find
+            the offset of a substring, the results are likely to be misleading
+            when searching within substitutions that yield an empty string, or
+            when searching for the empty substring.
+
+     I      Like ‘i', but gives the index of the last match, or all possible
+            matching keys in an associative array.  On failure substitutes 0,
+            or the empty string for an associative array.  This flag is best
+            when testing for values or keys that do not exist.
+
+            Note: If the option KSH_ARRAYS is in effect and no match is found,
+            the result is indistinguishable from the case when the first
+            element of the array matches.
+
+     k      If used in a subscript on an associative array, this flag causes
+            the keys to be interpreted as patterns, and returns the value for
+            the first key found where exp is matched by the key.  Note this
+            could be any such key as no ordering of associative arrays is
+            defined.  This flag does not work on the left side of an assignment
+            to an associative array element.  If used on another type of
+            parameter, this behaves like ‘r'.
+
+     K      On an associative array this is like ‘k' but returns all values
+            where exp is matched by the keys.  On other types of parameters
+            this has the same effect as ‘R'.
+
+     n:expr:
+            If combined with ‘r', ‘R', ‘i' or ‘I', makes them give the nth or
+            nth last match (if expr evaluates to n).  This flag is ignored when
+            the array is associative.  The delimiter character : is arbitrary;
+            see above.
+
+     b:expr:
+            If combined with ‘r', ‘R', ‘i' or ‘I', makes them begin at the nth
+            or nth last element, word, or character (if expr evaluates to n).
+            This flag is ignored when the array is associative.  The delimiter
+            character : is arbitrary; see above.
+
+     e      This flag causes any pattern matching that would be performed on
+            the subscript to use plain string matching instead.  Hence
+            ‘${array[(re)*]}' matches only the array element whose value is *.
+            Note that other forms of substitution such as parameter
+            substitution are not inhibited.
+
+            This flag can also be used to force * or @ to be interpreted as a
+            single key rather than as a reference to all values.  It may be
+            used for either purpose on the left side of an assignment.
+
+     See Parameter Expansion Flags (zshexpn(1)) for additional ways to
+     manipulate the results of array subscripting.
+
+   Subscript Parsing
+     This discussion applies mainly to associative array key strings and to
+     patterns used for reverse subscripting (the ‘r', ‘R', ‘i', etc. flags),
+     but it may also affect parameter substitutions that appear as part of an
+     arithmetic expression in an ordinary subscript.
+
+     To avoid subscript parsing limitations in assignments to associative array
+     elements, use the append syntax:
+
+            aa+=('key with "*strange*" characters' 'value string')
+
+     The basic rule to remember when writing a subscript expression is that all
+     text between the opening ‘[' and the closing ‘]' is interpreted as if it
+     were in double quotes (see zshmisc(1)).  However, unlike double quotes
+     which normally cannot nest, subscript expressions may appear inside
+     double-quoted strings or inside other subscript expressions (or both!), so
+     the rules have two important differences.
+
+     The first difference is that brackets (‘[' and ‘]') must appear as
+     balanced pairs in a subscript expression unless they are preceded by a
+     backslash (‘\').  Therefore, within a subscript expression (and unlike
+     true double-quoting) the sequence ‘\[' becomes ‘[', and similarly ‘\]'
+     becomes ‘]'.  This applies even in cases where a backslash is not normally
+     required; for example, the pattern ‘[^[]' (to match any character other
+     than an open bracket) should be written ‘[^\[]' in a reverse-subscript
+     pattern.  However, note that ‘\[^\[\]' and even ‘\[^[]' mean the same
+     thing, because backslashes are always stripped when they appear before
+     brackets!
+
+     The same rule applies to parentheses (‘(' and ‘)') and braces (‘{' and
+     ‘}'): they must appear either in balanced pairs or preceded by a
+     backslash, and backslashes that protect parentheses or braces are removed
+     during parsing.  This is because parameter expansions may be surrounded by
+     balanced braces, and subscript flags are introduced by balanced
+     parentheses.
+
+     The second difference is that a double-quote (‘"') may appear as part of a
+     subscript expression without being preceded by a backslash, and therefore
+     that the two characters ‘\"' remain as two characters in the subscript (in
+     true double-quoting, ‘\"' becomes ‘"').  However, because of the standard
+     shell quoting rules, any double-quotes that appear must occur in balanced
+     pairs unless preceded by a backslash.  This makes it more difficult to
+     write a subscript expression that contains an odd number of double-quote
+     characters, but the reason for this difference is so that when a subscript
+     expression appears inside true double-quotes, one can still write ‘\"'
+     (rather than ‘\\\"') for ‘"'.
+
+     To use an odd number of double quotes as a key in an assignment, use the
+     typeset builtin and an enclosing pair of double quotes; to refer to the
+     value of that key, again use double quotes:
+
+            typeset -A aa
+            typeset "aa[one\"two\"three\"quotes]"=QQQ
+            print "$aa[one\"two\"three\"quotes]"
+
+     It is important to note that the quoting rules do not change when a
+     parameter expansion with a subscript is nested inside another subscript
+     expression.  That is, it is not necessary to use additional backslashes
+     within the inner subscript expression; they are removed only once, from
+     the innermost subscript outwards.  Parameters are also expanded from the
+     innermost subscript first, as each expansion is encountered left to right
+     in the outer expression.
+
+     A further complication arises from a way in which subscript parsing is not
+     different from double quote parsing.  As in true double-quoting, the
+     sequences ‘\*', and ‘\@' remain as two characters when they appear in a
+     subscript expression.  To use a literal ‘*' or ‘@' as an associative array
+     key, the ‘e' flag must be used:
+
+            typeset -A aa
+            aa[(e)*]=star
+            print $aa[(e)*]
+
+     A last detail must be considered when reverse subscripting is performed.
+     Parameters appearing in the subscript expression are first expanded and
+     then the complete expression is interpreted as a pattern.  This has two
+     effects: first, parameters behave as if GLOB_SUBST were on (and it cannot
+     be turned off); second, backslashes are interpreted twice, once when
+     parsing the array subscript and again when parsing the pattern.  In a
+     reverse subscript, it's necessary to use four backslashes to cause a
+     single backslash to match literally in the pattern.  For complex patterns,
+     it is often easiest to assign the desired pattern to a parameter and then
+     refer to that parameter in the subscript, because then the backslashes,
+     brackets, parentheses, etc., are seen only when the complete expression is
+     converted to a pattern.  To match the value of a parameter literally in a
+     reverse subscript, rather than as a pattern, use ‘${(q)name}' (see
+     zshexpn(1)) to quote the expanded value.
+
+     Note that the ‘k' and ‘K' flags are reverse subscripting for an ordinary
+     array, but are not reverse subscripting for an associative array!  (For an
+     associative array, the keys in the array itself are interpreted as
+     patterns by those flags; the subscript is a plain string in that case.)
+
+     One final note, not directly related to subscripting: the numeric names of
+     positional parameters (described below) are parsed specially, so for
+     example ‘$2foo' is equivalent to ‘${2}foo'.  Therefore, to use subscript
+     syntax to extract a substring from a positional parameter, the expansion
+     must be surrounded by braces; for example, ‘${2[3,5]}' evaluates to the
+     third through fifth characters of the second positional parameter, but
+     ‘$2[3,5]' is the entire second parameter concatenated with the filename
+     generation pattern ‘[3,5]'.
+

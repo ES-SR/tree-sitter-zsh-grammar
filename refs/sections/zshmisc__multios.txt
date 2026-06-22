@@ -1,0 +1,101 @@
+MULTIOS
+     If the user tries to open a file descriptor for writing more than once,
+     the shell opens the file descriptor as a pipe to a process that copies its
+     input to all the specified outputs, similar to tee, provided the MULTIOS
+     option is set, as it is by default.  Thus:
+
+            date >foo >bar
+
+     writes the date to two files, named ‘foo' and ‘bar'.  Note that a pipe is
+     an implicit redirection; thus
+
+            date >foo | cat
+
+     writes the date to the file ‘foo', and also pipes it to cat.
+
+     Note that the shell opens all the files to be used in the multio process
+     immediately, not at the point they are about to be written.
+
+     Note also that redirections are always expanded in order.  This happens
+     regardless of the setting of the MULTIOS option, but with the option in
+     effect there are additional consequences. For example, the meaning of the
+     expression >&1 will change after a previous redirection:
+
+            date >&1 >output
+
+     In the case above, the >&1 refers to the standard output at the start of
+     the line; the result is similar to the tee command.  However, consider:
+
+            date >output >&1
+
+     As redirections are evaluated in order, when the >&1 is encountered the
+     standard output is set to the file output and another copy of the output
+     is therefore sent to that file.  This is unlikely to be what is intended.
+
+     If the MULTIOS option is set, the word after a redirection operator is
+     also subjected to filename generation (globbing).  Thus
+
+            : > *
+
+     will truncate all files in the current directory, assuming there's at
+     least one.  (Without the MULTIOS option, it would create an empty file
+     called ‘*'.)  Similarly, you can do
+
+            echo exit 0 >> *.sh
+
+     If the user tries to open a file descriptor for reading more than once,
+     the shell opens the file descriptor as a pipe to a process that copies all
+     the specified inputs to its output in the order specified, provided the
+     MULTIOS option is set.  It should be noted that each file is opened
+     immediately, not at the point where it is about to be read: this behaviour
+     differs from cat, so if strictly standard behaviour is needed, cat should
+     be used instead.
+
+     Thus
+
+            sort <foo <fubar
+
+     or even
+
+            sort <f{oo,ubar}
+
+     is equivalent to ‘cat foo fubar | sort'.
+
+     Expansion of the redirection argument occurs at the point the redirection
+     is opened, at the point described above for the expansion of the variable
+     in >&$myfd.
+
+     Note that a pipe is an implicit redirection; thus
+
+            cat bar | sort <foo
+
+     is equivalent to ‘cat bar foo | sort' (note the order of the inputs).
+
+     If the MULTIOS option is unset, each redirection replaces the previous
+     redirection for that file descriptor.  However, all files redirected to
+     are actually opened, so
+
+            echo Hello > bar > baz
+
+     when MULTIOS is unset will truncate ‘bar', and write ‘Hello' into ‘baz'.
+
+     There is a problem when an output multio is attached to an external
+     program.  A simple example shows this:
+
+            cat file >file1 >file2
+            cat file1 file2
+
+     Here, it is possible that the second ‘cat' will not display the full
+     contents of file1 and file2 (i.e. the original contents of file repeated
+     twice).
+
+     The reason for this is that the multios are spawned after the cat process
+     is forked from the parent shell, so the parent shell does not wait for the
+     multios to finish writing data.  This means the command as shown can exit
+     before file1 and file2 are completely written.  As a workaround, it is
+     possible to run the cat process as part of a job in the current shell:
+
+            { cat file } >file >file2
+
+     Here, the {...} job will pause to wait for both files to be written.
+

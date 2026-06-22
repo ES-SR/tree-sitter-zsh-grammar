@@ -1,0 +1,31 @@
+SPECIFYING OPTIONS
+     Options are primarily referred to by name.  These names are case
+     insensitive and underscores are ignored.  For example, ‘allexport' is
+     equivalent to ‘A__lleXP_ort'.
+
+     The sense of an option name may be inverted by preceding it with ‘no', so
+     ‘setopt No_Beep' is equivalent to ‘unsetopt beep'.  This inversion can
+     only be done once, so ‘nonobeep' is not a synonym for ‘beep'.  Similarly,
+     ‘tify' is not a synonym for ‘nonotify' (the inversion of ‘notify').
+
+     Some options also have one or more single letter names.  There are two
+     sets of single letter options: one used by default, and another used to
+     emulate sh/ksh (used when the SH_OPTION_LETTERS option is set).  The
+     single letter options can be used on the shell command line, or with the
+     set, setopt and unsetopt builtins, as normal Unix options preceded by ‘-'.
+
+     The sense of the single letter options may be inverted by using ‘+'
+     instead of ‘-'.  Some of the single letter option names refer to an option
+     being off, in which case the inversion of that name refers to the option
+     being on.  For example, ‘+n' is the short name of ‘exec', and ‘-n' is the
+     short name of its inversion, ‘noexec'.
+
+     In strings of single letter options supplied to the shell at startup,
+     trailing whitespace will be ignored; for example the string ‘-f    ' will
+     be treated just as ‘-f', but the string ‘-f i' is an error.  This is
+     because many systems which implement the ‘#!' mechanism for calling
+     scripts do not strip trailing whitespace.
+
+     It is possible for options to be set within a function scope.  See the
+     description of the option LOCAL_OPTIONS below.
+

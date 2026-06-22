@@ -1,0 +1,13 @@
+L1 ZSHPARAM(1)                 General Commands Manual                 ZSHPARAM(1)
+L1 NAME
+L1 DESCRIPTION
+L1 ARRAY PARAMETERS
+L2   Array Subscripts
+L2   Array Element Assignment
+L2   Subscript Flags
+L2   Subscript Parsing
+L1 POSITIONAL PARAMETERS
+L1 LOCAL PARAMETERS
+L1 PARAMETERS SET BY THE SHELL
+L1 PARAMETERS USED BY THE SHELL
+L1 zsh 5.9.1                         May 31, 2026                      ZSHPARAM(1)

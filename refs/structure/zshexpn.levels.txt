@@ -1,0 +1,2084 @@
+1 0 ZSHEXPN(1)                  General Commands Manual                  ZSHEXPN(1)
+1 0 NAME
+3 5 zshexpn - zsh expansion and substitution
+1 0 DESCRIPTION
+3 5 The following types of expansions are performed in the indicated order in
+3 5 five steps:
+3 5 History Expansion
+4 12 This is performed only in interactive shells.
+3 5 Alias Expansion
+4 12 Aliases are expanded immediately before the command line is parsed
+4 12 as explained under Aliasing in zshmisc(1).
+3 5 Process Substitution
+3 5 Parameter Expansion
+3 5 Command Substitution
+3 5 Arithmetic Expansion
+3 5 Brace Expansion
+4 12 These five are performed in left-to-right fashion.  On each
+4 12 argument, any of the five steps that are needed are performed one
+4 12 after the other.  Hence, for example, all the parts of parameter
+4 12 expansion are completed before command substitution is started.
+4 12 After these expansions, all unquoted occurrences of the characters
+4 12 ‘\',‘'' and ‘"' are removed.
+3 5 Filename Expansion
+4 12 If the SH_FILE_EXPANSION option is set, the order of expansion is
+4 12 modified for compatibility with sh and ksh.  In that case filename
+4 12 expansion is performed immediately after alias expansion, preceding
+4 12 the set of five expansions mentioned above.
+3 5 Filename Generation
+4 12 This expansion, commonly referred to as globbing, is always done
+4 12 last.
+3 5 The following sections explain the types of expansion in detail.
+1 0 HISTORY EXPANSION
+3 5 History expansion allows you to use words from previous command lines in
+3 5 the command line you are typing.  This simplifies spelling corrections and
+3 5 the repetition of complicated commands or arguments.
+3 5 Immediately before execution, each command is saved in the history list,
+3 5 the size of which is controlled by the HISTSIZE parameter.  The one most
+3 5 recent command is always retained in any case.  Each saved command in the
+3 5 history list is called a history event and is assigned a number, beginning
+3 5 with 1 (one) when the shell starts up.  The history number that you may
+3 5 see in your prompt (see EXPANSION OF PROMPT SEQUENCES in zshmisc(1)) is
+3 5 the number that is to be assigned to the next command.
+2 3 Overview
+3 5 A history expansion begins with the first character of the histchars
+3 5 parameter, which is ‘!' by default, and may occur anywhere on the command
+3 5 line, including inside double quotes (but not inside single quotes '...'
+3 5 or C-style quotes $'...' nor when escaped with a backslash).
+3 5 The first character is followed by an optional event designator (see the
+3 5 section ‘Event Designators') and then an optional word designator (the
+3 5 section ‘Word Designators'); if neither of these designators is present,
+3 5 no history expansion occurs.
+3 5 Input lines containing history expansions are echoed after being expanded,
+3 5 but before any other expansions take place and before the command is
+3 5 executed.  It is this expanded form that is recorded as the history event
+3 5 for later references.
+3 5 History expansions do not nest.
+3 5 By default, a history reference with no event designator refers to the
+3 5 same event as any preceding history reference on that command line; if it
+3 5 is the only history reference in a command, it refers to the previous
+3 5 command.  However, if the option CSH_JUNKIE_HISTORY is set, then every
+3 5 history reference with no event specification always refers to the
+3 5 previous command.
+3 5 For example, ‘!' is the event designator for the previous command, so
+3 5 ‘!!:1' always refers to the first word of the previous command, and ‘!!$'
+3 5 always refers to the last word of the previous command.  With
+3 5 CSH_JUNKIE_HISTORY set, then ‘!:1' and ‘!$' function in the same manner as
+3 5 ‘!!:1' and ‘!!$', respectively.  Conversely, if CSH_JUNKIE_HISTORY is
+3 5 unset, then ‘!:1' and ‘!$' refer to the first and last words,
+3 5 respectively, of the same event referenced by the nearest other history
+3 5 reference preceding them on the current command line, or to the previous
+3 5 command if there is no preceding reference.
+3 5 The character sequence ‘^foo^bar' (where ‘^' is actually the second
+3 5 character of the histchars parameter) repeats the last command, replacing
+3 5 the string foo with bar.  More precisely, the sequence ‘^foo^bar^' is
+3 5 synonymous with ‘!!:s^foo^bar^', hence other modifiers (see the section
+3 5 ‘Modifiers') may follow the final ‘^'.  In particular, ‘^foo^bar^:G'
+3 5 performs a global substitution.
+3 5 If the shell encounters the character sequence ‘!"' in the input, the
+3 5 history mechanism is temporarily disabled until the current list (see
+3 5 zshmisc(1)) is fully parsed.  The ‘!"' is removed from the input, and any
+3 5 subsequent ‘!' characters have no special significance.
+3 5 A less convenient but more comprehensible form of command history support
+3 5 is provided by the fc builtin.
+2 3 Event Designators
+3 5 An event designator is a reference to a command-line entry in the history
+3 5 list.  In the list below, remember that the initial ‘!' in each item may
+3 5 be changed to another character by setting the histchars parameter.
+3 5 !      Start a history expansion, except when followed by a blank,
+4 12 newline, ‘=' or ‘('.  If followed immediately by a word designator
+4 12 (see the section ‘Word Designators'), this forms a history
+4 12 reference with no event designator (see the section ‘Overview').
+3 5 !!     Refer to the previous command.  By itself, this expansion repeats
+4 12 the previous command.
+3 5 !n     Refer to command-line n.
+3 5 !-n    Refer to the current command-line minus n.
+3 5 !str   Refer to the most recent command starting with str.
+3 5 !?str[?]
+4 12 Refer to the most recent command containing str.  The trailing ‘?'
+4 12 is necessary if this reference is to be followed by a modifier or
+4 12 followed by any text that is not to be considered part of str.
+3 5 !#     Refer to the current command line typed in so far.  The line is
+4 12 treated as if it were complete up to and including the word before
+4 12 the one with the ‘!#' reference.
+3 5 !{...}
+4 12 Insulate a history reference from adjacent characters (if
+4 12 necessary).
+2 3 Word Designators
+3 5 A word designator indicates which word or words of a given command line
+3 5 are to be included in a history reference.  A ‘:' usually separates the
+3 5 event specification from the word designator.  It may be omitted only if
+3 5 the word designator begins with a ‘^', ‘$', ‘*', ‘-' or ‘%'.  Word
+3 5 designators include:
+3 5 0      The first input word (command).
+3 5 n      The nth argument.
+3 5 ^      The first argument.  That is, 1.
+3 5 $      The last argument.
+3 5 %      The word matched by (the most recent) ?str search.
+3 5 x-y    A range of words; x defaults to 0.
+3 5 *      All the arguments, or a null value if there are none.
+3 5 x*     Abbreviates ‘x-$'.
+3 5 x-     Like ‘x*' but omitting word $.
+3 5 Note that a ‘%' word designator works only when used in one of ‘!%', ‘!:%'
+3 5 or ‘!?str?:%', and only when used after a !? expansion (possibly in an
+3 5 earlier command).  Anything else results in an error, although the error
+3 5 may not be the most obvious one.
+2 3 Modifiers
+3 5 After the optional word designator, you can add a sequence of one or more
+3 5 of the following modifiers, each preceded by a ‘:'.  These modifiers also
+3 5 work on the result of filename generation and parameter expansion, except
+3 5 where noted.
+3 5 a      Turn a file name into an absolute path:  prepends the current
+4 12 directory, if necessary; remove ‘.' path segments; and remove ‘..'
+4 12 path segments and the segments that immediately precede them.
+4 12 This transformation is agnostic about what is in the filesystem,
+4 12 i.e. is on the logical, not the physical directory.  It takes place
+4 12 in the same manner as when changing directories when neither of the
+4 12 options CHASE_DOTS or CHASE_LINKS is set.  For example,
+4 12 ‘/before/here/../after' is always transformed to ‘/before/after',
+4 12 regardless of whether ‘/before/here' exists or what kind of object
+4 12 (dir, file, symlink, etc.) it is.
+3 5 A      Turn a file name into an absolute path as the ‘a' modifier does,
+4 12 and then pass the result through the realpath(3) library function
+4 12 to resolve symbolic links.
+4 12 Note: on systems that do not have a realpath(3) library function,
+4 12 symbolic links are not resolved, so on those systems ‘a' and ‘A'
+4 12 are equivalent.
+4 12 Note: foo:A and realpath(foo) are different on some inputs.  For
+4 12 realpath(foo) semantics, see the ‘P‘ modifier.
+3 5 c      Resolve a command name into an absolute path by searching the
+4 12 command path given by the PATH variable.  This does not work for
+4 12 commands containing directory parts.  Note also that this does not
+4 12 usually work as a glob qualifier unless a file of the same name is
+4 12 found in the current directory.
+3 5 e      Remove all but the part of the filename extension following the
+4 12 ‘.'; see the definition of the filename extension in the
+4 12 description of the r modifier below.  Note that according to that
+4 12 definition the result will be empty if the string ends with a ‘.'.
+3 5 h [ digits ]
+4 12 Remove a trailing pathname component, shortening the path by one
+4 12 directory level: this is the ‘head' of the pathname.  This works
+4 12 like ‘dirname'.  If the h is followed immediately (with no spaces
+4 12 or other separator) by any number of decimal digits, and the value
+4 12 of the resulting number is non-zero, that number of leading
+4 12 components is preserved instead of the final component being
+4 12 removed.  In an absolute path the leading ‘/' is the first
+4 12 component, so, for example, if var=/my/path/to/something, then
+4 12 ${var:h3} substitutes /my/path.  Consecutive ‘/'s are treated the
+4 12 same as a single ‘/'.  In parameter substitution, digits may only
+4 12 be used if the expression is in braces, so for example the short
+4 12 form substitution $var:h2 is treated as ${var:h}2, not as
+4 12 ${var:h2}.  No restriction applies to the use of digits in history
+4 12 substitution or globbing qualifiers.  If more components are
+4 12 requested than are present, the entire path is substituted (so this
+4 12 does not trigger a ‘failed modifier' error in history expansion).
+3 5 l      Convert the words to all lowercase.
+3 5 p      Print the new command but do not execute it.  Only works with
+4 12 history expansion.
+3 5 P      Turn a file name into an absolute path, like realpath(3).  The
+4 12 resulting path will be absolute, will refer to the same directory
+4 12 entry as the input filename, and none of its components will be
+4 12 symbolic links or equal to ‘.' or ‘..'.
+4 12 Unlike realpath(3), non-existent trailing components are permitted
+4 12 and preserved.
+3 5 q      Quote the substituted words, escaping further substitutions.  Works
+4 12 with history expansion and parameter expansion, though for
+4 12 parameters it is only useful if the resulting text is to be
+4 12 re-evaluated such as by eval.
+3 5 Q      Remove one level of quotes from the substituted words.
+3 5 r      Remove a filename extension leaving the root name.  Strings with no
+4 12 filename extension are not altered.  A filename extension is a ‘.'
+4 12 followed by any number of characters (including zero) that are
+4 12 neither ‘.' nor ‘/' and that continue to the end of the string.
+4 12 For example, the extension of ‘foo.orig.c' is ‘.c', and ‘dir.c/foo'
+4 12 has no extension.
+3 5 s/l/r[/]
+4 12 Substitute r for l as described below.  The substitution is done
+4 12 only for the first string that matches l.  For arrays and for
+4 12 filename generation, this applies to each word of the expanded
+4 12 text.  See below for further notes on substitutions.
+4 12 The forms ‘gs/l/r' and ‘s/l/r/:G' perform global substitution, i.e.
+4 12 substitute every occurrence of r for l.  Note that the g or :G must
+4 12 appear in exactly the position shown.
+4 12 See further notes on this form of substitution below.
+3 5 &      Repeat the previous s substitution.  Like s, may be preceded
+4 12 immediately by a g.  In parameter expansion the & must appear
+4 12 inside braces, and in filename generation it must be quoted with a
+4 12 backslash.
+3 5 t [ digits ]
+4 12 Remove all leading pathname components, leaving the final component
+4 12 (tail).  This works like ‘basename'.  Any trailing slashes are
+4 12 first removed.  Decimal digits are handled as described above for
+4 12 (h), but in this case that number of trailing components is
+4 12 preserved instead of the default 1; 0 is treated the same as 1.
+3 5 u      Convert the words to all uppercase.
+3 5 x      Like q, but break into words at whitespace.  Does not work with
+4 12 parameter expansion.
+3 5 The s/l/r/ substitution works as follows.  By default the left-hand side
+3 5 of substitutions are not patterns, but character strings.  Any character
+3 5 can be used as the delimiter in place of ‘/'.  A backslash quotes the
+3 5 delimiter character.  The character ‘&', in the right-hand-side r, is
+3 5 replaced by the text from the left-hand-side l.  The ‘&' can be quoted
+3 5 with a backslash.  A null l uses the previous string either from the
+3 5 previous l or from the contextual scan string s from ‘!?s'.  You can omit
+3 5 the rightmost delimiter if a newline immediately follows r; the rightmost
+3 5 ‘?' in a context scan can similarly be omitted.  Note the same record of
+3 5 the last l and r is maintained across all forms of expansion.
+3 5 Note that if a ‘&' is used within glob qualifiers an extra backslash is
+3 5 needed as a & is a special character in this case.
+3 5 Also note that the order of expansions affects the interpretation of l and
+3 5 r.  When used in a history expansion, which occurs before any other
+3 5 expansions, l and r are treated as literal strings (except as explained
+3 5 for HIST_SUBST_PATTERN below).  When used in parameter expansion, the
+3 5 replacement of r into the parameter's value is done first, and then any
+3 5 additional process, parameter, command, arithmetic, or brace references
+3 5 are applied, which may evaluate those substitutions and expansions more
+3 5 than once if l appears more than once in the starting value.  When used in
+3 5 a glob qualifier, any substitutions or expansions are performed once at
+3 5 the time the qualifier is parsed, even before the ‘:s' expression itself
+3 5 is divided into l and r sides.
+3 5 If the option HIST_SUBST_PATTERN is set, l is treated as a pattern of the
+3 5 usual form described in the section FILENAME GENERATION below.  This can
+3 5 be used in all the places where modifiers are available; note, however,
+3 5 that in globbing qualifiers parameter substitution has already taken
+3 5 place, so parameters in the replacement string should be quoted to ensure
+3 5 they are replaced at the correct time.  Note also that complicated
+3 5 patterns used in globbing qualifiers may need the extended glob qualifier
+3 5 notation (#q:s/.../.../) in order for the shell to recognize the
+3 5 expression as a glob qualifier.  Further, note that bad patterns in the
+3 5 substitution are not subject to the NO_BAD_PATTERN option so will cause an
+3 5 error.
+3 5 When HIST_SUBST_PATTERN is set, l may start with a # to indicate that the
+3 5 pattern must match at the start of the string to be substituted, and a %
+3 5 may appear at the start or after an # to indicate that the pattern must
+3 5 match at the end of the string to be substituted.  The % or # may be
+3 5 quoted with two backslashes.
+3 5 For example, the following piece of filename generation code with the
+3 5 EXTENDED_GLOB option:
+4 12 print -r -- *.c(#q:s/#%(#b)s(*).c/'S${match[1]}.C'/)
+3 5 takes the expansion of *.c and applies the glob qualifiers in the (#q...)
+3 5 expression, which consists of a substitution modifier anchored to the
+3 5 start and end of each word (#%).  This turns on backreferences ((#b)), so
+3 5 that the parenthesised subexpression is available in the replacement
+3 5 string as ${match[1]}.  The replacement string is quoted so that the
+3 5 parameter is not substituted before the start of filename generation.
+3 5 The following f, F, w and W modifiers work only with parameter expansion
+3 5 and filename generation.  They are listed here to provide a single point
+3 5 of reference for all modifiers.
+3 5 f      Repeats the immediately (without a colon) following modifier until
+4 12 the resulting word doesn't change any more.
+3 5 F:expr:
+4 12 Like f, but repeats only n times if the expression expr evaluates
+4 12 to n.  Any character can be used instead of the ‘:'; if ‘(', ‘[',
+4 12 or ‘{' is used as the opening delimiter, the closing delimiter
+4 12 should be ')', ‘]', or ‘}', respectively.
+3 5 w      Makes the immediately following modifier work on each word in the
+4 12 string.
+3 5 W:sep:
+4 12 Like w but words are considered to be the parts of the string that
+4 12 are separated by sep. Any character can be used instead of the ‘:';
+4 12 opening parentheses are handled specially, see above.
+1 0 PROCESS SUBSTITUTION
+3 5 Each part of a command argument that takes the form ‘<(list)', ‘>(list)'
+3 5 or ‘=(list)' is subject to process substitution.  The expression may be
+3 5 preceded or followed by other strings except that, to prevent clashes with
+3 5 commonly occurring strings and patterns, the last form must occur at the
+3 5 start of a command argument, and the forms are only expanded when first
+3 5 parsing command or assignment arguments.  Process substitutions may be
+3 5 used following redirection operators; in this case, the substitution must
+3 5 appear with no trailing string.
+3 5 Note that ‘<<(list)' is not a special syntax; it is equivalent to ‘<
+3 5 <(list)', redirecting standard input from the result of process
+3 5 substitution.  Hence all the following documentation applies.  The second
+3 5 form (with the space) is recommended for clarity.
+3 5 In the case of the < or > forms, the shell runs the commands in list as a
+3 5 subprocess of the job executing the shell command line.  If the system
+3 5 supports the /dev/fd mechanism, the command argument is the name of the
+3 5 device file corresponding to a file descriptor; otherwise, if the system
+3 5 supports named pipes (FIFOs), the command argument will be a named pipe.
+3 5 If the form with > is selected then writing on this special file will
+3 5 provide input for list.  If < is used, then the file passed as an argument
+3 5 will be connected to the output of the list process.  For example,
+4 12 paste <(cut -f1 file1) <(cut -f3 file2) |
+4 12 tee >(process1) >(process2) >/dev/null
+3 5 cuts fields 1 and 3 from the files file1 and file2 respectively, pastes
+3 5 the results together, and sends it to the processes process1 and process2.
+3 5 If =(...) is used instead of <(...), then the file passed as an argument
+3 5 will be the name of a temporary file containing the output of the list
+3 5 process.  This may be used instead of the < form for a program that
+3 5 expects to lseek (see lseek(2)) on the input file.
+3 5 There is an optimisation for substitutions of the form =(<<<arg), where
+3 5 arg is a single-word argument to the here-string redirection <<<.  This
+3 5 form produces a file name containing the value of arg after any
+3 5 substitutions have been performed.  This is handled entirely within the
+3 5 current shell.  This is effectively the reverse of the special form
+3 5 $(<arg) which treats arg as a file name and replaces it with the file's
+3 5 contents.
+3 5 The = form is useful as both the /dev/fd and the named pipe implementation
+3 5 of <(...) have drawbacks.  In the former case, some programmes may
+3 5 automatically close the file descriptor in question before examining the
+3 5 file on the command line, particularly if this is necessary for security
+3 5 reasons such as when the programme is running setuid.  In the second case,
+3 5 if the programme does not actually open the file, the subshell attempting
+3 5 to read from or write to the pipe will (in a typical implementation,
+3 5 different operating systems may have different behaviour) block for ever
+3 5 and have to be killed explicitly.  In both cases, the shell actually
+3 5 supplies the information using a pipe, so that programmes that expect to
+3 5 lseek (see lseek(2)) on the file will not work.
+3 5 Also note that the previous example can be more compactly and efficiently
+3 5 written (provided the MULTIOS option is set) as:
+4 12 paste <(cut -f1 file1) <(cut -f3 file2) > >(process1) > >(process2)
+3 5 The shell uses pipes instead of FIFOs to implement the latter two process
+3 5 substitutions in the above example.
+3 5 There is an additional problem with >(process); when this is attached to
+3 5 an external command, the parent shell does not wait for process to finish
+3 5 and hence an immediately following command cannot rely on the results
+3 5 being complete.  The problem and solution are the same as described in the
+3 5 section MULTIOS in zshmisc(1).  Hence in a simplified version of the
+3 5 example above:
+4 12 paste <(cut -f1 file1) <(cut -f3 file2) > >(process)
+3 5 (note that no MULTIOS are involved), process will be run asynchronously as
+3 5 far as the parent shell is concerned.  The workaround is:
+4 12 { paste <(cut -f1 file1) <(cut -f3 file2) } > >(process)
+3 5 The extra processes here are spawned from the parent shell which will wait
+3 5 for their completion.
+3 5 Another problem arises any time a job with a substitution that requires a
+3 5 temporary file is disowned by the shell, including the case where ‘&!' or
+3 5 ‘&|' appears at the end of a command containing a substitution.  In that
+3 5 case the temporary file will not be cleaned up as the shell no longer has
+3 5 any memory of the job.  A workaround is to use a subshell, for example,
+4 12 (mycmd =(myoutput)) &!
+3 5 as the forked subshell will wait for the command to finish then remove the
+3 5 temporary file.
+3 5 A general workaround to ensure a process substitution endures for an
+3 5 appropriate length of time is to pass it as a parameter to an anonymous
+3 5 shell function (a piece of shell code that is run immediately with
+3 5 function scope).  For example, this code:
+4 12 () {
+6 15 print File $1:
+6 15 cat $1
+4 12 } =(print This be the verse)
+3 5 outputs something resembling the following
+4 12 File /tmp/zsh6nU0kS:
+4 12 This be the verse
+3 5 The temporary file created by the process substitution will be deleted
+3 5 when the function exits.
+1 0 PARAMETER EXPANSION
+3 5 The character ‘$' is used to introduce parameter expansions.  See
+3 5 zshparam(1) for a description of parameters, including arrays, associative
+3 5 arrays, and subscript notation to access individual array elements.
+3 5 Note in particular the fact that words of unquoted parameters are not
+3 5 automatically split on whitespace unless the option SH_WORD_SPLIT is set;
+3 5 see references to this option below for more details.  This is an
+3 5 important difference from other shells.  However, as in other shells, null
+3 5 words are elided from unquoted parameters' expansions.
+3 5 With default options, after the assignments:
+4 12 array=("first word" "" "third word")
+4 12 scalar="only word"
+3 5 then $array substitutes two words, ‘first word' and ‘third word', and
+3 5 $scalar substitutes a single word ‘only word'.  Note that second element
+3 5 of array was elided.  Scalar parameters can be elided too if their value
+3 5 is null (empty).  To avoid elision, use quoting as follows: "$scalar" for
+3 5 scalars and "${array[@]}" or "${(@)array}" for arrays.  (The last two
+3 5 forms are equivalent.)
+3 5 Parameter expansions can involve flags, as in ‘${(@kv)aliases}', and other
+3 5 operators, such as ‘${PREFIX:-"/usr/local"}'.  Parameter expansions can
+3 5 also be nested.  These topics will be introduced below.  The full rules
+3 5 are complicated and are noted at the end.
+3 5 In the expansions discussed below that require a pattern, the form of the
+3 5 pattern is the same as that used for filename generation; see the section
+3 5 ‘Filename Generation'.  Note that these patterns, along with the
+3 5 replacement text of any substitutions, are themselves subject to parameter
+3 5 expansion, command substitution, and arithmetic expansion.  In addition to
+3 5 the following operations, the colon modifiers described in the section
+3 5 ‘Modifiers' in the section ‘History Expansion' can be applied:  for
+3 5 example, ${i:s/foo/bar/} performs string substitution on the expansion of
+3 5 parameter $i.
+3 5 In the following descriptions, ‘word' refers to a single word substituted
+3 5 on the command line, not necessarily a space delimited word.
+3 5 ${name}
+4 12 The value, if any, of the parameter name is substituted.  The
+4 12 braces are required if the expansion is to be followed by a letter,
+4 12 digit, or underscore that is not to be interpreted as part of name.
+4 12 In addition, more complicated forms of substitution usually require
+4 12 the braces to be present; exceptions, which only apply if the
+4 12 option KSH_ARRAYS is not set, are a single subscript or any colon
+4 12 modifiers appearing after the name, or any of the characters ‘^',
+4 12 ‘=', ‘~', ‘#' or ‘+' appearing before the name, all of which work
+4 12 with or without braces.
+4 12 If name is an array parameter, and the KSH_ARRAYS option is not
+4 12 set, then the value of each element of name is substituted, one
+4 12 element per word.  Otherwise, the expansion results in one word
+4 12 only; with KSH_ARRAYS, this is the first element of an array.  No
+4 12 field splitting is done on the result unless the SH_WORD_SPLIT
+4 12 option is set.  See also the flags = and s:string:.
+3 5 ${+name}
+4 12 If name is the name of a set parameter ‘1' is substituted,
+4 12 otherwise ‘0' is substituted.
+3 5 ${name-word}
+3 5 ${name:-word}
+4 12 If name is set, or in the second form is non-null, then substitute
+4 12 its value; otherwise substitute word.  In the second form name may
+4 12 be omitted, in which case word is always substituted.
+3 5 ${name+word}
+3 5 ${name:+word}
+4 12 If name is set, or in the second form is non-null, then substitute
+4 12 word; otherwise substitute nothing.
+3 5 ${name=word}
+3 5 ${name:=word}
+3 5 ${name::=word}
+4 12 In the first form, if name is unset then set it to word; in the
+4 12 second form, if name is unset or null then set it to word; and in
+4 12 the third form, unconditionally set name to word.  In all forms,
+4 12 the value of the parameter is then substituted.
+3 5 ${name?word}
+3 5 ${name:?word}
+4 12 In the first form, if name is set, or in the second form if name is
+4 12 both set and non-null, then substitute its value; otherwise, print
+4 12 word and exit from the shell.  Interactive shells instead return to
+4 12 the prompt.  If word is omitted, then a standard message is
+4 12 printed.  Note that word is expanded even though its value is not
+4 12 substituted onto the command line.
+3 5 In any of the above expressions that test a variable and substitute an
+3 5 alternate word, note that you can use standard shell quoting in the word
+3 5 value to selectively override the splitting done by the SH_WORD_SPLIT
+3 5 option and the = flag, but not splitting by the s:string: flag.
+3 5 In the following expressions, when name is an array and the substitution
+3 5 is not quoted, or if the ‘(@)' flag or the name[@] syntax is used,
+3 5 matching and replacement is performed on each array element separately.
+3 5 ${name#pattern}
+3 5 ${name##pattern}
+4 12 If the pattern matches the beginning of the value of name, then
+4 12 substitute the value of name with the matched portion deleted;
+4 12 otherwise, just substitute the value of name.  In the first form,
+4 12 the smallest matching pattern is preferred; in the second form, the
+4 12 largest matching pattern is preferred.
+3 5 ${name%pattern}
+3 5 ${name%%pattern}
+4 12 If the pattern matches the end of the value of name, then
+4 12 substitute the value of name with the matched portion deleted;
+4 12 otherwise, just substitute the value of name.  In the first form,
+4 12 the smallest matching pattern is preferred; in the second form, the
+4 12 largest matching pattern is preferred.
+3 5 ${name:#pattern}
+4 12 If the pattern matches the value of name, then substitute the empty
+4 12 string; otherwise, just substitute the value of name.  If name is
+4 12 an array the matching array elements are removed (use the ‘(M)'
+4 12 flag to remove the non-matched elements).
+3 5 ${name:|arrayname}
+4 12 If arrayname is the name (N.B., not contents) of an array variable,
+4 12 then any elements contained in arrayname are removed from the
+4 12 substitution of name.  If the substitution is scalar, either
+4 12 because name is a scalar variable or the expression is quoted, the
+4 12 elements of arrayname are instead tested against the entire
+4 12 expression.
+3 5 ${name:*arrayname}
+4 12 Similar to the preceding substitution, but in the opposite sense,
+4 12 so that entries present in both the original substitution and as
+4 12 elements of arrayname are retained and others removed.
+3 5 ${name:^arrayname}
+3 5 ${name:^^arrayname}
+4 12 Zips two arrays, such that the output array is twice as long as the
+4 12 shortest (longest for ‘:^^') of name and arrayname, with the
+4 12 elements alternatingly being picked from them. For ‘:^', if one of
+4 12 the input arrays is longer, the output will stop when the end of
+4 12 the shorter array is reached.  Thus,
+9 19 a=(1 2 3 4); b=(a b); print ${a:^b}
+4 12 will output ‘1 a 2 b'.  For ‘:^^', then the input is repeated until
+4 12 all of the longer array has been used up and the above will output
+4 12 ‘1 a 2 b 3 a 4 b'.
+4 12 Either or both inputs may be a scalar, they will be treated as an
+4 12 array of length 1 with the scalar as the only element. If either
+4 12 array is empty, the other array is output with no extra elements
+4 12 inserted.
+4 12 Currently the following code will output ‘a b' and ‘1' as two
+4 12 separate elements, which can be unexpected. The second print
+4 12 provides a workaround which should continue to work if this is
+4 12 changed.
+9 19 a=(a b); b=(1 2); print -l "${a:^b}"; print -l "${${a:^b}}"
+3 5 ${name:offset}
+3 5 ${name:offset:length}
+4 12 This syntax gives effects similar to parameter subscripting in the
+4 12 form $name[start,end], but is compatible with other shells; note
+4 12 that both offset and length are interpreted differently from the
+4 12 components of a subscript.
+4 12 If offset is non-negative, then if the variable name is a scalar
+4 12 substitute the contents starting offset characters from the first
+4 12 character of the string, and if name is an array substitute
+4 12 elements starting offset elements from the first element.  If
+4 12 length is given, substitute that many characters or elements,
+4 12 otherwise the entire rest of the scalar or array.
+4 12 A positive offset is always treated as the offset of a character or
+4 12 element in name from the first character or element of the array
+4 12 (this is different from native zsh subscript notation).  Hence 0
+4 12 refers to the first character or element regardless of the setting
+4 12 of the option KSH_ARRAYS.
+4 12 A negative offset counts backwards from the end of the scalar or
+4 12 array, so that -1 corresponds to the last character or element, and
+4 12 so on.
+4 12 When positive, length counts from the offset position toward the
+4 12 end of the scalar or array.  When negative, length counts back from
+4 12 the end.  If this results in a position smaller than offset, a
+4 12 diagnostic is printed and nothing is substituted.
+4 12 The option MULTIBYTE is obeyed, i.e. the offset and length count
+4 12 multibyte characters where appropriate.
+4 12 offset and length undergo the same set of shell substitutions as
+4 12 for scalar assignment; in addition, they are then subject to
+4 12 arithmetic evaluation.  Hence, for example
+9 19 print ${foo:3}
+9 19 print ${foo: 1 + 2}
+9 19 print ${foo:$(( 1 + 2))}
+9 19 print ${foo:$(echo 1 + 2)}
+4 12 all have the same effect, extracting the string starting at the
+4 12 fourth character of $foo if the substitution would otherwise return
+4 12 a scalar, or the array starting at the fourth element if $foo would
+4 12 return an array.  Note that with the option KSH_ARRAYS $foo always
+4 12 returns a scalar (regardless of the use of the offset syntax) and a
+4 12 form such as ${foo[*]:3} is required to extract elements of an
+4 12 array named foo.
+4 12 If offset is negative, the - may not appear immediately after the :
+4 12 as this indicates the ${name:-word} form of substitution.  Instead,
+4 12 a space may be inserted before the -.  Furthermore, neither offset
+4 12 nor length may begin with an alphabetic character or & as these are
+4 12 used to indicate history-style modifiers.  To substitute a value
+4 12 from a variable, the recommended approach is to precede it with a $
+4 12 as this signifies the intention (parameter substitution can easily
+4 12 be rendered unreadable); however, as arithmetic substitution is
+4 12 performed, the expression ${var: offs} does work, retrieving the
+4 12 offset from $offs.
+4 12 For further compatibility with other shells there is a special case
+4 12 for array offset 0.  This usually accesses the first element of the
+4 12 array.  However, if the substitution refers to the positional
+4 12 parameter array, e.g. $@ or $*, then offset 0 instead refers to $0,
+4 12 offset 1 refers to $1, and so on.  In other words, the positional
+4 12 parameter array is effectively extended by prepending $0.  Hence
+4 12 ${*:0:1} substitutes $0 and ${*:1:1} substitutes $1.
+3 5 ${name/pattern/repl}
+3 5 ${name//pattern/repl}
+3 5 ${name:/pattern/repl}
+4 12 Replace the longest possible match of pattern in the expansion of
+4 12 parameter name by string repl.  The first form replaces just the
+4 12 first occurrence, the second form all occurrences, and the third
+4 12 form replaces only if pattern matches the entire string.  Both
+4 12 pattern and repl are subject to double-quoted substitution, so that
+4 12 expressions like ${name/$opat/$npat} will work, but obey the usual
+4 12 rule that pattern characters in $opat are not treated specially
+4 12 unless either the option GLOB_SUBST is set, or $opat is instead
+4 12 substituted as ${~opat}.
+4 12 The pattern may begin with a ‘#', in which case the pattern must
+4 12 match at the start of the string, or ‘%', in which case it must
+4 12 match at the end of the string, or ‘#%' in which case the pattern
+4 12 must match the entire string.  The repl may be an empty string, in
+4 12 which case the final ‘/' may also be omitted.  To quote the final
+4 12 ‘/' in other cases it should be preceded by a single backslash;
+4 12 this is not necessary if the ‘/' occurs inside a substituted
+4 12 parameter.  Note also that the ‘#', ‘%' and ‘#% are not active if
+4 12 they occur inside a substituted parameter, even at the start.
+4 12 If, after quoting rules apply, ${name} expands to an array, the
+4 12 replacements act on each element individually.  Note also the
+4 12 effect of the I and S parameter expansion flags below; however, the
+4 12 flags M, R, B, E and N are not useful.
+4 12 For example,
+9 19 foo="twinkle twinkle little star" sub="t*e" rep="spy"
+9 19 print ${foo//${~sub}/$rep}
+9 19 print ${(S)foo//${~sub}/$rep}
+4 12 Here, the ‘~' ensures that the text of $sub is treated as a pattern
+4 12 rather than a plain string.  In the first case, the longest match
+4 12 for t*e is substituted and the result is ‘spy star', while in the
+4 12 second case, the shortest matches are taken and the result is ‘spy
+4 12 spy lispy star'.
+3 5 ${#spec}
+4 12 If spec is one of the above substitutions, substitute the length in
+4 12 characters of the result instead of the result itself.  If spec is
+4 12 an array expression, substitute the number of elements of the
+4 12 result.  This has the side-effect that joining is skipped even in
+4 12 quoted forms, which may affect other sub-expressions in spec.  Note
+4 12 that ‘^', ‘=', and ‘~', below, must appear to the left of ‘#' when
+4 12 these forms are combined.
+4 12 If the option POSIX_IDENTIFIERS is not set, and spec is a simple
+4 12 name, then the braces are optional; this is true even for special
+4 12 parameters so e.g. $#- and $#* take the length of the string $- and
+4 12 the array $* respectively.  If POSIX_IDENTIFIERS is set, then
+4 12 braces are required for the # to be treated in this fashion.
+3 5 ${^spec}
+3 5 ${^^spec}
+4 12 Turn on the RC_EXPAND_PARAM option for the evaluation of spec; if
+4 12 the ‘^' is doubled, turn it off.  When this option is set, array
+4 12 expansions of the form foo${xx}bar, where the parameter xx is set
+4 12 to (a b c), are substituted with ‘fooabar foobbar foocbar' instead
+4 12 of the default ‘fooa b cbar'.  Note that an empty array will
+4 12 therefore cause all arguments to be removed.
+4 12 Internally, each such expansion is converted into the equivalent
+4 12 list for brace expansion.  E.g., ${^var} becomes
+4 12 {$var[1],$var[2],...}, and is processed as described in the section
+4 12 ‘Brace Expansion' below: note, however, the expansion happens
+4 12 immediately, with any explicit brace expansion happening later.  If
+4 12 word splitting is also in effect the $var[N] may themselves be
+4 12 split into different list elements.
+3 5 ${=spec}
+3 5 ${==spec}
+4 12 Perform word splitting using the rules for SH_WORD_SPLIT during the
+4 12 evaluation of spec, but regardless of whether the parameter appears
+4 12 in double quotes; if the ‘=' is doubled, turn it off.  This forces
+4 12 parameter expansions to be split into separate words before
+4 12 substitution, using IFS as a delimiter.  This is done by default in
+4 12 most other shells.
+4 12 Note that splitting is applied to word in the assignment forms of
+4 12 spec before the assignment to name is performed.  This affects the
+4 12 result of array assignments with the A flag.
+3 5 ${~spec}
+3 5 ${~~spec}
+4 12 Turn on the GLOB_SUBST option for the evaluation of spec; if the
+4 12 ‘~' is doubled, turn it off.  When this option is set, the string
+4 12 resulting from the expansion will be interpreted as a pattern
+4 12 anywhere that is possible, such as in filename expansion and
+4 12 filename generation and pattern-matching contexts like the right
+4 12 hand side of the ‘=' and ‘!=' operators in conditions.
+4 12 In nested substitutions, note that the effect of the ~ applies to
+4 12 the result of the current level of substitution.  A surrounding
+4 12 pattern operation on the result may cancel it.  Hence, for example,
+4 12 if the parameter foo is set to *, ${~foo//\*/*.c} is substituted by
+4 12 the pattern *.c, which may be expanded by filename generation, but
+4 12 ${${~foo}//\*/*.c} substitutes to the string *.c, which will not be
+4 12 further expanded.
+3 5 If a ${...} type parameter expression or a $(...) type command
+3 5 substitution is used in place of name above, it is expanded first and the
+3 5 result is used as if it were the value of name.  Thus it is possible to
+3 5 perform nested operations:  ${${foo#head}%tail} substitutes the value of
+3 5 $foo with both ‘head' and ‘tail' deleted.  The form with $(...) is often
+3 5 useful in combination with the flags described next; see the examples
+3 5 below.  Each name or nested ${...} in a parameter expansion may also be
+3 5 followed by a subscript expression as described in Array Parameters in
+3 5 zshparam(1).
+3 5 Note that double quotes may appear around nested expressions, in which
+3 5 case only the part inside is treated as quoted; for example,
+3 5 ${(f)"$(foo)"} quotes the result of $(foo), but the flag ‘(f)' (see below)
+3 5 is applied using the rules for unquoted expansions.  Note further that
+3 5 quotes are themselves nested in this context; for example, in
+3 5 "${(@f)"$(foo)"}", there are two sets of quotes, one surrounding the whole
+3 5 expression, the other (redundant) surrounding the $(foo) as before.
+2 3 Parameter Expansion Flags
+3 5 If the opening brace is directly followed by an opening parenthesis, the
+3 5 string up to the matching closing parenthesis will be taken as a list of
+3 5 flags.  In cases where repeating a flag is meaningful, the repetitions
+3 5 need not be consecutive; for example, ‘(q%q%q)' means the same thing as
+3 5 the more readable ‘(%%qqq)'.  The following flags are supported:
+3 5 #      Evaluate the resulting words as numeric expressions and interpret
+4 12 these as character codes.  Output the corresponding characters.
+4 12 Note that this form is entirely distinct from use of the # without
+4 12 parentheses.
+4 12 If the MULTIBYTE option is set and the number is greater than 127
+4 12 (i.e. not an ASCII character) it is treated as a Unicode character.
+3 5 %      Expand all % escapes in the resulting words in the same way as in
+4 12 prompts (see EXPANSION OF PROMPT SEQUENCES in zshmisc(1)). If this
+4 12 flag is given twice, full prompt expansion is done on the resulting
+4 12 words, depending on the setting of the PROMPT_PERCENT, PROMPT_SUBST
+4 12 and PROMPT_BANG options.
+3 5 @      In double quotes, array elements are put into separate words.
+4 12 E.g., ‘"${(@)foo}"' is equivalent to ‘"${foo[@]}"' and
+4 12 ‘"${(@)foo[1,2]}"' is the same as ‘"$foo[1]" "$foo[2]"'.  This is
+4 12 distinct from field splitting by the f, s or z flags, which still
+4 12 applies within each array element.
+3 5 A      Convert the substitution into an array expression, even if it
+4 12 otherwise would be scalar.  This has lower precedence than
+4 12 subscripting, so one level of nested expansion is required in order
+4 12 that subscripts apply to array elements.  Thus ${${(A)name}[1]}
+4 12 yields the full value of name when name is scalar.
+4 12 This assigns an array parameter with ‘${...=...}', ‘${...:=...}' or
+4 12 ‘${...::=...}'.  If this flag is repeated (as in ‘AA'), assigns an
+4 12 associative array parameter.  Assignment is made before sorting or
+4 12 padding; if field splitting is active, the word part is split
+4 12 before assignment.  The name part may be a subscripted range for
+4 12 ordinary arrays; when assigning an associative array, the word part
+4 12 must be converted to an array, for example by using
+4 12 ‘${(AA)=name=...}' to activate field splitting.
+4 12 Surrounding context such as additional nesting or use of the value
+4 12 in a scalar assignment may cause the array to be joined back into a
+4 12 single string again.
+3 5 a      Sort in array index order; when combined with ‘O' sort in reverse
+4 12 array index order.  Note that ‘a' is therefore equivalent to the
+4 12 default but ‘Oa' is useful for obtaining an array's elements in
+4 12 reverse order.
+3 5 b      Quote with backslashes only characters that are special to pattern
+4 12 matching. This is useful when the contents of the variable are to
+4 12 be tested using GLOB_SUBST, including the ${~...} switch.
+4 12 Quoting using one of the q family of flags does not work for this
+4 12 purpose since quotes are not stripped from non-pattern characters
+4 12 by GLOB_SUBST.  In other words,
+9 19 pattern=${(q)str}
+9 19 [[ $str = ${~pattern} ]]
+4 12 works if $str is ‘a*b' but not if it is ‘a b', whereas
+9 19 pattern=${(b)str}
+9 19 [[ $str = ${~pattern} ]]
+4 12 is always true for any possible value of $str.
+3 5 c      With ${#name}, count the total number of characters in an array, as
+4 12 if the elements were concatenated with spaces between them.  This
+4 12 is not a true join of the array, so other expressions used with
+4 12 this flag may have an effect on the elements of the array before it
+4 12 is counted.
+3 5 C      Capitalize the resulting words.  ‘Words' in this case refers to
+4 12 sequences of alphanumeric characters separated by
+4 12 non-alphanumerics, not to words that result from field splitting.
+3 5 D      Assume the string or array elements contain directories and attempt
+4 12 to substitute the leading part of these by names.  The remainder of
+4 12 the path (the whole of it if the leading part was not substituted)
+4 12 is then quoted so that the whole string can be used as a shell
+4 12 argument.  This is the reverse of ‘~' substitution:  see the
+4 12 section FILENAME EXPANSION below.
+3 5 e      Perform single word shell expansions, namely parameter expansion,
+4 12 command substitution and arithmetic expansion, on the result. Such
+4 12 expansions can be nested but too deep recursion may have
+4 12 unpredictable effects.
+3 5 f      Split the result of the expansion at newlines. This is a shorthand
+4 12 for ‘ps:\n:'.
+3 5 F      Join the words of arrays together using newline as a separator.
+4 12 This is a shorthand for ‘pj:\n:'.
+3 5 g:opts:
+4 12 Process escape sequences like the echo builtin when no options are
+4 12 given (g::).  With the o option, octal escapes don't take a leading
+4 12 zero.  With the c option, sequences like ‘^X' are also processed.
+4 12 With the e option, processes ‘\M-t' and similar sequences like the
+4 12 print builtin.  With both of the o and e options, behaves like the
+4 12 print builtin except that in none of these modes is ‘\c'
+4 12 interpreted.
+3 5 i      Sort case-insensitively.  May be combined with ‘n' or ‘O'.
+3 5 k      If name refers to an associative array, substitute the keys
+4 12 (element names) rather than the values of the elements.  Used with
+4 12 subscripts (including ordinary arrays), force indices or keys to be
+4 12 substituted even if the subscript form refers to values.  However,
+4 12 this flag may not be combined with subscript ranges.  With the
+4 12 KSH_ARRAYS option a subscript ‘[*]' or ‘[@]' is needed to operate
+4 12 on the whole array, as usual.
+3 5 L      Convert all letters in the result to lower case.
+3 5 n      Sort decimal integers numerically; if the first differing
+4 12 characters of two test strings are not digits, sorting is lexical.
+4 12 ‘+' and ‘-' are not treated specially; they are treated as any
+4 12 other non-digit.  Integers with more initial zeroes are sorted
+4 12 before those with fewer or none.  Hence the array ‘foo+24 foo1
+4 12 foo02 foo2 foo3 foo20 foo23' is sorted into the order shown.  May
+4 12 be combined with ‘i' or ‘O'.
+3 5 -      As n, but a leading minus sign indicates a negative decimal
+4 12 integer.  A leading minus sign not followed by an integer does not
+4 12 trigger numeric sorting.  Note that ‘+' signs are not handled
+4 12 specially (this may change in the future).
+3 5 o      Sort the resulting words in ascending order; if this appears on its
+4 12 own the sorting is lexical and case-sensitive (unless the locale
+4 12 renders it case-insensitive).  Sorting in ascending order is the
+4 12 default for other forms of sorting, so this is ignored if combined
+4 12 with ‘a', ‘i', ‘n' or ‘-'.
+3 5 O      Sort the resulting words in descending order; ‘O' without ‘a', ‘i',
+4 12 ‘n' or ‘-' sorts in reverse lexical order.  May be combined with
+4 12 ‘a', ‘i', ‘n' or ‘-' to reverse the order of sorting.
+3 5 P      This forces the value of the parameter name to be interpreted as a
+4 12 further parameter name, whose value will be used where appropriate.
+4 12 Note that flags set with one of the typeset family of commands (in
+4 12 particular case transformations) are not applied to the value of
+4 12 name used in this fashion.
+4 12 If used with a nested parameter or command substitution, the result
+4 12 of that will be taken as a parameter name in the same way.  For
+4 12 example, if you have ‘foo=bar' and ‘bar=baz', the strings
+4 12 ${(P)foo}, ${(P)${foo}}, and ${(P)$(echo bar)} will be expanded to
+4 12 ‘baz'.
+4 12 Likewise, if the reference is itself nested, the expression with
+4 12 the flag is treated as if it were directly replaced by the
+4 12 parameter name.  It is an error if this nested substitution
+4 12 produces an array with more than one word.  For example, if
+4 12 ‘name=assoc' where the parameter assoc is an associative array,
+4 12 then ‘${${(P)name}[elt]}' refers to the element of the associative
+4 12 subscripted ‘elt'.
+3 5 q      Quote characters that are special to the shell in the resulting
+4 12 words with backslashes; unprintable or invalid characters are
+4 12 quoted using the $'\NNN' form, with separate quotes for each octet.
+4 12 If this flag is given twice, the resulting words are quoted in
+4 12 single quotes and if it is given three times, the words are quoted
+4 12 in double quotes; in these forms no special handling of unprintable
+4 12 or invalid characters is attempted.  If the flag is given four
+4 12 times, the words are quoted in single quotes preceded by a $.  Note
+4 12 that in all three of these forms quoting is done unconditionally,
+4 12 even if this does not change the way the resulting string would be
+4 12 interpreted by the shell.
+4 12 If a q- is given (only a single q may appear), a minimal form of
+4 12 single quoting is used that only quotes the string if needed to
+4 12 protect special characters.  Typically this form gives the most
+4 12 readable output.
+4 12 If a q+ is given, an extended form of minimal quoting is used that
+4 12 causes unprintable characters to be rendered using $'...'.  This
+4 12 quoting is similar to that used by the output of values by the
+4 12 typeset family of commands.
+3 5 Q      Remove one level of quotes from the resulting words.
+3 5 t      Use a string describing the type of the parameter where the value
+4 12 of the parameter would usually appear. This string consists of
+4 12 keywords separated by hyphens (‘-'). The first keyword in the
+4 12 string describes the main type, it can be one of ‘scalar', ‘array',
+4 12 ‘integer', ‘float' or ‘association'. The other keywords describe
+4 12 the type in more detail:
+4 12 local  for local parameters
+4 12 left   for left justified parameters
+4 12 right_blanks
+9 19 for right justified parameters with leading blanks
+4 12 right_zeros
+9 19 for right justified parameters with leading zeros
+4 12 lower  for parameters whose value is converted to all lower case
+9 19 when it is expanded
+4 12 upper  for parameters whose value is converted to all upper case
+9 19 when it is expanded
+4 12 readonly
+9 19 for readonly parameters
+4 12 tag    for tagged parameters
+4 12 tied   for parameters tied to another parameter in the manner of
+9 19 PATH (colon-separated list) and path (array), whether these
+9 19 are special parameters or user-defined with ‘typeset -T'
+4 12 export
+9 19 for exported parameters
+4 12 unique
+9 19 for arrays which keep only the first occurrence of
+9 19 duplicated values
+4 12 hide   for parameters with the ‘hide' flag
+4 12 hideval
+9 19 for parameters with the ‘hideval' flag
+4 12 special
+9 19 for special parameters defined by the shell
+3 5 u      Expand only the first occurrence of each unique word.
+3 5 U      Convert all letters in the result to upper case.
+3 5 v      Used with k, substitute (as two consecutive words) both the key and
+4 12 the value of each associative array element.  Used with subscripts,
+4 12 force values to be substituted even if the subscript form refers to
+4 12 indices or keys.
+3 5 V      Make any special characters in the resulting words visible.
+3 5 w      With ${#name}, count words in arrays or strings; the s flag may be
+4 12 used to set a word delimiter.
+3 5 W      Similar to w with the difference that empty words between repeated
+4 12 delimiters are also counted.
+3 5 X      With this flag, parsing errors occurring with the Q, e and # flags
+4 12 or the pattern matching forms such as ‘${name#pattern}' are
+4 12 reported.  Without the flag, errors are silently ignored.
+3 5 z      Split the result of the expansion into words using shell parsing to
+4 12 find the words, i.e. taking into account any quoting in the value.
+4 12 Comments are not treated specially but as ordinary strings, similar
+4 12 to interactive shells with the INTERACTIVE_COMMENTS option unset
+4 12 (however, see the Z flag below for related options)
+4 12 Note that this is done very late, even later than the ‘(s)' flag.
+4 12 So to access single words in the result use nested expansions as in
+4 12 ‘${${(z)foo}[2]}'. Likewise, to remove the quotes in the resulting
+4 12 words use ‘${(Q)${(z)foo}}'.
+3 5 0      Split the result of the expansion on null bytes.  This is a
+4 12 shorthand for ‘ps:\0:'.
+3 5 The following flags (except p) are followed by one or more arguments as
+3 5 shown.  Any character, or the matching pairs ‘(...)', ‘{...}', ‘[...]', or
+3 5 ‘<...>', may be used in place of a colon as delimiters, but note that when
+3 5 a flag takes more than one argument, a matched pair of delimiters must
+3 5 surround each argument.
+3 5 p      Recognize the same escape sequences as the print builtin in string
+4 12 arguments to any of the flags described below that follow this
+4 12 argument.
+4 12 Alternatively, with this option string arguments may be in the form
+4 12 $var in which case the value of the variable is substituted.  Note
+4 12 this form is strict; the string argument does not undergo general
+4 12 parameter expansion.
+4 12 For example,
+9 19 sep=:
+9 19 val=a:b:c
+9 19 print ${(ps.$sep.)val}
+4 12 splits the variable on a :.
+3 5 ~      Strings inserted into the expansion by any of the flags below are
+4 12 to be treated as patterns.  This applies to the string arguments of
+4 12 flags that follow ~ within the same set of parentheses.  Compare
+4 12 with ~ outside parentheses, which forces the entire substituted
+4 12 string to be treated as a pattern.  Hence, for example,
+9 19 [[ "?" = ${(~j.|.)array} ]]
+4 12 treats ‘|' as a pattern and succeeds if and only if $array contains
+4 12 the string ‘?' as an element.  The ~ may be repeated to toggle the
+4 12 behaviour; its effect only lasts to the end of the parenthesised
+4 12 group.
+3 5 j:string:
+4 12 Join the words of arrays together using string as a separator.
+4 12 Note that this occurs before field splitting by the s:string: flag
+4 12 or the SH_WORD_SPLIT option.
+3 5 l:expr::string1::string2:
+4 12 Pad the resulting words on the left.  Each word will be truncated
+4 12 if required and placed in a field expr characters wide.
+4 12 The arguments :string1: and :string2: are optional; neither, the
+4 12 first, or both may be given.  Note that the same pairs of
+4 12 delimiters must be used for each of the three arguments.  The space
+4 12 to the left will be filled with string1 (concatenated as often as
+4 12 needed) or spaces if string1 is not given.  If both string1 and
+4 12 string2 are given, string2 is inserted once directly to the left of
+4 12 each word, truncated if necessary, before string1 is used to
+4 12 produce any remaining padding.
+4 12 If either of string1 or string2 is present but empty, i.e. there
+4 12 are two delimiters together at that point, the first character of
+4 12 $IFS is used instead.
+4 12 If the MULTIBYTE option is in effect, the flag m may also be given,
+4 12 in which case widths will be used for the calculation of padding;
+4 12 otherwise individual multibyte characters are treated as occupying
+4 12 one unit of width.
+4 12 If the MULTIBYTE option is not in effect, each byte in the string
+4 12 is treated as occupying one unit of width.
+4 12 Control characters are always assumed to be one unit wide; this
+4 12 allows the mechanism to be used for generating repetitions of
+4 12 control characters.
+3 5 m      Only useful together with one of the flags l or r or with the #
+4 12 length operator when the MULTIBYTE option is in effect.  Use the
+4 12 character width reported by the system in calculating how much of
+4 12 the string it occupies or the overall length of the string.  Most
+4 12 printable characters have a width of one unit, however certain
+4 12 Asian character sets and certain special effects use wider
+4 12 characters; combining characters have zero width.  Non-printable
+4 12 characters are arbitrarily counted as zero width; how they would
+4 12 actually be displayed will vary.
+4 12 If the m is repeated, the character either counts zero (if it has
+4 12 zero width), else one.  For printable character strings this has
+4 12 the effect of counting the number of glyphs (visibly separate
+4 12 characters), except for the case where combining characters
+4 12 themselves have non-zero width (true in certain alphabets).
+3 5 r:expr::string1::string2:
+4 12 As l, but pad the words on the right and insert string2 immediately
+4 12 to the right of the string to be padded.
+4 12 Left and right padding may be used together.  In this case the
+4 12 strategy is to apply left padding to the first half width of each
+4 12 of the resulting words, and right padding to the second half.  If
+4 12 the string to be padded has odd width the extra padding is applied
+4 12 on the left.
+3 5 s:string:
+4 12 Force field splitting at the separator string.  Note that a string
+4 12 of two or more characters means that all of them must match in
+4 12 sequence; this differs from the treatment of two or more characters
+4 12 in the IFS parameter.  See also the = flag and the SH_WORD_SPLIT
+4 12 option.  An empty string may also be given in which case every
+4 12 character will be a separate element.
+4 12 For historical reasons, the usual behaviour that empty array
+4 12 elements are retained inside double quotes is disabled for arrays
+4 12 generated by splitting; hence the following:
+9 19 line="one::three"
+9 19 print -l "${(s.:.)line}"
+4 12 produces two lines of output for one and three and elides the empty
+4 12 field.  To override this behaviour, supply the ‘(@)' flag as well,
+4 12 i.e.  "${(@s.:.)line}".
+3 5 Z:opts:
+4 12 As z but takes a combination of option letters between a following
+4 12 pair of delimiter characters.  With no options the effect is
+4 12 identical to z.  The following options are available:
+4 12 (Z+c+)
+9 19 causes comments to be parsed as a string and retained; any
+9 19 field in the resulting array beginning with an unquoted
+9 19 comment character is a comment.
+4 12 (Z+C+)
+9 19 causes comments to be parsed and removed.  The rule for
+9 19 comments is standard: anything between a word starting with
+9 19 the third character of $HISTCHARS, default #, up to the next
+9 19 newline is a comment.
+4 12 (Z+n+)
+9 19 causes unquoted newlines to be treated as ordinary
+9 19 whitespace, else they are treated as if they are shell code
+9 19 delimiters and converted to semicolons.
+4 12 Options are combined within the same set of delimiters, e.g.
+4 12 (Z+Cn+).
+3 5 _:flags:
+4 12 The underscore (_) flag is reserved for future use.  As of this
+4 12 revision of zsh, there are no valid flags; anything following an
+4 12 underscore, other than an empty pair of delimiters, is treated as
+4 12 an error, and the flag itself has no effect.
+3 5 The following flags are meaningful with the ${...#...} or ${...%...}
+3 5 forms.  The S, I, and * flags may also be used with the ${.../...} forms.
+3 5 S      With # or ##, search for the match that starts closest to the start
+4 12 of the string (a ‘substring match'). Of all matches at a particular
+4 12 position, # selects the shortest and ## the longest:
+9 19 % str="aXbXc"
+9 19 % echo ${(S)str#X*}
+9 19 abXc
+9 19 % echo ${(S)str##X*}
+9 19 a
+9 19 %
+4 12 With % or %%, search for the match that starts closest to the end
+4 12 of the string:
+9 19 % str="aXbXc"
+9 19 % echo ${(S)str%X*}
+9 19 aXbc
+9 19 % echo ${(S)str%%X*}
+9 19 aXb
+9 19 %
+4 12 (Note that % and %% don't search for the match that ends closest to
+4 12 the end of the string, as one might expect.)
+4 12 With substitution via ${.../...} or ${...//...}, specifies
+4 12 non-greedy matching, i.e. that the shortest instead of the longest
+4 12 match should be replaced:
+9 19 % str="abab"
+9 19 % echo ${str/*b/_}
+9 19 _
+9 19 % echo ${(S)str/*b/_}
+9 19 _ab
+9 19 %
+3 5 I:expr:
+4 12 Search the exprth match (where expr evaluates to a number).  This
+4 12 only applies when searching for substrings, either with the S flag,
+4 12 or with ${.../...} (only the exprth match is substituted) or
+4 12 ${...//...} (all matches from the exprth on are substituted).  The
+4 12 default is to take the first match.
+4 12 The exprth match is counted such that there is either one or zero
+4 12 matches from each starting position in the string, although for
+4 12 global substitution matches overlapping previous replacements are
+4 12 ignored.  With the ${...%...} and ${...%%...} forms, the starting
+4 12 position for the match moves backwards from the end as the index
+4 12 increases, while with the other forms it moves forward from the
+4 12 start.
+4 12 Hence with the string
+9 19 which switch is the right switch for Ipswich?
+4 12 substitutions of the form ${(SI:N:)string#w*ch} as N increases from
+4 12 1 will match and remove ‘which', ‘witch', ‘witch' and ‘wich'; the
+4 12 form using ‘##' will match and remove ‘which switch is the right
+4 12 switch for Ipswich', ‘witch is the right switch for Ipswich',
+4 12 ‘witch for Ipswich' and ‘wich'. The form using ‘%' will remove the
+4 12 same matches as for ‘#', but in reverse order, and the form using
+4 12 ‘%%' will remove the same matches as for ‘##' in reverse order.
+3 5 *      Enable EXTENDED_GLOB for substitution via ${.../...} or
+4 12 ${...//...}.  Note that ‘**' does not disable extendedglob.
+3 5 B      Include the index of the beginning of the match in the result.
+3 5 E      Include the index one character past the end of the match in the
+4 12 result (note this is inconsistent with other uses of parameter
+4 12 index).
+3 5 M      Include the matched portion in the result.
+3 5 N      Include the length of the match in the result.
+3 5 R      Include the unmatched portion in the result (the Rest).
+2 3 Rules
+3 5 Here is a summary of the rules for substitution; this assumes that braces
+3 5 are present around the substitution, i.e. ${...}.  Some particular
+3 5 examples are given below.  Note that the Zsh Development Group accepts no
+3 5 responsibility for any brain damage which may occur during the reading of
+3 5 the following rules.
+3 5 1. Nested substitution
+4 12 If multiple nested ${...} forms are present, substitution is
+4 12 performed from the inside outwards.  At each level, the
+4 12 substitution takes account of whether the current value is a scalar
+4 12 or an array, whether the whole substitution is in double quotes,
+4 12 and what flags are supplied to the current level of substitution,
+4 12 just as if the nested substitution were the outermost.  The flags
+4 12 are not propagated up to enclosing substitutions; the nested
+4 12 substitution will return either a scalar or an array as determined
+4 12 by the flags, possibly adjusted for quoting.  All the following
+4 12 steps take place where applicable at all levels of substitution.
+4 12 Note that, unless the ‘(P)' flag is present, the flags and any
+4 12 subscripts apply directly to the value of the nested substitution;
+4 12 for example, the expansion ${${foo}} behaves exactly the same as
+4 12 ${foo}.  When the ‘(P)' flag is present in a nested substitution,
+4 12 the other substitution rules are applied to the value before it is
+4 12 interpreted as a name, so ${${(P)foo}} may differ from ${(P)foo}.
+4 12 At each nested level of substitution, the substituted words undergo
+4 12 all forms of single-word substitution (i.e. not filename
+4 12 generation), including command substitution, arithmetic expansion
+4 12 and filename expansion (i.e. leading ~ and =).  Thus, for example,
+4 12 ${${:-=cat}:h} expands to the directory where the cat program
+4 12 resides.  (Explanation: the internal substitution has no parameter
+4 12 but a default value =cat, which is expanded by filename expansion
+4 12 to a full path; the outer substitution then applies the modifier :h
+4 12 and takes the directory part of the path.)
+3 5 2. Internal parameter flags
+4 12 Any parameter flags set by one of the typeset family of commands,
+4 12 in particular the -L, -R, -Z, -u and -l options for padding and
+4 12 capitalization, are applied directly to the parameter value.  Note
+4 12 these flags are options to the command, e.g. ‘typeset -Z'; they are
+4 12 not the same as the flags used within parameter substitutions.
+4 12 At the outermost level of substitution, the ‘(P)' flag (rule 4.)
+4 12 ignores these transformations and uses the unmodified value of the
+4 12 parameter as the name to be replaced.  This is usually the desired
+4 12 behavior because padding may make the value syntactically illegal
+4 12 as a parameter name, but if capitalization changes are desired, use
+4 12 the ${${(P)foo}} form (rule 25.).
+3 5 3. Parameter subscripting
+4 12 If the value is a raw parameter reference with a subscript, such as
+4 12 ${var[3]}, the effect of subscripting is applied directly to the
+4 12 parameter.  Subscripts are evaluated left to right; subsequent
+4 12 subscripts apply to the scalar or array value yielded by the
+4 12 previous subscript.  Thus if var is an array, ${var[1][2]} is the
+4 12 second character of the first word, but ${var[2,4][2]} is the
+4 12 entire third word (the second word of the range of words two
+4 12 through four of the original array).  Any number of subscripts may
+4 12 appear.  Flags such as ‘(k)' and ‘(v)' which alter the result of
+4 12 subscripting are applied.
+3 5 4. Parameter name replacement
+4 12 At the outermost level of nesting only, the ‘(P)' flag is applied.
+4 12 This treats the value so far as a parameter name (which may include
+4 12 a subscript expression) and replaces that with the corresponding
+4 12 value.  This replacement occurs later if the ‘(P)' flag appears in
+4 12 a nested substitution.
+4 12 If the value so far names a parameter that has internal flags (rule
+4 12 2.), those internal flags are applied to the new value after
+4 12 replacement.
+3 5 5. Double-quoted joining
+4 12 If the value after this process is an array, and the substitution
+4 12 appears in double quotes, and neither an ‘(@)' flag nor a ‘#'
+4 12 length operator is present at the current level, then words of the
+4 12 value are joined with the first character of the parameter $IFS, by
+4 12 default a space, between each word (single word arrays are not
+4 12 modified).  If the ‘(j)' flag is present, that is used for joining
+4 12 instead of $IFS.
+3 5 6. Nested subscripting
+4 12 Any remaining subscripts (i.e. of a nested substitution) are
+4 12 evaluated at this point, based on whether the value is an array or
+4 12 a scalar.  As with 3., multiple subscripts can appear.  Note that
+4 12 ${foo[2,4][2]} is thus equivalent to ${${foo[2,4]}[2]} and also to
+4 12 "${${(@)foo[2,4]}[2]}" (the nested substitution returns an array in
+4 12 both cases), but not to "${${foo[2,4]}[2]}" (the nested
+4 12 substitution returns a scalar because of the quotes).
+3 5 7. Modifiers
+4 12 Any modifiers, as specified by a trailing ‘#', ‘%', ‘/' (possibly
+4 12 doubled) or by a set of modifiers of the form ‘:...' (see the
+4 12 section ‘Modifiers' in the section ‘History Expansion'), are
+4 12 applied to the words of the value at this level.
+3 5 8. Character evaluation
+4 12 Any ‘(#)' flag is applied, evaluating the result so far numerically
+4 12 as a character.
+3 5 9. Length
+4 12 Any initial ‘#' modifier, i.e. in the form ${#var}, is used to
+4 12 evaluate the length of the expression so far.
+3 5 10. Forced joining
+4 12 If the ‘(j)' flag is present, or no ‘(j)' flag is present but the
+4 12 string is to be split as given by rule 11., and joining did not
+4 12 take place at rule 5., any words in the value are joined together
+4 12 using the given string or the first character of $IFS if none.
+4 12 Note that the ‘(F)' flag implicitly supplies a string for joining
+4 12 in this manner.
+3 5 11. Simple word splitting
+4 12 If one of the ‘(s)' or ‘(f)' flags are present, or the ‘='
+4 12 specifier was present (e.g. ${=var}), the word is split on
+4 12 occurrences of the specified string, or (for = with neither of the
+4 12 two flags present) any of the characters in $IFS.
+4 12 If no ‘(s)', ‘(f)' or ‘=' was given, but the word is not quoted and
+4 12 the option SH_WORD_SPLIT is set, the word is split on occurrences
+4 12 of any of the characters in $IFS.  Note this step, too, takes place
+4 12 at all levels of a nested substitution.
+3 5 12. Case modification
+4 12 Any case modification from one of the flags ‘(L)', ‘(U)' or ‘(C)'
+4 12 is applied.
+3 5 13. Escape sequence replacement
+4 12 First any replacements from the ‘(g)' flag are performed, then any
+4 12 prompt-style formatting from the ‘(%)' family of flags is applied.
+3 5 14. Quote application
+4 12 Any quoting or unquoting using ‘(q)' and ‘(Q)' and related flags is
+4 12 applied.
+3 5 15. Directory naming
+4 12 Any directory name substitution using ‘(D)' flag is applied.
+3 5 16. Visibility enhancement
+4 12 Any modifications to make characters visible using the ‘(V)' flag
+4 12 are applied.
+3 5 17. Lexical word splitting
+4 12 If the '(z)' flag or one of the forms of the '(Z)' flag is present,
+4 12 the word is split as if it were a shell command line, so that
+4 12 quotation marks and other metacharacters are used to decide what
+4 12 constitutes a word.  Note this form of splitting is entirely
+4 12 distinct from that described by rule 11.: it does not use $IFS, and
+4 12 does not cause forced joining.
+3 5 18. Uniqueness
+4 12 If the result is an array and the ‘(u)' flag was present, duplicate
+4 12 elements are removed from the array.
+3 5 19. Ordering
+4 12 If the result is still an array and one of the ‘(o)' or ‘(O)' flags
+4 12 was present, the array is reordered.
+3 5 20. RC_EXPAND_PARAM
+4 12 At this point the decision is made whether any resulting array
+4 12 elements are to be combined element by element with surrounding
+4 12 text, as given by either the RC_EXPAND_PARAM option or the ‘^'
+4 12 flag.
+3 5 21. Re-evaluation
+4 12 Any ‘(e)' flag is applied to the value, forcing it to be
+4 12 re-examined for new parameter substitutions, but also for command
+4 12 and arithmetic substitutions.
+3 5 22. Padding
+4 12 Any padding of the value by the ‘(l.fill.)' or ‘(r.fill.)' flags is
+4 12 applied.
+3 5 23. Semantic joining
+4 12 In contexts where expansion semantics requires a single word to
+4 12 result, all words are rejoined with the first character of IFS
+4 12 between.  So in ‘${(P)${(f)lines}}' the value of ${lines} is split
+4 12 at newlines, but then must be joined again before the ‘(P)' flag
+4 12 can be applied.
+4 12 If a single word is not required, this rule is skipped.
+3 5 24. Empty argument removal
+4 12 If the substitution does not appear in double quotes, any resulting
+4 12 zero-length argument, whether from a scalar or an element of an
+4 12 array, is elided from the list of arguments inserted into the
+4 12 command line.
+4 12 Strictly speaking, the removal happens later as the same happens
+4 12 with other forms of substitution; the point to note here is simply
+4 12 that it occurs after any of the above parameter operations.
+3 5 25. Nested parameter name replacement
+4 12 If the ‘(P)' flag is present and rule 4. has not applied, the value
+4 12 so far is treated as a parameter name (which may include a
+4 12 subscript expression) and replaced with the corresponding value,
+4 12 with internal flags (rule 2.) applied to the new value.
+2 3 Examples
+3 5 The flag f is useful to split a double-quoted substitution line by line.
+3 5 For example, ${(f)"$(<file)"} substitutes the contents of file divided so
+3 5 that each line is an element of the resulting array.  Compare this with
+3 5 the effect of $(<file) alone, which divides the file up by words, or the
+3 5 same inside double quotes, which makes the entire content of the file a
+3 5 single string.
+3 5 The following illustrates the rules for nested parameter expansions.
+3 5 Suppose that $foo contains the array (bar baz):
+3 5 "${(@)${foo}[1]}"
+4 12 This produces the result b.  First, the inner substitution
+4 12 "${foo}", which has no array (@) flag, produces a single word
+4 12 result "bar baz".  The outer substitution "${(@)...[1]}" detects
+4 12 that this is a scalar, so that (despite the ‘(@)' flag) the
+4 12 subscript picks the first character.
+3 5 "${${(@)foo}[1]}"
+4 12 This produces the result ‘bar'.  In this case, the inner
+4 12 substitution "${(@)foo}" produces the array ‘(bar baz)'.  The outer
+4 12 substitution "${...[1]}" detects that this is an array and picks
+4 12 the first word.  This is similar to the simple case "${foo[1]}".
+3 5 As an example of the rules for word splitting and joining, suppose $foo
+3 5 contains the array ‘(ax1 bx1)'.  Then
+3 5 ${(s/x/)foo}
+4 12 produces the words ‘a', ‘1 b' and ‘1'.
+3 5 ${(j/x/s/x/)foo}
+4 12 produces ‘a', ‘1', ‘b' and ‘1'.
+3 5 ${(s/x/)foo%%1*}
+4 12 produces ‘a' and ‘ b' (note the extra space).  As substitution
+4 12 occurs before either joining or splitting, the operation  first
+4 12 generates the modified array (ax bx), which is joined to give "ax
+4 12 bx", and then split to give ‘a', ‘ b' and ‘'.  The final empty
+4 12 string will then be elided, as it is not in double quotes.
+1 0 COMMAND SUBSTITUTION
+3 5 A command enclosed in parentheses preceded by a dollar sign, like
+3 5 ‘$(...)', or quoted with grave accents, like ‘‘...‘', is replaced with its
+3 5 standard output, with any trailing newlines deleted.  If the substitution
+3 5 is not enclosed in double quotes, the output is broken into words using
+3 5 the IFS parameter.
+3 5 The substitution ‘$(cat foo)' may be replaced by the faster ‘$(<foo)'.  In
+3 5 this case foo undergoes single word shell expansions (parameter expansion,
+3 5 command substitution and arithmetic expansion), but not filename
+3 5 generation.
+3 5 If the option GLOB_SUBST is set, the result of any unquoted command
+3 5 substitution, including the special form just mentioned, is eligible for
+3 5 filename generation.
+1 0 ARITHMETIC EXPANSION
+3 5 A string of the form ‘$[exp]' or ‘$((exp))' is substituted with the value
+3 5 of the arithmetic expression exp.  exp is subjected to parameter
+3 5 expansion, command substitution and arithmetic expansion before it is
+3 5 evaluated.  See the section ‘Arithmetic Evaluation'.
+1 0 BRACE EXPANSION
+3 5 A string of the form ‘foo{xx,yy,zz}bar' is expanded to the individual
+3 5 words ‘fooxxbar', ‘fooyybar' and ‘foozzbar'.  Left-to-right order is
+3 5 preserved.  This construct may be nested.  Commas may be quoted in order
+3 5 to include them literally in a word.
+3 5 An expression of the form ‘{n1..n2}', where n1 and n2 are integers, is
+3 5 expanded to every number between n1 and n2 inclusive.  If either number
+3 5 begins with a zero, all the resulting numbers will be padded with leading
+3 5 zeroes to that minimum width, but for negative numbers the - character is
+3 5 also included in the width.  If the numbers are in decreasing order the
+3 5 resulting sequence will also be in decreasing order.
+3 5 An expression of the form ‘{n1..n2..n3}', where n1, n2, and n3 are
+3 5 integers, is expanded as above, but only every n3th number starting from
+3 5 n1 is output.  If n3 is negative the numbers are output in reverse order,
+3 5 this is slightly different from simply swapping n1 and n2 in the case that
+3 5 the step n3 doesn't evenly divide the range.  Zero padding can be
+3 5 specified in any of the three numbers, specifying it in the third can be
+3 5 useful to pad for example ‘{-99..100..01}' which is not possible to
+3 5 specify by putting a 0 on either of the first two numbers (i.e. pad to two
+3 5 characters).
+3 5 An expression of the form ‘{c1..c2}', where c1 and c2 are single
+3 5 characters (which may be multibyte characters), is expanded to every
+3 5 character in the range from c1 to c2 in whatever character sequence is
+3 5 used internally.  For characters with code points below 128 this is US
+3 5 ASCII (this is the only case most users will need).  If any intervening
+3 5 character is not printable, appropriate quotation is used to render it
+3 5 printable.  If the character sequence is reversed, the output is in
+3 5 reverse order, e.g. ‘{d..a}' is substituted as ‘d c b a'.
+3 5 If a brace expression matches none of the above forms, it is left
+3 5 unchanged, unless the option BRACE_CCL (an abbreviation for ‘brace
+3 5 character class') is set.  In that case, it is expanded to a list of the
+3 5 individual characters between the braces sorted into the order of the
+3 5 characters in the ASCII character set (multibyte characters are not
+3 5 currently handled).  The syntax is similar to a [...] expression in
+3 5 filename generation: ‘-' is treated specially to denote a range of
+3 5 characters, but ‘^' or ‘!' as the first character is treated normally.
+3 5 For example, ‘{abcdef0-9}' expands to 16 words 0 1 2 3 4 5 6 7 8 9 a b c d
+3 5 e f.
+3 5 Note that brace expansion is not part of filename generation (globbing);
+3 5 an expression such as */{foo,bar} is split into two separate words */foo
+3 5 and */bar before filename generation takes place.  In particular, note
+3 5 that this is liable to produce a ‘no match' error if either of the two
+3 5 expressions does not match; this is to be contrasted with */(foo|bar),
+3 5 which is treated as a single pattern but otherwise has similar effects.
+3 5 To combine brace expansion with array expansion, see the ${^spec} form
+3 5 described in the section ‘Parameter Expansion' above.
+1 0 FILENAME EXPANSION
+3 5 Each word is checked to see if it begins with an unquoted ‘~'.  If it
+3 5 does, then the word up to a ‘/', or the end of the word if there is no
+3 5 ‘/', is checked to see if it can be substituted in one of the ways
+3 5 described here.  If so, then the ‘~' and the checked portion are replaced
+3 5 with the appropriate substitute value.
+3 5 A ‘~' by itself is replaced by the value of $HOME.  A ‘~' followed by a
+3 5 ‘+' or a ‘-' is replaced by current or previous working directory,
+3 5 respectively.
+3 5 A ‘~' followed by a number is replaced by the directory at that position
+3 5 in the directory stack.  ‘~0' is equivalent to ‘~+', and ‘~1' is the top
+3 5 of the stack.  ‘~+' followed by a number is replaced by the directory at
+3 5 that position in the directory stack.  ‘~+0' is equivalent to ‘~+', and
+3 5 ‘~+1' is the top of the stack.  ‘~-' followed by a number is replaced by
+3 5 the directory that many positions from the bottom of the stack.  ‘~-0' is
+3 5 the bottom of the stack.  The PUSHD_MINUS option exchanges the effects of
+3 5 ‘~+' and ‘~-' where they are followed by a number.
+2 3 Dynamic named directories
+3 5 If the function zsh_directory_name exists, or the shell variable
+3 5 zsh_directory_name_functions exists and contains an array of function
+3 5 names, then the functions are used to implement dynamic directory naming.
+3 5 The functions are tried in order until one returns status zero, so it is
+3 5 important that functions test whether they can handle the case in question
+3 5 and return an appropriate status.
+3 5 A ‘~' followed by a string namstr in unquoted square brackets is treated
+3 5 specially as a dynamic directory name.  Note that the first unquoted
+3 5 closing square bracket always terminates namstr.  The shell function is
+3 5 passed two arguments: the string n (for name) and namstr.  It should
+3 5 either set the array reply to a single element which is the directory
+3 5 corresponding to the name and return status zero (executing an assignment
+3 5 as the last statement is usually sufficient), or it should return status
+3 5 non-zero.  In the former case the element of reply is used as the
+3 5 directory; in the latter case the substitution is deemed to have failed.
+3 5 If all functions fail and the option NOMATCH is set, an error results.
+3 5 The functions defined as above are also used to see if a directory can be
+3 5 turned into a name, for example when printing the directory stack or when
+3 5 expanding %~ in prompts.  In this case each function is passed two
+3 5 arguments: the string d (for directory) and the candidate for dynamic
+3 5 naming.  The function should either return non-zero status, if the
+3 5 directory cannot be named by the function, or it should set the array
+3 5 reply to consist of two elements: the first is the dynamic name for the
+3 5 directory (as would appear within ‘~[...]'), and the second is the prefix
+3 5 length of the directory to be replaced.  For example, if the trial
+3 5 directory is /home/myname/src/zsh and the dynamic name for
+3 5 /home/myname/src (which has 16 characters) is s, then the function sets
+4 12 reply=(s 16)
+3 5 The directory name so returned is compared with possible static names for
+3 5 parts of the directory path, as described below; it is used if the prefix
+3 5 length matched (16 in the example) is longer than that matched by any
+3 5 static name.
+3 5 It is not a requirement that a function implements both n and d calls; for
+3 5 example, it might be appropriate for certain dynamic forms of expansion
+3 5 not to be contracted to names.  In that case any call with the first
+3 5 argument d should cause a non-zero status to be returned.
+3 5 The completion system calls ‘zsh_directory_name c' followed by equivalent
+3 5 calls to elements of the array zsh_directory_name_functions, if it exists,
+3 5 in order to complete dynamic names for directories.  The code for this
+3 5 should be as for any other completion function as described in
+3 5 zshcompsys(1).
+3 5 As a working example, here is a function that expands any dynamic names
+3 5 beginning with the string p: to directories below /home/pws/perforce.  In
+3 5 this simple case a static name for the directory would be just as
+3 5 effective.
+4 12 zsh_directory_name() {
+5 14 emulate -L zsh
+5 14 setopt extendedglob
+5 14 local -a match mbegin mend
+5 14 if [[ $1 = d ]]; then
+7 16 # turn the directory into a name
+7 16 if [[ $2 = (#b)(/home/pws/perforce/)([^/]##)* ]]; then
+8 18 typeset -ga reply
+8 18 reply=(p:$match[2] $(( ${#match[1]} + ${#match[2]} )) )
+7 16 else
+8 18 return 1
+7 16 fi
+5 14 elif [[ $1 = n ]]; then
+7 16 # turn the name into a directory
+7 16 [[ $2 != (#b)p:(?*) ]] && return 1
+7 16 typeset -ga reply
+7 16 reply=(/home/pws/perforce/$match[1])
+5 14 elif [[ $1 = c ]]; then
+7 16 # complete names
+7 16 local expl
+7 16 local -a dirs
+7 16 dirs=(/home/pws/perforce/*(/:t))
+7 16 dirs=(p:${^dirs})
+7 16 _wanted dynamic-dirs expl 'dynamic directory' compadd -S\] -a dirs
+7 16 return
+5 14 else
+7 16 return 1
+5 14 fi
+5 14 return 0
+4 12 }
+2 3 Static named directories
+3 5 A ‘~' followed by anything not already covered consisting of any number of
+3 5 alphanumeric characters or underscore (‘_'), hyphen (‘-'), or dot (‘.') is
+3 5 looked up as a named directory, and replaced by the value of that named
+3 5 directory if found.  Named directories are typically home directories for
+3 5 users on the system.  They may also be defined if the text after the ‘~'
+3 5 is the name of a string shell parameter whose value begins with a ‘/'.
+3 5 Note that trailing slashes will be removed from the path to the directory
+3 5 (though the original parameter is not modified).
+3 5 It is also possible to define directory names using the -d option to the
+3 5 hash builtin.
+3 5 When the shell prints a path (e.g. when expanding %~ in prompts or when
+3 5 printing the directory stack), the path is checked to see if it has a
+3 5 named directory as its prefix.  If so, then the prefix portion is replaced
+3 5 with a ‘~' followed by the name of the directory.  The shorter of the two
+3 5 ways of referring to the directory is used, i.e. either the directory name
+3 5 or the full path; the name is used if they are the same length.  The
+3 5 parameters $PWD and $OLDPWD are never abbreviated in this fashion.
+2 3 ‘=' expansion
+3 5 If a word begins with an unquoted ‘=' and the EQUALS option is set, the
+3 5 remainder of the word is taken as the name of a command.  If a command
+3 5 exists by that name, the word is replaced by the full pathname of the
+3 5 command.
+2 3 Notes
+3 5 Filename expansion is performed on the right hand side of a parameter
+3 5 assignment, including those appearing after commands of the typeset
+3 5 family.  In this case, the right hand side will be treated as a
+3 5 colon-separated list in the manner of the PATH parameter, so that a ‘~' or
+3 5 an ‘=' following a ‘:' is eligible for expansion.  All such behaviour can
+3 5 be disabled by quoting the ‘~', the ‘=', or the whole expression (but not
+3 5 simply the colon); the EQUALS option is also respected.
+3 5 If the option MAGIC_EQUAL_SUBST is set, any unquoted shell argument in the
+3 5 form ‘identifier=expression' becomes eligible for file expansion as
+3 5 described in the previous paragraph.  Quoting the first ‘=' also inhibits
+3 5 this.
+1 0 FILENAME GENERATION
+3 5 If a word contains an unquoted instance of one of the characters ‘*', ‘(',
+3 5 ‘|', ‘<', ‘[', or ‘?', it is regarded as a pattern for filename
+3 5 generation, unless the GLOB option is unset.  If the EXTENDED_GLOB option
+3 5 is set, the ‘^' and ‘#' characters also denote a pattern; otherwise they
+3 5 are not treated specially by the shell.
+3 5 The word is replaced with a list of sorted filenames that match the
+3 5 pattern.  If no matching pattern is found, the shell gives an error
+3 5 message, unless the NULL_GLOB option is set, in which case the word is
+3 5 deleted; or unless the NOMATCH option is unset, in which case the word is
+3 5 left unchanged.
+3 5 In filename generation, the character ‘/' must be matched explicitly;
+3 5 also, a ‘.' must be matched explicitly at the beginning of a pattern or
+3 5 after a ‘/', unless the GLOB_DOTS option is set.  No filename generation
+3 5 pattern matches the files ‘.' or ‘..'.  In other instances of pattern
+3 5 matching, the ‘/' and ‘.' are not treated specially.
+2 3 Glob Operators
+3 5 *      Matches any string, including the null string.
+3 5 ?      Matches any character.
+3 5 [...]  Matches any of the enclosed characters.  Ranges of characters can
+4 12 be specified by separating two characters by a ‘-'.  A ‘-' or ‘]'
+4 12 may be matched by including it as the first character in the list.
+4 12 There are also several named classes of characters, in the form
+4 12 ‘[:name:]' with the following meanings.  The first set use the
+4 12 macros provided by the operating system to test for the given
+4 12 character combinations, including any modifications due to local
+4 12 language settings, see ctype(3):
+4 12 [:alnum:]
+9 19 The character is alphanumeric
+4 12 [:alpha:]
+9 19 The character is alphabetic
+4 12 [:ascii:]
+9 19 The character is 7-bit, i.e. is a single-byte character
+9 19 without the top bit set.
+4 12 [:blank:]
+9 19 The character is a blank character
+4 12 [:cntrl:]
+9 19 The character is a control character
+4 12 [:digit:]
+9 19 The character is a decimal digit
+4 12 [:graph:]
+9 19 The character is a printable character other than whitespace
+4 12 [:lower:]
+9 19 The character is a lowercase letter
+4 12 [:print:]
+9 19 The character is printable
+4 12 [:punct:]
+9 19 The character is printable but neither alphanumeric nor
+9 19 whitespace
+4 12 [:space:]
+9 19 The character is whitespace
+4 12 [:upper:]
+9 19 The character is an uppercase letter
+4 12 [:xdigit:]
+9 19 The character is a hexadecimal digit
+4 12 Another set of named classes is handled internally by the shell and
+4 12 is not sensitive to the locale:
+4 12 [:IDENT:]
+9 19 The character is allowed to form part of a shell identifier,
+9 19 such as a parameter name; this test respects the
+9 19 POSIX_IDENTIFIERS option
+4 12 [:IFS:]
+9 19 The character is used as an input field separator, i.e. is
+9 19 contained in the IFS parameter
+4 12 [:IFSSPACE:]
+9 19 The character is an IFS white space character; see the
+9 19 documentation for IFS in the zshparam(1) manual page.
+4 12 [:INCOMPLETE:]
+9 19 Matches a byte that starts an incomplete multibyte
+9 19 character.  Note that there may be a sequence of more than
+9 19 one bytes that taken together form the prefix of a multibyte
+9 19 character.  To test for a potentially incomplete byte
+9 19 sequence, use the pattern ‘[[:INCOMPLETE:]]*'.  This will
+9 19 never match a sequence starting with a valid multibyte
+9 19 character.
+4 12 [:INVALID:]
+9 19 Matches a byte that does not start a valid multibyte
+9 19 character.  Note this may be a continuation byte of an
+9 19 incomplete multibyte character as any part of a multibyte
+9 19 string consisting of invalid and incomplete multibyte
+9 19 characters is treated as single bytes.
+4 12 [:WORD:]
+9 19 The character is treated as part of a word; this test is
+9 19 sensitive to the value of the WORDCHARS parameter
+4 12 Note that the square brackets are additional to those enclosing the
+4 12 whole set of characters, so to test for a single alphanumeric
+4 12 character you need ‘[[:alnum:]]'.  Named character sets can be used
+4 12 alongside other types, e.g. ‘[[:alpha:]0-9]'.
+3 5 [^...]
+3 5 [!...]
+4 12 Like [...], except that it matches any character which is not in
+4 12 the given set.
+3 5 <[x]-[y]>
+4 12 Matches any number in the range x to y, inclusive.  Either of the
+4 12 numbers may be omitted to make the range open-ended; hence ‘<->'
+4 12 matches any number.  To match individual digits, the [...] form is
+4 12 more efficient.
+4 12 Be careful when using other wildcards adjacent to patterns of this
+4 12 form; for example, <0-9>* will actually match any number whatsoever
+4 12 at the start of the string, since the ‘<0-9>' will match the first
+4 12 digit, and the ‘*' will match any others.  This is a trap for the
+4 12 unwary, but is in fact an inevitable consequence of the rule that
+4 12 the longest possible match always succeeds.  Expressions such as
+4 12 ‘<0-9>[^[:digit:]]*' can be used instead.
+3 5 (...)  Matches the enclosed pattern.  This is used for grouping.  If the
+4 12 KSH_GLOB option is set, then a ‘@', ‘*', ‘+', ‘?' or ‘!'
+4 12 immediately preceding the ‘(' is treated specially, as detailed
+4 12 below. The option SH_GLOB prevents bare parentheses from being used
+4 12 in this way, though the KSH_GLOB option is still available.
+4 12 Note that grouping cannot extend over multiple directories: it is
+4 12 an error to have a ‘/' within a group (this only applies for
+4 12 patterns used in filename generation).  There is one exception:  a
+4 12 group of the form (pat/)# appearing as a complete path segment can
+4 12 match a sequence of directories.  For example, foo/(a*/)#bar
+4 12 matches foo/bar, foo/any/bar, foo/any/anyother/bar, and so on.
+3 5 x|y    Matches either x or y.  This operator has lower precedence than any
+4 12 other.  The ‘|' character must be within parentheses, to avoid
+4 12 interpretation as a pipeline.  The alternatives are tried in order
+4 12 from left to right.
+3 5 ^x     (Requires EXTENDED_GLOB to be set.)  Matches anything except the
+4 12 pattern x.  This has a higher precedence than ‘/', so ‘^foo/bar'
+4 12 will search directories in ‘.' except ‘./foo' for a file named
+4 12 ‘bar'.
+3 5 x~y    (Requires EXTENDED_GLOB to be set.)  Match anything that matches
+4 12 the pattern x but does not match y.  This has lower precedence than
+4 12 any operator except ‘|', so ‘*/*~foo/bar' will search for all files
+4 12 in all directories in ‘.'  and then exclude ‘foo/bar' if there was
+4 12 such a match.  Multiple patterns can be excluded by ‘foo~bar~baz'.
+4 12 In the exclusion pattern (y), ‘/' and ‘.' are not treated specially
+4 12 the way they usually are in globbing.
+3 5 x#     (Requires EXTENDED_GLOB to be set.)  Matches zero or more
+4 12 occurrences of the pattern x.  This operator has high precedence;
+4 12 ‘12#' is equivalent to ‘1(2#)', rather than ‘(12)#'.  It is an
+4 12 error for an unquoted ‘#' to follow something which cannot be
+4 12 repeated; this includes an empty string, a pattern already followed
+4 12 by ‘##', or parentheses when part of a KSH_GLOB pattern (for
+4 12 example, ‘!(foo)#' is invalid and must be replaced by ‘*(!(foo))').
+3 5 x##    (Requires EXTENDED_GLOB to be set.)  Matches one or more
+4 12 occurrences of the pattern x.  This operator has high precedence;
+4 12 ‘12##' is equivalent to ‘1(2##)', rather than ‘(12)##'.  No more
+4 12 than two active ‘#' characters may appear together.  (Note the
+4 12 potential clash with glob qualifiers in the form ‘1(2##)' which
+4 12 should therefore be avoided.)
+2 3 ksh-like Glob Operators
+3 5 If the KSH_GLOB option is set, the effects of parentheses can be modified
+3 5 by a preceding ‘@', ‘*', ‘+', ‘?' or ‘!'.  This character need not be
+3 5 unquoted to have special effects, but the ‘(' must be.
+3 5 @(...)
+4 12 Match the pattern in the parentheses.  (Like ‘(...)'.)
+3 5 *(...)
+4 12 Match any number of occurrences.  (Like ‘(...)#', except that
+4 12 recursive directory searching is not supported.)
+3 5 +(...)
+4 12 Match at least one occurrence.  (Like ‘(...)##', except that
+4 12 recursive directory searching is not supported.)
+3 5 ?(...)
+4 12 Match zero or one occurrence.  (Like ‘(|...)'.)
+3 5 !(...)
+4 12 Match anything but the expression in parentheses.  (Like
+4 12 ‘(^(...))'.)
+2 3 Precedence
+3 5 The precedence of the operators given above is (highest) ‘^', ‘/', ‘~',
+3 5 ‘|' (lowest); the remaining operators are simply treated from left to
+3 5 right as part of a string, with ‘#' and ‘##' applying to the shortest
+3 5 possible preceding unit (i.e. a character, ‘?', ‘[...]', ‘<...>', or a
+3 5 parenthesised expression).  As mentioned above, a ‘/' used as a directory
+3 5 separator may not appear inside parentheses, while a ‘|' must do so; in
+3 5 patterns used in other contexts than filename generation (for example, in
+3 5 case statements and tests within ‘[[...]]'), a ‘/' is not special; and ‘/'
+3 5 is also not special after a ‘~' appearing outside parentheses in a
+3 5 filename pattern.
+2 3 Globbing Flags
+3 5 There are various flags which affect any text to their right up to the end
+3 5 of the enclosing group or to the end of the pattern; they require the
+3 5 EXTENDED_GLOB option. All take the form (#X) where X may have one of the
+3 5 following forms:
+3 5 i      Case insensitive:  upper or lower case characters in the pattern
+4 12 match upper or lower case characters.
+3 5 l      Lower case characters in the pattern match upper or lower case
+4 12 characters; upper case characters in the pattern still only match
+4 12 upper case characters.
+3 5 I      Case sensitive:  locally negates the effect of i or l from that
+4 12 point on.
+3 5 b      Activate backreferences for parenthesised groups in the pattern;
+4 12 this does not work in filename generation.  When a pattern with a
+4 12 set of active parentheses is matched, the strings matched by the
+4 12 groups are stored in the array $match, the indices of the beginning
+4 12 of the matched parentheses in the array $mbegin, and the indices of
+4 12 the end in the array $mend, with the first element of each array
+4 12 corresponding to the first parenthesised group, and so on.  These
+4 12 arrays are not otherwise special to the shell.  The indices use the
+4 12 same convention as does parameter substitution, so that elements of
+4 12 $mend and $mbegin may be used in subscripts; the KSH_ARRAYS option
+4 12 is respected.  Sets of globbing flags are not considered
+4 12 parenthesised groups; only the first nine active parentheses can be
+4 12 referenced.
+4 12 For example,
+9 19 foo="a_string_with_a_message"
+9 19 if [[ $foo = (a|an)_(#b)(*) ]]; then
+10 21 print ${foo[$mbegin[1],$mend[1]]}
+9 19 fi
+4 12 prints ‘string_with_a_message'.  Note that the first set of
+4 12 parentheses is before the (#b) and does not create a backreference.
+4 12 Backreferences work with all forms of pattern matching other than
+4 12 filename generation, but note that when performing matches on an
+4 12 entire array, such as ${array#pattern}, or a global substitution,
+4 12 such as ${param//pat/repl}, only the data for the last match
+4 12 remains available.  In the case of global replacements this may
+4 12 still be useful.  See the example for the m flag below.
+4 12 The numbering of backreferences strictly follows the order of the
+4 12 opening parentheses from left to right in the pattern string,
+4 12 although sets of parentheses may be nested.  There are special
+4 12 rules for parentheses followed by ‘#' or ‘##'.  Only the last match
+4 12 of the parenthesis is remembered: for example, in ‘[[ abab =
+4 12 (#b)([ab])# ]]', only the final ‘b' is stored in match[1].  Thus
+4 12 extra parentheses may be necessary to match the complete segment:
+4 12 for example, use ‘X((ab|cd)#)Y' to match a whole string of either
+4 12 ‘ab' or ‘cd' between ‘X' and ‘Y', using the value of $match[1]
+4 12 rather than $match[2].
+4 12 If the match fails none of the parameters is altered, so in some
+4 12 cases it may be necessary to initialise them beforehand.  If some
+4 12 of the backreferences fail to match -- which happens if they are in
+4 12 an alternate branch which fails to match, or if they are followed
+4 12 by # and matched zero times -- then the matched string is set to
+4 12 the empty string, and the start and end indices are set to -1.
+4 12 Pattern matching with backreferences is slightly slower than
+4 12 without.
+3 5 B      Deactivate backreferences, negating the effect of the b flag from
+4 12 that point on.
+3 5 cN,M   The flag (#cN,M) can be used anywhere that the # or ## operators
+4 12 can be used except in the expressions ‘(*/)#' and ‘(*/)##' in
+4 12 filename generation, where ‘/' has special meaning; it cannot be
+4 12 combined with other globbing flags and a bad pattern error occurs
+4 12 if it is misplaced.  It is equivalent to the form {N,M} in regular
+4 12 expressions.  The previous character or group is required to match
+4 12 between N and M times, inclusive.  The form (#cN) requires exactly
+4 12 N matches; (#c,M) is equivalent to specifying N as 0; (#cN,)
+4 12 specifies that there is no maximum limit on the number of matches.
+3 5 m      Set references to the match data for the entire string matched;
+4 12 this is similar to backreferencing and does not work in filename
+4 12 generation.  The flag must be in effect at the end of the pattern,
+4 12 i.e. not local to a group. The parameters $MATCH,  $MBEGIN and
+4 12 $MEND will be set to the string matched and to the indices of the
+4 12 beginning and end of the string, respectively.  This is most useful
+4 12 in parameter substitutions, as otherwise the string matched is
+4 12 obvious.
+4 12 For example,
+9 19 arr=(veldt jynx grimps waqf zho buck)
+9 19 print ${arr//(#m)[aeiou]/${(U)MATCH}}
+4 12 forces all the matches (i.e. all vowels) into uppercase, printing
+4 12 ‘vEldt jynx grImps wAqf zhO bUck'.
+4 12 Unlike backreferences, there is no speed penalty for using match
+4 12 references, other than the extra substitutions required for the
+4 12 replacement strings in cases such as the example shown.
+3 5 M      Deactivate the m flag, hence no references to match data will be
+4 12 created.
+3 5 anum   Approximate matching: num errors are allowed in the string matched
+4 12 by the pattern.  The rules for this are described in the next
+4 12 subsection.
+3 5 s, e   Unlike the other flags, these have only a local effect, and each
+4 12 must appear on its own:  ‘(#s)' and ‘(#e)' are the only valid
+4 12 forms.  The ‘(#s)' flag succeeds only at the start of the test
+4 12 string, and the ‘(#e)' flag succeeds only at the end of the test
+4 12 string; they correspond to ‘^' and ‘$' in standard regular
+4 12 expressions.  They are useful for matching path segments in
+4 12 patterns other than those in filename generation (where path
+4 12 segments are in any case treated separately).  For example,
+4 12 ‘*((#s)|/)test((#e)|/)*' matches a path segment ‘test' in any of
+4 12 the following strings: test, test/at/start, at/end/test,
+4 12 in/test/middle.
+4 12 Another use is in parameter substitution; for example
+4 12 ‘${array/(#s)A*Z(#e)}' will remove only elements of an array which
+4 12 match the complete pattern ‘A*Z'.  There are other ways of
+4 12 performing many operations of this type, however the combination of
+4 12 the substitution operations ‘/' and ‘//' with the ‘(#s)' and ‘(#e)'
+4 12 flags provides a single simple and memorable method.
+4 12 Note that assertions of the form ‘(^(#s))' also work, i.e. match
+4 12 anywhere except at the start of the string, although this actually
+4 12 means ‘anything except a zero-length portion at the start of the
+4 12 string'; you need to use ‘(""~(#s))' to match a zero-length portion
+4 12 of the string not at the start.
+3 5 q      A ‘q' and everything up to the closing parenthesis of the globbing
+4 12 flags are ignored by the pattern matching code.  This is intended
+4 12 to support the use of glob qualifiers, see below.  The result is
+4 12 that the pattern ‘(#b)(*).c(#q.)' can be used both for globbing and
+4 12 for matching against a string.  In the former case, the ‘(#q.)'
+4 12 will be treated as a glob qualifier and the ‘(#b)' will not be
+4 12 useful, while in the latter case the ‘(#b)' is useful for
+4 12 backreferences and the ‘(#q.)' will be ignored.  Note that colon
+4 12 modifiers in the glob qualifiers are also not applied in ordinary
+4 12 pattern matching.
+3 5 u      Respect the current locale in determining the presence of multibyte
+4 12 characters in a pattern, provided the shell was compiled with
+4 12 MULTIBYTE_SUPPORT.  This overrides the MULTIBYTE option; the
+4 12 default behaviour is taken from the option.  Compare U.  (Mnemonic:
+4 12 typically multibyte characters are from Unicode in the UTF-8
+4 12 encoding, although any extension of ASCII supported by the system
+4 12 library may be used.)
+3 5 U      All characters are considered to be a single byte long.  The
+4 12 opposite of u.  This overrides the MULTIBYTE option.
+3 5 For example, the test string fooxx can be matched by the pattern
+3 5 (#i)FOOXX, but not by (#l)FOOXX, (#i)FOO(#I)XX or ((#i)FOOX)X.  The string
+3 5 (#ia2)readme specifies case-insensitive matching of readme with up to two
+3 5 errors.
+3 5 When using the ksh syntax for grouping both KSH_GLOB and EXTENDED_GLOB
+3 5 must be set and the left parenthesis should be preceded by @.  Note also
+3 5 that the flags do not affect letters inside [...] groups, in other words
+3 5 (#i)[a-z] still matches only lowercase letters.  Finally, note that when
+3 5 examining whole paths case-insensitively every directory must be searched
+3 5 for all files which match, so that a pattern of the form (#i)/foo/bar/...
+3 5 is potentially slow.
+2 3 Approximate Matching
+3 5 When matching approximately, the shell keeps a count of the errors found,
+3 5 which cannot exceed the number specified in the (#anum) flags.  Four types
+3 5 of error are recognised:
+3 5 1.     Different characters, as in fooxbar and fooybar.
+3 5 2.     Transposition of characters, as in banana and abnana.
+3 5 3.     A character missing in the target string, as with the pattern road
+4 12 and target string rod.
+3 5 4.     An extra character appearing in the target string, as with stove
+4 12 and strove.
+3 5 Thus, the pattern (#a3)abcd matches dcba, with the errors occurring by
+3 5 using the first rule twice and the second once, grouping the string as
+3 5 [d][cb][a] and [a][bc][d].
+3 5 Non-literal parts of the pattern must match exactly, including characters
+3 5 in character ranges: hence (#a1)???  matches strings of length four, by
+3 5 applying rule 4 to an empty part of the pattern, but not strings of length
+3 5 two, since all the ? must match.  Other characters which must match
+3 5 exactly are initial dots in filenames (unless the GLOB_DOTS option is
+3 5 set), and all slashes in filenames, so that a/bc is two errors from ab/c
+3 5 (the slash cannot be transposed with another character).  Similarly,
+3 5 errors are counted separately for non-contiguous strings in the pattern,
+3 5 so that (ab|cd)ef is two errors from aebf.
+3 5 When using exclusion via the ~ operator, approximate matching is treated
+3 5 entirely separately for the excluded part and must be activated
+3 5 separately.  Thus, (#a1)README~READ_ME matches READ.ME but not READ_ME, as
+3 5 the trailing READ_ME is matched without approximation.  However,
+3 5 (#a1)README~(#a1)READ_ME does not match any pattern of the form READ?ME as
+3 5 all such forms are now excluded.
+3 5 Apart from exclusions, there is only one overall error count; however, the
+3 5 maximum errors allowed may be altered locally, and this can be delimited
+3 5 by grouping.  For example, (#a1)cat((#a0)dog)fox allows one error in
+3 5 total, which may not occur in the dog section, and the pattern
+3 5 (#a1)cat(#a0)dog(#a1)fox is equivalent.  Note that the point at which an
+3 5 error is first found is the crucial one for establishing whether to use
+3 5 approximation; for example, (#a1)abc(#a0)xyz will not match abcdxyz,
+3 5 because the error occurs at the ‘x', where approximation is turned off.
+3 5 Entire path segments may be matched approximately, so that
+3 5 ‘(#a1)/foo/d/is/available/at/the/bar' allows one error in any path
+3 5 segment.  This is much less efficient than without the (#a1), however,
+3 5 since every directory in the path must be scanned for a possible
+3 5 approximate match.  It is best to place the (#a1) after any path segments
+3 5 which are known to be correct.
+2 3 Recursive Globbing
+3 5 A pathname component of the form ‘(foo/)#' matches a path consisting of
+3 5 zero or more directories matching the pattern foo.
+3 5 As a shorthand, ‘**/' is equivalent to ‘(*/)#'; note that this therefore
+3 5 matches files in the current directory as well as subdirectories.  Thus:
+4 12 ls -ld -- (*/)#bar
+3 5 or
+4 12 ls -ld -- **/bar
+3 5 does a recursive directory search for files named ‘bar' (potentially
+3 5 including the file ‘bar' in the current directory).  This form does not
+3 5 follow symbolic links; the alternative form ‘***/' does, but is otherwise
+3 5 identical.  Neither of these can be combined with other forms of globbing
+3 5 within the same path segment; in that case, the ‘*' operators revert to
+3 5 their usual effect.
+3 5 Even shorter forms are available when the option GLOB_STAR_SHORT is set.
+3 5 In that case if no / immediately follows a ** or *** they are treated as
+3 5 if both a / plus a further * are present.  Hence:
+4 12 setopt GLOBSTARSHORT
+4 12 ls -ld -- **.c
+3 5 is equivalent to
+4 12 ls -ld -- **/*.c
+2 3 Glob Qualifiers
+3 5 Patterns used for filename generation may end in a list of qualifiers
+3 5 enclosed in parentheses.  The qualifiers specify which filenames that
+3 5 otherwise match the given pattern will be inserted in the argument list.
+3 5 If the option BARE_GLOB_QUAL is set, then a trailing set of parentheses
+3 5 containing no ‘|' or ‘(' characters (or ‘~' if it is special) is taken as
+3 5 a set of glob qualifiers.  A glob subexpression that would normally be
+3 5 taken as glob qualifiers, for example ‘(^x)', can be forced to be treated
+3 5 as part of the glob pattern by doubling the parentheses, in this case
+3 5 producing ‘((^x))'.
+3 5 If the option EXTENDED_GLOB is set, a different syntax for glob qualifiers
+3 5 is available, namely ‘(#qx)' where x is any of the same glob qualifiers
+3 5 used in the other format.  The qualifiers must still appear at the end of
+3 5 the pattern.  However, with this syntax multiple glob qualifiers may be
+3 5 chained together.  They are treated as a logical AND of the individual
+3 5 sets of flags.  Also, as the syntax is unambiguous, the expression will be
+3 5 treated as glob qualifiers just as long any parentheses contained within
+3 5 it are balanced; appearance of ‘|', ‘(' or ‘~' does not negate the effect.
+3 5 Note that qualifiers will be recognised in this form even if a bare glob
+3 5 qualifier exists at the end of the pattern, for example ‘*(#q*)(.)' will
+3 5 recognise executable regular files if both options are set; however, mixed
+3 5 syntax should probably be avoided for the sake of clarity.  Note that
+3 5 within conditions using the ‘[[' form the presence of a parenthesised
+3 5 expression (#q...) at the end of a string indicates that globbing should
+3 5 be performed; the expression may include glob qualifiers, but it is also
+3 5 valid if it is simply (#q).  This does not apply to the right hand side of
+3 5 pattern match operators as the syntax already has special significance.
+3 5 A qualifier may be any one of the following:
+3 5 /      directories
+3 5 F      ‘full' (i.e. non-empty) directories.  Note that the opposite sense
+4 12 (^F) expands to empty directories and all non-directories.  Use
+4 12 (/^F) for empty directories.
+3 5 .      plain files
+3 5 @      symbolic links
+3 5 =      sockets
+3 5 p      named pipes (FIFOs)
+3 5 *      executable plain files (0100 or 0010 or 0001)
+3 5 %      device files (character or block special)
+3 5 %b     block special files
+3 5 %c     character special files
+3 5 r      owner-readable files (0400)
+3 5 w      owner-writable files (0200)
+3 5 x      owner-executable files (0100)
+3 5 A      group-readable files (0040)
+3 5 I      group-writable files (0020)
+3 5 E      group-executable files (0010)
+3 5 R      world-readable files (0004)
+3 5 W      world-writable files (0002)
+3 5 X      world-executable files (0001)
+3 5 s      setuid files (04000)
+3 5 S      setgid files (02000)
+3 5 t      files with the sticky bit (01000)
+3 5 fspec  files with access rights matching spec. This spec may be a octal
+4 12 number optionally preceded by a ‘=', a ‘+', or a ‘-'. If none of
+4 12 these characters is given, the behavior is the same as for ‘='. The
+4 12 octal number describes the mode bits to be expected, if combined
+4 12 with a ‘=', the value given must match the file-modes exactly, with
+4 12 a ‘+', at least the bits in the given number must be set in the
+4 12 file-modes, and with a ‘-', the bits in the number must not be set.
+4 12 Giving a ‘?' instead of a octal digit anywhere in the number
+4 12 ensures that the corresponding bits in the file-modes are not
+4 12 checked, this is only useful in combination with ‘='.
+4 12 If the qualifier ‘f' is followed by any other character anything up
+4 12 to the next matching character (‘[', ‘{', and ‘<' match ‘]', ‘}',
+4 12 and ‘>' respectively, any other character matches itself) is taken
+4 12 as a list of comma-separated sub-specs. Each sub-spec may be either
+4 12 an octal number as described above or a list of any of the
+4 12 characters ‘u', ‘g', ‘o', and ‘a', followed by a ‘=', a ‘+', or a
+4 12 ‘-', followed by a list of any of the characters ‘r', ‘w', ‘x',
+4 12 ‘s', and ‘t', or an octal digit. The first list of characters
+4 12 specify which access rights are to be checked. If a ‘u' is given,
+4 12 those for the owner of the file are used, if a ‘g' is given, those
+4 12 of the group are checked, a ‘o' means to test those of other users,
+4 12 and the ‘a' says to test all three groups. The ‘=', ‘+', and ‘-'
+4 12 again says how the modes are to be checked and have the same
+4 12 meaning as described for the first form above. The second list of
+4 12 characters finally says which access rights are to be expected: ‘r'
+4 12 for read access, ‘w' for write access, ‘x' for the right to execute
+4 12 the file (or to search a directory), ‘s' for the setuid and setgid
+4 12 bits, and ‘t' for the sticky bit.
+4 12 Thus, ‘*(f70?)' gives the files for which the owner has read,
+4 12 write, and execute permission, and for which other group members
+4 12 have no rights, independent of the permissions for other users. The
+4 12 pattern ‘*(f-100)' gives all files for which the owner does not
+4 12 have execute permission, and ‘*(f:gu+w,o-rx:)' gives the files for
+4 12 which the owner and the other members of the group have at least
+4 12 write permission, and for which other users don't have read or
+4 12 execute permission.
+3 5 estring
+3 5 +cmd   The string will be executed as shell code.  The filename will be
+4 12 included in the list if and only if the code returns a zero status
+4 12 (usually the status of the last command).
+4 12 In the first form, the first character after the ‘e' will be used
+4 12 as a separator and anything up to the next matching separator will
+4 12 be taken  as the string; ‘[', ‘{', and ‘<' match ‘]', ‘}', and ‘>',
+4 12 respectively, while any other character matches itself. Note that
+4 12 expansions must be quoted in the string to prevent them from being
+4 12 expanded before globbing is done.  string is then executed as shell
+4 12 code.  The string globqual is appended to the array
+4 12 zsh_eval_context the duration of execution.
+4 12 During the execution of string the filename currently being tested
+4 12 is available in the parameter REPLY; the parameter may be altered
+4 12 to a string to be inserted into the list instead of the original
+4 12 filename.  In addition, the parameter reply may be set to an array
+4 12 or a string, which overrides the value of REPLY.  If set to an
+4 12 array, the latter is inserted into the command line word by word.
+4 12 For example, suppose a directory contains a single file ‘lonely'.
+4 12 Then the expression ‘*(e:'reply=(${REPLY}{1,2})':)' will cause the
+4 12 words ‘lonely1' and ‘lonely2' to be inserted into the command line.
+4 12 Note the quoting of string.
+4 12 The form +cmd has the same effect, but no delimiters appear around
+4 12 cmd.  Instead, cmd is taken as the longest sequence of characters
+4 12 following the + that are alphanumeric or underscore.  Typically cmd
+4 12 will be the name of a shell function that contains the appropriate
+4 12 test.  For example,
+9 19 nt() { [[ $REPLY -nt $NTREF ]] }
+9 19 NTREF=reffile
+9 19 ls -ld -- *(+nt)
+4 12 lists all files in the directory that have been modified more
+4 12 recently than reffile.
+3 5 ddev   files on the device dev
+3 5 l[-|+]ct
+4 12 files having a link count less than ct (-), greater than ct (+), or
+4 12 equal to ct
+3 5 U      files owned by the effective user ID
+3 5 G      files owned by the effective group ID
+3 5 uid    files owned by user ID id if that is a number.  Otherwise, id
+4 12 specifies a user name: the character after the ‘u' will be taken as
+4 12 a separator and the string between it and the next matching
+4 12 separator will be taken as a user name.  The starting separators
+4 12 ‘[', ‘{', and ‘<' match the final separators ‘]', ‘}', and ‘>',
+4 12 respectively; any other character matches itself.  The selected
+4 12 files are those owned by this user.  For example, ‘u:foo:' or
+4 12 ‘u[foo]' selects files owned by user ‘foo'.
+3 5 gid    like uid but with group IDs or names
+3 5 a[Mwhms][-|+]n
+4 12 files accessed exactly n days ago.  Files accessed within the last
+4 12 n days are selected using a negative value for n (-n).  Files
+4 12 accessed more than n days ago are selected by a positive n value
+4 12 (+n).  Optional unit specifiers ‘M', ‘w', ‘h', ‘m' or ‘s' (e.g.
+4 12 ‘ah5') cause the check to be performed with months (of 30 days),
+4 12 weeks, hours, minutes or seconds instead of days, respectively.  An
+4 12 explicit ‘d' for days is also allowed.
+4 12 Any fractional part of the difference between the access time and
+4 12 the current part in the appropriate units is ignored in the
+4 12 comparison.  For instance, ‘echo *(ah-5)' would echo files accessed
+4 12 within the last five hours, while ‘echo *(ah+5)' would echo files
+4 12 accessed at least six hours ago, as times strictly between five and
+4 12 six hours are treated as five hours.
+3 5 m[Mwhms][-|+]n
+4 12 like the file access qualifier, except that it uses the file
+4 12 modification time.
+3 5 c[Mwhms][-|+]n
+4 12 like the file access qualifier, except that it uses the file inode
+4 12 change time.
+3 5 L[+|-]n
+4 12 files less than n bytes (-), more than n bytes (+), or exactly n
+4 12 bytes in length.
+4 12 If this flag is directly followed by a size specifier ‘k' (‘K'),
+4 12 ‘m' (‘M'), or ‘p' (‘P') (e.g. ‘Lk-50') the check is performed with
+4 12 kilobytes, megabytes, or blocks (of 512 bytes) instead.  (On some
+4 12 systems additional specifiers are available for gigabytes, ‘g' or
+4 12 ‘G', and terabytes, ‘t' or ‘T'.) If a size specifier is used a file
+4 12 is regarded as "exactly" the size if the file size rounded up to
+4 12 the next unit is equal to the test size.  Hence ‘*(Lm1)' matches
+4 12 files from 1 byte up to 1 Megabyte inclusive.  Note also that the
+4 12 set of files "less than" the test size only includes files that
+4 12 would not match the equality test; hence ‘*(Lm-1)' only matches
+4 12 files of zero size.
+3 5 ^      negates all qualifiers following it
+3 5 -      toggles between making the qualifiers work on symbolic links (the
+4 12 default) and the files they point to, if any; any symbolic link for
+4 12 whose target the ‘stat' system call fails (whatever the cause of
+4 12 the failure) is treated as a file in its own right
+3 5 M      sets the MARK_DIRS option for the current pattern
+3 5 T      appends a trailing qualifier mark to the filenames, analogous to
+4 12 the LIST_TYPES option, for the current pattern (overrides M)
+3 5 N      sets the NULL_GLOB option for the current pattern
+3 5 D      sets the GLOB_DOTS option for the current pattern
+3 5 n      sets the NUMERIC_GLOB_SORT option for the current pattern
+3 5 Yn     enables short-circuit mode: the pattern will expand to at most n
+4 12 filenames.  If more than n matches exist, only the first n matches
+4 12 in directory traversal order will be considered.
+4 12 Implies oN when no oc qualifier is used.
+3 5 oc     specifies how the names of the files should be sorted. The
+4 12 following values of c sort in the following ways:
+4 12 n      By name.
+4 12 L      By the size (length) of the files.
+4 12 l      By number of links.
+4 12 a      By time of last access, youngest first.
+4 12 m      By time of last modification, youngest first.
+4 12 c      By time of last inode change, youngest first.
+4 12 d      By directories: files in subdirectories appear before those
+9 19 in the current directory at each level of the search -- this
+9 19 is best combined with other criteria, for example ‘odon' to
+9 19 sort on names for files within the same directory.
+4 12 N      No sorting is performed.
+4 12 estring
+4 12 +cmd   Sort by shell code (see below).
+4 12 Note that the modifiers ^ and - are used, so ‘*(^-oL)' gives a list
+4 12 of all files sorted by file size in descending order, following any
+4 12 symbolic links.  Unless oN is used, multiple order specifiers may
+4 12 occur to resolve ties.
+4 12 The default sorting is n (by name) unless the Y glob qualifier is
+4 12 used, in which case it is N (unsorted).
+4 12 oe and o+ are special cases; they are each followed by shell code,
+4 12 delimited as for the e glob qualifier and the + glob qualifier
+4 12 respectively (see above).  The code is executed for each matched
+4 12 file with the parameter REPLY set to the name of the file on entry
+4 12 and globsort appended to zsh_eval_context.  The code should modify
+4 12 the parameter REPLY in some fashion.  On return, the value of the
+4 12 parameter is used instead of the file name as the string on which
+4 12 to sort.  Unlike other sort operators, oe and o+ may be repeated,
+4 12 but note that the maximum number of sort operators of any kind that
+4 12 may appear in any glob expression is 12.
+3 5 Oc     like ‘o', but sorts in descending order; i.e. ‘*(^oc)' is the same
+4 12 as ‘*(Oc)' and ‘*(^Oc)' is the same as ‘*(oc)'; ‘Od' puts files in
+4 12 the current directory before those in subdirectories at each level
+4 12 of the search.
+3 5 [beg[,end]]
+4 12 specifies which of the matched filenames should be included in the
+4 12 returned list. The syntax is the same as for array subscripts. beg
+4 12 and the optional end may be mathematical expressions. As in
+4 12 parameter subscripting they may be negative to make them count from
+4 12 the last match backward. E.g.: ‘*(-OL[1,3])' gives a list of the
+4 12 names of the three largest files.
+3 5 Pstring
+4 12 The string will be prepended to each glob match as a separate word.
+4 12 string is delimited in the same way as arguments to the e glob
+4 12 qualifier described above.  The qualifier can be repeated; the
+4 12 words are prepended separately so that the resulting command line
+4 12 contains the words in the same order they were given in the list of
+4 12 glob qualifiers.
+4 12 A typical use for this is to prepend an option before all
+4 12 occurrences of a file name; for example, the pattern ‘*(P:-f:)'
+4 12 produces the command line arguments ‘-f file1 -f file2 ...'
+4 12 If the modifier ^ is active, then string will be appended instead
+4 12 of prepended.  Prepending and appending is done independently so
+4 12 both can be used on the same glob expression; for example by
+4 12 writing ‘*(P:foo:^P:bar:^P:baz:)' which produces the command line
+4 12 arguments ‘foo baz file1 bar ...'
+3 5 More than one of these lists can be combined, separated by commas. The
+3 5 whole list matches if at least one of the sublists matches (they are
+3 5 ‘or'ed, the qualifiers in the sublists are ‘and'ed).  Some qualifiers,
+3 5 however, affect all matches generated, independent of the sublist in which
+3 5 they are given.  These are the qualifiers ‘M', ‘T', ‘N', ‘D', ‘n', ‘o',
+3 5 ‘O' and the subscripts given in brackets (‘[...]').
+3 5 If a ‘:' appears in a qualifier list, the remainder of the expression in
+3 5 parenthesis is interpreted as a modifier (see the section ‘Modifiers' in
+3 5 the section ‘History Expansion').  Each modifier must be introduced by a
+3 5 separate ‘:'.  Note also that the result after modification does not have
+3 5 to be an existing file.  The name of any existing file can be followed by
+3 5 a modifier of the form ‘(:...)' even if no actual filename generation is
+3 5 performed, although note that the presence of the parentheses causes the
+3 5 entire expression to be subjected to any global pattern matching options
+3 5 such as NULL_GLOB. Thus:
+4 12 ls -ld -- *(-/)
+3 5 lists all directories and symbolic links that point to directories, and
+4 12 ls -ld -- *(-@)
+3 5 lists all broken symbolic links, and
+4 12 ls -ld -- *(%W)
+3 5 lists all world-writable device files in the current directory, and
+4 12 ls -ld -- *(W,X)
+3 5 lists all files in the current directory that are world-writable or
+3 5 world-executable, and
+4 12 print -rC1 /tmp/foo*(u0^@:t)
+3 5 outputs the basename of all root-owned files beginning with the string
+3 5 ‘foo' in /tmp, ignoring symlinks, and
+4 12 ls -ld -- *.*~(lex|parse).[ch](^D^l1)
+3 5 lists all files having a link count of one whose names contain a dot (but
+3 5 not those starting with a dot, since GLOB_DOTS is explicitly switched off)
+3 5 except for lex.c, lex.h, parse.c and parse.h.
+4 12 print -rC1 b*.pro(#q:s/pro/shmo/)(#q.:s/builtin/shmiltin/)
+3 5 demonstrates how colon modifiers and other qualifiers may be chained
+3 5 together.  The ordinary qualifier ‘.' is applied first, then the colon
+3 5 modifiers in order from left to right.  So if EXTENDED_GLOB is set and the
+3 5 base pattern matches the regular file builtin.pro, the shell will print
+3 5 ‘shmiltin.shmo'.
+1 0 zsh 5.9.1                         May 31, 2026                       ZSHEXPN(1)

@@ -1,0 +1,1391 @@
+1 0 ZSHOPTIONS(1)               General Commands Manual               ZSHOPTIONS(1)
+1 0 NAME
+3 5 zshoptions - zsh options
+1 0 SPECIFYING OPTIONS
+3 5 Options are primarily referred to by name.  These names are case
+3 5 insensitive and underscores are ignored.  For example, ‘allexport' is
+3 5 equivalent to ‘A__lleXP_ort'.
+3 5 The sense of an option name may be inverted by preceding it with ‘no', so
+3 5 ‘setopt No_Beep' is equivalent to ‘unsetopt beep'.  This inversion can
+3 5 only be done once, so ‘nonobeep' is not a synonym for ‘beep'.  Similarly,
+3 5 ‘tify' is not a synonym for ‘nonotify' (the inversion of ‘notify').
+3 5 Some options also have one or more single letter names.  There are two
+3 5 sets of single letter options: one used by default, and another used to
+3 5 emulate sh/ksh (used when the SH_OPTION_LETTERS option is set).  The
+3 5 single letter options can be used on the shell command line, or with the
+3 5 set, setopt and unsetopt builtins, as normal Unix options preceded by ‘-'.
+3 5 The sense of the single letter options may be inverted by using ‘+'
+3 5 instead of ‘-'.  Some of the single letter option names refer to an option
+3 5 being off, in which case the inversion of that name refers to the option
+3 5 being on.  For example, ‘+n' is the short name of ‘exec', and ‘-n' is the
+3 5 short name of its inversion, ‘noexec'.
+3 5 In strings of single letter options supplied to the shell at startup,
+3 5 trailing whitespace will be ignored; for example the string ‘-f    ' will
+3 5 be treated just as ‘-f', but the string ‘-f i' is an error.  This is
+3 5 because many systems which implement the ‘#!' mechanism for calling
+3 5 scripts do not strip trailing whitespace.
+3 5 It is possible for options to be set within a function scope.  See the
+3 5 description of the option LOCAL_OPTIONS below.
+1 0 DESCRIPTION OF OPTIONS
+3 5 In the following list, options set by default in all emulations are marked
+3 5 <D>; those set by default only in csh, ksh, sh, or zsh emulations are
+3 5 marked <C>, <K>, <S>, <Z> as appropriate.  When listing options (by
+3 5 ‘setopt', ‘unsetopt', ‘set -o' or ‘set +o'), those turned on by default
+3 5 appear in the list prefixed with ‘no'.  Hence (unless KSH_OPTION_PRINT is
+3 5 set), ‘setopt' shows all options whose settings are changed from the
+3 5 default.
+2 3 Changing Directories
+3 5 AUTO_CD (-J)
+4 12 If a command is issued that can't be executed as a normal command,
+4 12 and the command is the name of a directory, perform the cd command
+4 12 to that directory.  This option is only applicable if the option
+4 12 SHIN_STDIN is set, i.e. if commands are being read from standard
+4 12 input.  The option is designed for interactive use; it is
+4 12 recommended that cd be used explicitly in scripts to avoid
+4 12 ambiguity.
+3 5 AUTO_PUSHD (-N)
+4 12 Make cd push the old directory onto the directory stack.
+3 5 CDABLE_VARS (-T)
+4 12 If the argument to a cd command (or an implied cd with the AUTO_CD
+4 12 option set) is not a directory, and does not begin with a slash,
+4 12 try to expand the expression as if it were preceded by a ‘~' (see
+4 12 the section ‘Filename Expansion').
+3 5 CD_SILENT
+4 12 Never print the working directory after a cd (whether explicit or
+4 12 implied with the AUTO_CD option set). cd normally prints the
+4 12 working directory when the argument given to it was -, a stack
+4 12 entry, or the name of a directory found under CDPATH. Note that
+4 12 this is distinct from pushd's stack-printing behaviour, which is
+4 12 controlled by PUSHD_SILENT. This option overrides the
+4 12 printing-related effects of POSIX_CD.
+3 5 CHASE_DOTS
+4 12 When changing to a directory containing a path segment ‘..' which
+4 12 would otherwise be treated as canceling the previous segment in the
+4 12 path (in other words, ‘foo/..' would be removed from the path, or
+4 12 if ‘..' is the first part of the path, the last part of the current
+4 12 working directory would be removed), instead resolve the path to
+4 12 the physical directory.  This option is overridden by CHASE_LINKS.
+4 12 For example, suppose /foo/bar is a link to the directory /alt/rod.
+4 12 Without this option set, ‘cd /foo/bar/..' changes to /foo; with it
+4 12 set, it changes to /alt.  The same applies if the current directory
+4 12 is /foo/bar and ‘cd ..' is used.  Note that all other symbolic
+4 12 links in the path will also be resolved.
+3 5 CHASE_LINKS (-w)
+4 12 Resolve symbolic links to their true values when changing
+4 12 directory.  This also has the effect of CHASE_DOTS, i.e. a ‘..'
+4 12 path segment will be treated as referring to the physical parent,
+4 12 even if the preceding path segment is a symbolic link.
+3 5 POSIX_CD <K> <S>
+4 12 Modifies the behaviour of cd, chdir and pushd commands to make them
+4 12 more compatible with the POSIX standard. The behaviour with the
+4 12 option unset is described in the documentation for the cd builtin
+4 12 in zshbuiltins(1).  If the option is set, the shell does not test
+4 12 for directories beneath the local directory (‘.') until after all
+4 12 directories in cdpath have been tested, and the cd and chdir
+4 12 commands do not recognise arguments of the form ‘{+|-}n' as
+4 12 directory stack entries.
+4 12 Also, if the option is set, the conditions under which the shell
+4 12 prints the new directory after changing to it are modified.  It is
+4 12 no longer restricted to interactive shells (although printing of
+4 12 the directory stack with pushd is still limited to interactive
+4 12 shells); and any use of a component of CDPATH, including a ‘.' but
+4 12 excluding an empty component that is otherwise treated as ‘.',
+4 12 causes the directory to be printed.
+3 5 PUSHD_IGNORE_DUPS
+4 12 Don't push multiple copies of the same directory onto the directory
+4 12 stack.
+3 5 PUSHD_MINUS
+4 12 Exchanges the meanings of ‘+' and ‘-' when used with a number to
+4 12 specify a directory in the stack.
+3 5 PUSHD_SILENT (-E)
+4 12 Do not print the directory stack after pushd or popd.
+3 5 PUSHD_TO_HOME (-D)
+4 12 Have pushd with no arguments act like ‘pushd $HOME'.
+2 3 Completion
+3 5 ALWAYS_LAST_PROMPT <D>
+4 12 If unset, key functions that list completions try to return to the
+4 12 last prompt if given a numeric argument. If set these functions try
+4 12 to return to the last prompt if given no numeric argument.
+3 5 ALWAYS_TO_END
+4 12 If a completion is performed with the cursor within a word, and a
+4 12 full completion is inserted, the cursor is moved to the end of the
+4 12 word.  That is, the cursor is moved to the end of the word if
+4 12 either a single match is inserted or menu completion is performed.
+3 5 AUTO_LIST (-9) <D>
+4 12 Automatically list choices on an ambiguous completion.
+3 5 AUTO_MENU <D>
+4 12 Automatically use menu completion after the second consecutive
+4 12 request for completion, for example by pressing the tab key
+4 12 repeatedly. This option is overridden by MENU_COMPLETE.
+3 5 AUTO_NAME_DIRS
+4 12 Any parameter that is set to the absolute name of a directory
+4 12 immediately becomes a name for that directory, that will be used by
+4 12 the ‘%~' and related prompt sequences, and will be available when
+4 12 completion is performed on a word starting with ‘~'.  (Otherwise,
+4 12 the parameter must be used in the form ‘~param' first.)
+3 5 AUTO_PARAM_KEYS <D>
+4 12 If a parameter name was completed and a following character
+4 12 (normally a space) automatically inserted, and the next character
+4 12 typed is one of those that have to come directly after the name
+4 12 (like ‘}', ‘:', etc.), the automatically added character is
+4 12 deleted, so that the character typed comes immediately after the
+4 12 parameter name.  Completion in a brace expansion is affected
+4 12 similarly: the added character is a ‘,', which will be removed if
+4 12 ‘}' is typed next.
+3 5 AUTO_PARAM_SLASH <D>
+4 12 If a parameter is completed whose content is the name of a
+4 12 directory, then add a trailing slash instead of a space.
+3 5 AUTO_REMOVE_SLASH <D>
+4 12 When the last character resulting from a completion is a slash and
+4 12 the next character typed is a word delimiter, a slash, or a
+4 12 character that ends a command (such as a semicolon or an
+4 12 ampersand), remove the slash.
+3 5 BASH_AUTO_LIST
+4 12 On an ambiguous completion, automatically list choices when the
+4 12 completion function is called twice in succession.  This takes
+4 12 precedence over AUTO_LIST.  The setting of LIST_AMBIGUOUS is
+4 12 respected.  If AUTO_MENU is set, the menu behaviour will then start
+4 12 with the third press.  Note that this will not work with
+4 12 MENU_COMPLETE, since repeated completion calls immediately cycle
+4 12 through the list in that case.
+3 5 COMPLETE_ALIASES
+4 12 Prevents aliases on the command line from being internally
+4 12 substituted before completion is attempted.  The effect is to make
+4 12 the alias a distinct command for completion purposes.
+3 5 COMPLETE_IN_WORD
+4 12 If unset, the cursor is set to the end of the word if completion is
+4 12 started. Otherwise it stays there and completion is done from both
+4 12 ends.
+3 5 GLOB_COMPLETE
+4 12 When the current word has a glob pattern, do not insert all the
+4 12 words resulting from the expansion but generate matches as for
+4 12 completion and cycle through them like MENU_COMPLETE. The matches
+4 12 are generated as if a ‘*' was added to the end of the word, or
+4 12 inserted at the cursor when COMPLETE_IN_WORD is set.  This actually
+4 12 uses pattern matching, not globbing, so it works not only for files
+4 12 but for any completion, such as options, user names, etc.
+4 12 Note that when the pattern matcher is used, matching control (for
+4 12 example, case-insensitive or anchored matching) cannot be used.
+4 12 This limitation only applies when the current word contains a
+4 12 pattern; simply turning on the GLOB_COMPLETE option does not have
+4 12 this effect.
+3 5 HASH_LIST_ALL <D>
+4 12 Whenever a command completion or spelling correction is attempted,
+4 12 make sure the entire command path is hashed first.  This makes the
+4 12 first completion slower but avoids false reports of spelling
+4 12 errors.
+3 5 LIST_AMBIGUOUS <D>
+4 12 This option works when AUTO_LIST or BASH_AUTO_LIST is also set.  If
+4 12 there is an unambiguous prefix to insert on the command line, that
+4 12 is done without a completion list being displayed; in other words,
+4 12 auto-listing behaviour only takes place when nothing would be
+4 12 inserted.  In the case of BASH_AUTO_LIST, this means that the list
+4 12 will be delayed to the third call of the function.
+3 5 LIST_BEEP <D>
+4 12 Beep on an ambiguous completion.  More accurately, this forces the
+4 12 completion widgets to return status 1 on an ambiguous completion,
+4 12 which causes the shell to beep if the option BEEP is also set; this
+4 12 may be modified if completion is called from a user-defined widget.
+3 5 LIST_PACKED
+4 12 Try to make the completion list smaller (occupying less lines) by
+4 12 printing the matches in columns with different widths.
+3 5 LIST_ROWS_FIRST
+4 12 Lay out the matches in completion lists sorted horizontally, that
+4 12 is, the second match is to the right of the first one, not under it
+4 12 as usual.
+3 5 LIST_TYPES (-X) <D>
+4 12 When listing files that are possible completions, show the type of
+4 12 each file with a trailing identifying mark.
+3 5 MENU_COMPLETE (-Y)
+4 12 On an ambiguous completion, instead of listing possibilities or
+4 12 beeping, insert the first match immediately.  Then when completion
+4 12 is requested again, remove the first match and insert the second
+4 12 match, etc.  When there are no more matches, go back to the first
+4 12 one again.  reverse-menu-complete may be used to loop through the
+4 12 list in the other direction. This option overrides AUTO_MENU.
+3 5 REC_EXACT (-S)
+4 12 If the string on the command line exactly matches one of the
+4 12 possible completions, it is accepted, even if there is another
+4 12 completion (i.e. that string with something else added) that also
+4 12 matches.
+2 3 Expansion and Globbing
+3 5 BAD_PATTERN (+2) <C> <Z>
+4 12 If a pattern for filename generation is badly formed, print an
+4 12 error message.  (If this option is unset, the pattern will be left
+4 12 unchanged.)
+3 5 BARE_GLOB_QUAL <Z>
+4 12 In a glob pattern, treat a trailing set of parentheses as a
+4 12 qualifier list, if it contains no ‘|', ‘(' or (if special) ‘~'
+4 12 characters.  See the section ‘Filename Generation'.
+3 5 BRACE_CCL
+4 12 Expand expressions in braces which would not otherwise undergo
+4 12 brace expansion to a lexically ordered list of all the characters.
+4 12 See the section ‘Brace Expansion'.
+3 5 CASE_GLOB <D>
+4 12 Make globbing (filename generation) sensitive to case.  Note that
+4 12 other uses of patterns are always sensitive to case.  If the option
+4 12 is unset, the presence of any character which is special to
+4 12 filename generation will cause case-insensitive matching.  For
+4 12 example, cvs(/) can match the directory CVS owing to the presence
+4 12 of the globbing flag (unless the option BARE_GLOB_QUAL is unset).
+3 5 CASE_MATCH <D>
+4 12 Make regular expressions using the zsh/regex module (including
+4 12 matches with =~) sensitive to case.
+3 5 CASE_PATHS
+4 12 If CASE_PATHS is not set (the default), CASE_GLOB affects the
+4 12 interpretation of every path component, whenever a special
+4 12 character appears in any component.  When CASE_PATHS is set, file
+4 12 path components that do not contain special filename generation
+4 12 characters are always sensitive to case, thus restricting
+4 12 NO_CASE_GLOB to components that contain globbing characters.
+4 12 Note that if the filesystem itself is not sensitive to case, then
+4 12 CASE_PATHS has no effect.
+3 5 CSH_NULL_GLOB <C>
+4 12 If a pattern for filename generation has no matches, delete the
+4 12 pattern from the argument list; do not report an error unless all
+4 12 the patterns in a command have no matches.  Overrides NOMATCH.
+3 5 EQUALS <Z>
+4 12 Perform = filename expansion.  (See the section ‘Filename
+4 12 Expansion'.)
+3 5 EXTENDED_GLOB
+4 12 Treat the ‘#', ‘~' and ‘^' characters as part of patterns for
+4 12 filename generation, etc.  (An initial unquoted ‘~' always produces
+4 12 named directory expansion.)
+3 5 FORCE_FLOAT
+4 12 Constants in arithmetic evaluation will be treated as floating
+4 12 point even without the use of a decimal point; the values of
+4 12 integer variables will be converted to floating point when used in
+4 12 arithmetic expressions.  Integers in any base will be converted.
+3 5 GLOB (+F, ksh: +f) <D>
+4 12 Perform filename generation (globbing).  (See the section ‘Filename
+4 12 Generation'.)
+3 5 GLOB_ASSIGN <C>
+4 12 If this option is set, filename generation (globbing) is performed
+4 12 on the right hand side of scalar parameter assignments of the form
+4 12 ‘name=pattern (e.g. ‘foo=*').  If the result has more than one word
+4 12 the parameter will become an array with those words as arguments.
+4 12 This option is provided for backwards compatibility only: globbing
+4 12 is always performed on the right hand side of array assignments of
+4 12 the form ‘name=(value)' (e.g. ‘foo=(*)') and this form is
+4 12 recommended for clarity; with this option set, it is not possible
+4 12 to predict whether the result will be an array or a scalar.
+3 5 GLOB_DOTS (-4)
+4 12 Do not require a leading ‘.' in a filename to be matched
+4 12 explicitly.
+3 5 GLOB_STAR_SHORT
+4 12 When this option is set and the default zsh-style globbing is in
+4 12 effect, the pattern ‘**/*' can be abbreviated to ‘**' and the
+4 12 pattern ‘***/*' can be abbreviated to ***.  Hence ‘**.c' finds a
+4 12 file ending in .c in any subdirectory, and ‘***.c' does the same
+4 12 while also following symbolic links.  A / immediately after the
+4 12 ‘**' or ‘***' forces the pattern to be treated as the unabbreviated
+4 12 form.
+3 5 GLOB_SUBST <C> <K> <S>
+4 12 Treat any characters resulting from parameter expansion as being
+4 12 eligible for filename expansion and filename generation, and any
+4 12 characters resulting from command substitution as being eligible
+4 12 for filename generation.  Braces (and commas in between) do not
+4 12 become eligible for expansion.
+3 5 HIST_SUBST_PATTERN
+4 12 Substitutions using the :s and :& history modifiers are performed
+4 12 with pattern matching instead of string matching.  This occurs
+4 12 wherever history modifiers are valid, including glob qualifiers and
+4 12 parameters.  See the section ‘Modifiers' in zshexpn(1).
+3 5 IGNORE_BRACES (-I) <S>
+4 12 Do not perform brace expansion.  For historical reasons this also
+4 12 includes the effect of the IGNORE_CLOSE_BRACES option.
+3 5 IGNORE_CLOSE_BRACES
+4 12 When neither this option nor IGNORE_BRACES is set, a sole close
+4 12 brace character ‘}' is syntactically significant at any point on a
+4 12 command line.  This has the effect that no semicolon or newline is
+4 12 necessary before the brace terminating a function or current shell
+4 12 construct.  When either option is set, a closing brace is
+4 12 syntactically significant only in command position.  Unlike
+4 12 IGNORE_BRACES, this option does not disable brace expansion.
+4 12 For example, with both options unset a function may be defined in
+4 12 the following fashion:
+5 19 args() { echo $# }
+4 12 while if either option is set, this does not work and something
+4 12 equivalent to the following is required:
+5 19 args() { echo $#; }
+3 5 KSH_GLOB <K>
+4 12 In pattern matching, the interpretation of parentheses is affected
+4 12 by a preceding ‘@', ‘*', ‘+', ‘?' or ‘!'.  See the section
+4 12 ‘Filename Generation'.
+3 5 MAGIC_EQUAL_SUBST
+4 12 All unquoted arguments of the form ‘anything=expression' appearing
+4 12 after the command name have filename expansion (that is, where
+4 12 expression has a leading ‘~' or ‘=') performed on expression as if
+4 12 it were a parameter assignment.  The argument is not otherwise
+4 12 treated specially; it is passed to the command as a single
+4 12 argument, and not used as an actual parameter assignment.  For
+4 12 example, in echo foo=~/bar:~/rod, both occurrences of ~ would be
+4 12 replaced.  Note that this happens anyway with typeset and similar
+4 12 statements.
+4 12 This option respects the setting of the KSH_TYPESET option.  In
+4 12 other words, if both options are in effect, arguments looking like
+4 12 assignments will not undergo word splitting.
+3 5 MARK_DIRS (-8, ksh: -X)
+4 12 Append a trailing ‘/' to all directory names resulting from
+4 12 filename generation (globbing).
+3 5 MULTIBYTE <D>
+4 12 Respect multibyte characters when found in strings.  When this
+4 12 option is set, strings are examined using the system library to
+4 12 determine how many bytes form a character, depending on the current
+4 12 locale.  This affects the way characters are counted in pattern
+4 12 matching, parameter values and various delimiters.
+4 12 The option is on by default if the shell was compiled with
+4 12 MULTIBYTE_SUPPORT; otherwise it is off by default and has no effect
+4 12 if turned on.
+4 12 If the option is off a single byte is always treated as a single
+4 12 character.  This setting is designed purely for examining strings
+4 12 known to contain raw bytes or other values that may not be
+4 12 characters in the current locale.  It is not necessary to unset the
+4 12 option merely because the character set for the current locale does
+4 12 not contain multibyte characters.
+4 12 The option does not affect the shell's editor,  which always uses
+4 12 the locale to determine multibyte characters.  This is because the
+4 12 character set displayed by the terminal emulator is independent of
+4 12 shell settings.
+3 5 NOMATCH (+3) <C> <Z>
+4 12 If a pattern for filename generation has no matches, print an
+4 12 error, instead of leaving it unchanged in the argument list.  This
+4 12 also applies to file expansion of an initial ‘~' or ‘='.
+3 5 NULL_GLOB (-G)
+4 12 If a pattern for filename generation has no matches, delete the
+4 12 pattern from the argument list instead of reporting an error.
+4 12 Overrides NOMATCH.
+3 5 NUMERIC_GLOB_SORT
+4 12 If numeric filenames are matched by a filename generation pattern,
+4 12 sort the filenames numerically rather than lexicographically.
+3 5 RC_EXPAND_PARAM (-P)
+4 12 Array expansions of the form ‘foo${xx}bar', where the parameter xx
+4 12 is set to (a b c), are substituted with ‘fooabar foobbar foocbar'
+4 12 instead of the default ‘fooa b cbar'.  Note that an empty array
+4 12 will therefore cause all arguments to be removed.
+3 5 REMATCH_PCRE
+4 12 If set, regular expression matching with the =~ operator will use
+4 12 Perl-Compatible Regular Expressions from the PCRE library.  (The
+4 12 zsh/pcre module must be available.)  If not set, regular
+4 12 expressions will use the extended regexp syntax provided by the
+4 12 system libraries.
+3 5 SH_GLOB <K> <S>
+4 12 Disables the special meaning of ‘(', ‘|', ‘)' and '<' for globbing
+4 12 the result of parameter and command substitutions, and in some
+4 12 other places where the shell accepts patterns.  If SH_GLOB is set
+4 12 but KSH_GLOB is not, the shell allows the interpretation of
+4 12 subshell expressions enclosed in parentheses in some cases where
+4 12 there is no space before the opening parenthesis, e.g. !(true) is
+4 12 interpreted as if there were a space after the !.  This option is
+4 12 set by default if zsh is invoked as sh or ksh.
+3 5 UNSET (+u, ksh: +u) <K> <S> <Z>
+4 12 Treat unset parameters as if they were empty when substituting, and
+4 12 as if they were zero when reading their values in arithmetic
+4 12 expansion and arithmetic commands.  Otherwise they are treated as
+4 12 an error.
+3 5 WARN_CREATE_GLOBAL
+4 12 Print a warning message when a global parameter is created in a
+4 12 function by an assignment or in math context.  This often indicates
+4 12 that a parameter has not been declared local when it should have
+4 12 been.  Parameters explicitly declared global from within a function
+4 12 using typeset -g do not cause a warning.  Note that there is no
+4 12 warning when a local parameter is assigned to in a nested function,
+4 12 which may also indicate an error.
+3 5 WARN_NESTED_VAR
+4 12 Print a warning message when an existing parameter from an
+4 12 enclosing function scope, or global, is set in a function by an
+4 12 assignment or in math context.  Assignment to shell special
+4 12 parameters does not cause a warning.  This is the companion to
+4 12 WARN_CREATE_GLOBAL as in this case the warning is only printed when
+4 12 a parameter is not created.  Where possible, use of typeset -g to
+4 12 set the parameter suppresses the error, but note that this needs to
+4 12 be used every time the parameter is set.  To restrict the effect of
+4 12 this option to a single function scope, use ‘functions -W'.
+4 12 For example, the following code produces a warning for the
+4 12 assignment inside the function nested as that overrides the value
+4 12 within toplevel
+5 19 toplevel() {
+6 21 local foo="in fn"
+6 21 nested
+5 19 }
+5 19 nested() {
+7 24 foo="in nested"
+5 19 }
+5 19 setopt warn_nested_var
+5 19 toplevel
+2 3 History
+3 5 APPEND_HISTORY <D>
+4 12 If this is set, zsh sessions will append their history list to the
+4 12 history file, rather than replace it. Thus, multiple parallel zsh
+4 12 sessions will all have the new entries from their history lists
+4 12 added to the history file, in the order that they exit.  The file
+4 12 will still be periodically re-written to trim it when the number of
+4 12 lines grows 20% beyond the value specified by $SAVEHIST (see also
+4 12 the HIST_SAVE_BY_COPY option).
+3 5 BANG_HIST (+K) <C> <Z>
+4 12 Perform textual history expansion, csh-style, treating the
+4 12 character ‘!' specially.
+3 5 EXTENDED_HISTORY <C>
+4 12 Save each command's beginning timestamp (in seconds since the
+4 12 epoch) and the duration (in seconds) to the history file.  The
+4 12 format of this prefixed data is:
+4 12 ‘: <beginning time>:<elapsed seconds>;<command>'.
+3 5 HIST_ALLOW_CLOBBER
+4 12 Add ‘|' to output redirections in the history.  This allows history
+4 12 references to clobber files even when CLOBBER is unset.
+3 5 HIST_BEEP <D>
+4 12 Beep in ZLE when a widget attempts to access a history entry which
+4 12 isn't there.
+3 5 HIST_EXPIRE_DUPS_FIRST
+4 12 If the internal history needs to be trimmed to add the current
+4 12 command line, setting this option will cause the oldest history
+4 12 event that has a duplicate to be lost before losing a unique event
+4 12 from the list.  You should be sure to set the value of HISTSIZE to
+4 12 a larger number than SAVEHIST in order to give you some room for
+4 12 the duplicated events, otherwise this option will behave just like
+4 12 HIST_IGNORE_ALL_DUPS once the history fills up with unique events.
+3 5 HIST_FCNTL_LOCK
+4 12 When writing out the history file, by default zsh uses ad-hoc file
+4 12 locking to avoid known problems with locking on some operating
+4 12 systems.  With this option locking is done by means of the system's
+4 12 fcntl call, where this method is available.  On recent operating
+4 12 systems this may provide better performance, in particular avoiding
+4 12 history corruption when files are stored on NFS.
+3 5 HIST_FIND_NO_DUPS
+4 12 When searching for history entries in the line editor, do not
+4 12 display duplicates of a line previously found, even if the
+4 12 duplicates are not contiguous.
+3 5 HIST_IGNORE_ALL_DUPS
+4 12 If a new command line being added to the history list duplicates an
+4 12 older one, the older command is removed from the list (even if it
+4 12 is not the previous event).
+3 5 HIST_IGNORE_DUPS (-h)
+4 12 Do not enter command lines into the history list if they are
+4 12 duplicates of the previous event.
+3 5 HIST_IGNORE_SPACE (-g)
+4 12 Remove command lines from the history list when the first character
+4 12 on the line is a space, or when one of the expanded aliases
+4 12 contains a leading space.  Only normal aliases (not global or
+4 12 suffix aliases) have this behaviour.  Note that the command lingers
+4 12 in the internal history until the next command is entered before it
+4 12 vanishes, allowing you to briefly reuse or edit the line.  If you
+4 12 want to make it vanish right away without entering another command,
+4 12 type a space and press return.
+3 5 HIST_LEX_WORDS
+4 12 By default, shell history that is read in from files is split into
+4 12 words on all white space.  This means that arguments with quoted
+4 12 whitespace are not correctly handled, with the consequence that
+4 12 references to words in history lines that have been read from a
+4 12 file may be inaccurate.  When this option is set, words read in
+4 12 from a history file are divided up in a similar fashion to normal
+4 12 shell command line handling.  Although this produces more
+4 12 accurately delimited words, if the size of the history file is
+4 12 large this can be slow.  Trial and error is necessary to decide.
+3 5 HIST_NO_FUNCTIONS
+4 12 Remove function definitions from the history list.  Note that the
+4 12 function lingers in the internal history until the next command is
+4 12 entered before it vanishes, allowing you to briefly reuse or edit
+4 12 the definition.
+3 5 HIST_NO_STORE
+4 12 Remove the history (fc -l) command from the history list when
+4 12 invoked.  Note that the command lingers in the internal history
+4 12 until the next command is entered before it vanishes, allowing you
+4 12 to briefly reuse or edit the line.
+3 5 HIST_REDUCE_BLANKS
+4 12 Remove superfluous blanks from each command line being added to the
+4 12 history list.
+3 5 HIST_SAVE_BY_COPY <D>
+4 12 When the history file is re-written, we normally write out a copy
+4 12 of the file named $HISTFILE.new and then rename it over the old
+4 12 one.  However, if this option is unset, we instead truncate the old
+4 12 history file and write out the new version in-place.  If one of the
+4 12 history-appending options is enabled, this option only has an
+4 12 effect when the enlarged history file needs to be re-written to
+4 12 trim it down to size.  Disable this only if you have special needs,
+4 12 as doing so makes it possible to lose history entries if zsh gets
+4 12 interrupted during the save.
+4 12 When writing out a copy of the history file, zsh preserves the old
+4 12 file's permissions and group information, but will refuse to write
+4 12 out a new file if it would change the history file's owner.
+3 5 HIST_SAVE_NO_DUPS
+4 12 When writing out the history file, older commands that duplicate
+4 12 newer ones are omitted.
+3 5 HIST_VERIFY
+4 12 Whenever the user enters a line with history expansion, don't
+4 12 execute the line directly; instead, perform history expansion and
+4 12 reload the line into the editing buffer.
+3 5 INC_APPEND_HISTORY
+4 12 This option works like APPEND_HISTORY except that new history lines
+4 12 are added to the $HISTFILE incrementally (as soon as they are
+4 12 entered), rather than waiting until the shell exits.  The file will
+4 12 still be periodically re-written to trim it when the number of
+4 12 lines grows 20% beyond the value specified by $SAVEHIST (see also
+4 12 the HIST_SAVE_BY_COPY option).
+3 5 INC_APPEND_HISTORY_TIME
+4 12 This option is a variant of INC_APPEND_HISTORY in which, where
+4 12 possible, the history entry is written out to the file after the
+4 12 command is finished, so that the time taken by the command is
+4 12 recorded correctly in the history file in EXTENDED_HISTORY format.
+4 12 This means that the history entry will not be available immediately
+4 12 from other instances of the shell that are using the same history
+4 12 file.
+4 12 This option is only useful if INC_APPEND_HISTORY and SHARE_HISTORY
+4 12 are turned off.  The three options should be considered mutually
+4 12 exclusive.
+3 5 SHARE_HISTORY <K>
+4 12 This option both imports new commands from the history file, and
+4 12 also causes your typed commands to be appended to the history file
+4 12 (the latter is like specifying INC_APPEND_HISTORY, which should be
+4 12 turned off if this option is in effect).  The history lines are
+4 12 also output with timestamps ala EXTENDED_HISTORY (which makes it
+4 12 easier to find the spot where we left off reading the file after it
+4 12 gets re-written).
+4 12 By default, history movement commands visit the imported lines as
+4 12 well as the local lines, but you can toggle this on and off with
+4 12 the set-local-history zle binding.  It is also possible to create a
+4 12 zle widget that will make some commands ignore imported commands,
+4 12 and some include them.
+4 12 If you find that you want more control over when commands get
+4 12 imported, you may wish to turn SHARE_HISTORY off,
+4 12 INC_APPEND_HISTORY or INC_APPEND_HISTORY_TIME (see above) on, and
+4 12 then manually import commands whenever you need them using ‘fc
+4 12 -RI'.
+2 3 Initialisation
+3 5 ALL_EXPORT (-a, ksh: -a)
+4 12 All parameters subsequently defined are automatically exported.
+3 5 GLOBAL_EXPORT <Z>
+4 12 If this option is set, passing the -x flag to the builtins declare,
+4 12 float, integer, readonly and typeset (but not local) will also set
+4 12 the -g flag;  hence parameters exported to the environment will not
+4 12 be made local to the enclosing function, unless they were already
+4 12 or the flag +g is given explicitly.  If the option is unset,
+4 12 exported parameters will be made local in just the same way as any
+4 12 other parameter.
+4 12 This option is set by default for backward compatibility; it is not
+4 12 recommended that its behaviour be relied upon.  Note that the
+4 12 builtin export always sets both the -x and -g flags, and hence its
+4 12 effect extends beyond the scope of the enclosing function; this is
+4 12 the most portable way to achieve this behaviour.
+3 5 GLOBAL_RCS (+d) <D>
+4 12 If this option is unset, the startup files /etc/zsh/zprofile,
+4 12 /etc/zsh/zshrc, /etc/zsh/zlogin and /etc/zsh/zlogout will not be
+4 12 run.  It can be disabled and re-enabled at any time, including
+4 12 inside local startup files (.zshrc, etc.).
+3 5 RCS (+f) <D>
+4 12 After /etc/zsh/zshenv is sourced on startup, source the .zshenv,
+4 12 /etc/zsh/zprofile, .zprofile, /etc/zsh/zshrc, .zshrc,
+4 12 /etc/zsh/zlogin, .zlogin, and .zlogout files, as described in the
+4 12 section ‘Files'.  If this option is unset, the /etc/zsh/zshenv file
+4 12 is still sourced, but any of the others will not be; it can be set
+4 12 at any time to prevent the remaining startup files after the
+4 12 currently executing one from being sourced.
+2 3 Input/Output
+3 5 ALIASES <D>
+4 12 Expand aliases.
+3 5 CLOBBER (+C, ksh: +C) <D>
+4 12 Allows ‘>' redirection to truncate existing files.  Otherwise ‘>!'
+4 12 or ‘>|' must be used to truncate a file.
+4 12 If the option is not set, and the option APPEND_CREATE is also not
+4 12 set, ‘>>!' or ‘>>|' must be used to create a file.  If either
+4 12 option is set, ‘>>' may be used.
+3 5 CLOBBER_EMPTY
+4 12 This option is only used if the option CLOBBER is not set: note
+4 12 that it is set by default.
+4 12 If this option is set, then regular files of zero length may be
+4 12 ovewritten (‘clobbered').  Note that it is possible another process
+4 12 has written to the file between this test and use of the file by
+4 12 the current process.  This option should therefore not be used in
+4 12 cases where files to be clobbered may be written to asynchronously.
+3 5 CORRECT (-0)
+4 12 Try to correct the spelling of commands.  Note that, when the
+4 12 HASH_LIST_ALL option is not set or when some directories in the
+4 12 path are not readable, this may falsely report spelling errors the
+4 12 first time some commands are used.
+4 12 The shell variable CORRECT_IGNORE may be set to a pattern to match
+4 12 words that will never be offered as corrections.
+3 5 CORRECT_ALL (-O)
+4 12 Try to correct the spelling of all arguments in a line.
+4 12 The shell variable CORRECT_IGNORE_FILE may be set to a pattern to
+4 12 match file names that will never be offered as corrections.
+3 5 DVORAK
+4 12 Use the Dvorak keyboard instead of the standard qwerty keyboard as
+4 12 a basis for examining spelling mistakes for the CORRECT and
+4 12 CORRECT_ALL options and the spell-word editor command.
+3 5 FLOW_CONTROL <D>
+4 12 If this option is unset, output flow control via start/stop
+4 12 characters (usually assigned to ^S/^Q) is disabled in the shell's
+4 12 editor.
+3 5 IGNORE_EOF (-7)
+4 12 Do not exit on end-of-file.  Require the use of exit or logout
+4 12 instead.  However, ten consecutive EOFs will cause the shell to
+4 12 exit anyway, to avoid the shell hanging if its tty goes away.
+4 12 Also, if this option is set and the Zsh Line Editor is used,
+4 12 widgets implemented by shell functions can be bound to EOF
+4 12 (normally Control-D) without printing the normal warning message.
+4 12 This works only for normal widgets, not for completion widgets.
+3 5 INTERACTIVE_COMMENTS (-k) <K> <S>
+4 12 Allow comments even in interactive shells.
+3 5 HASH_CMDS <D>
+4 12 Note the location of each command the first time it is executed.
+4 12 Subsequent invocations of the same command will use the saved
+4 12 location, avoiding a path search.  If this option is unset, no path
+4 12 hashing is done at all.  However, when CORRECT is set, commands
+4 12 whose names do not appear in the functions or aliases hash tables
+4 12 are hashed in order to avoid reporting them as spelling errors.
+3 5 HASH_DIRS <D>
+4 12 Whenever a command name is hashed, hash the directory containing
+4 12 it, as well as all directories that occur earlier in the path.  Has
+4 12 no effect if neither HASH_CMDS nor CORRECT is set.
+3 5 HASH_EXECUTABLES_ONLY
+4 12 When hashing commands because of HASH_CMDS, check that the file to
+4 12 be hashed is actually an executable.  This option is unset by
+4 12 default as if the path contains a large number of commands, or
+4 12 consists of many remote files, the additional tests can take a long
+4 12 time.  Trial and error is needed to show if this option is
+4 12 beneficial.
+3 5 MAIL_WARNING (-U)
+4 12 Print a warning message if a mail file has been accessed since the
+4 12 shell last checked.
+3 5 PATH_DIRS (-Q)
+4 12 Perform a path search even on command names with slashes in them.
+4 12 Thus if ‘/usr/local/bin' is in the user's path, and he or she types
+4 12 ‘X11/xinit', the command ‘/usr/local/bin/X11/xinit' will be
+4 12 executed (assuming it exists).  Commands explicitly beginning with
+4 12 ‘/', ‘./' or ‘../' are not subject to the path search.  This also
+4 12 applies to the ‘.' and source builtins.
+4 12 Note that subdirectories of the current directory are always
+4 12 searched for executables specified in this form.  This takes place
+4 12 before any search indicated by this option, and regardless of
+4 12 whether ‘.' or the current directory appear in the command search
+4 12 path.
+3 5 PATH_SCRIPT <K> <S>
+4 12 If this option is not set, a script passed as the first non-option
+4 12 argument to the shell must contain the name of the file to open.
+4 12 If this option is set, and the script does not specify a directory
+4 12 path, the script is looked for first in the current directory, then
+4 12 in the command path.  See the section INVOCATION in zsh(1).
+3 5 PRINT_EIGHT_BIT
+4 12 Print eight bit characters literally in completion lists, etc.
+4 12 This option is not necessary if your system correctly returns the
+4 12 printability of eight bit characters (see ctype(3)).
+3 5 PRINT_EXIT_VALUE (-1)
+4 12 Print the exit value of programs with non-zero exit status.  This
+4 12 is only available at the command line in interactive shells.
+3 5 RC_QUOTES
+4 12 Allow the character sequence ‘''' to signify a single quote within
+4 12 singly quoted strings.  Note this does not apply in quoted strings
+4 12 using the format $'...', where a backslashed single quote can be
+4 12 used.
+3 5 RM_STAR_SILENT (-H) <K> <S>
+4 12 Do not query the user before executing ‘rm *' or ‘rm path/*'.
+3 5 RM_STAR_WAIT
+4 12 If querying the user before executing ‘rm *' or ‘rm path/*', first
+4 12 wait ten seconds and ignore anything typed in that time.  This
+4 12 avoids the problem of reflexively answering ‘yes' to the query when
+4 12 one didn't really mean it.  The wait and query can always be
+4 12 avoided by expanding the ‘*' in ZLE (with tab).
+3 5 SHORT_LOOPS <C> <Z>
+4 12 Allow the short forms of for, repeat, select, if, and function
+4 12 constructs.
+3 5 SHORT_REPEAT
+4 12 Allow the short form repeat as SHORT_LOOPS but without enabling it
+4 12 for the other constructs.
+3 5 SUN_KEYBOARD_HACK (-L)
+4 12 If a line ends with a backquote, and there are an odd number of
+4 12 backquotes on the line, ignore the trailing backquote.  This is
+4 12 useful on some keyboards where the return key is too small, and the
+4 12 backquote key lies annoyingly close to it.  As an alternative the
+4 12 variable KEYBOARD_HACK lets you choose the character to be removed.
+2 3 Job Control
+3 5 AUTO_CONTINUE
+4 12 With this option set, stopped jobs that are removed from the job
+4 12 table with the disown builtin command are automatically sent a CONT
+4 12 signal to make them running.
+3 5 AUTO_RESUME (-W)
+4 12 Treat single word simple commands without redirection as candidates
+4 12 for resumption of an existing job.
+3 5 BG_NICE (-6) <C> <Z>
+4 12 Run all background jobs at a lower priority.  This option is set by
+4 12 default.
+3 5 CHECK_JOBS <Z>
+4 12 Report the status of background and suspended jobs before exiting a
+4 12 shell with job control; a second attempt to exit the shell will
+4 12 succeed.  NO_CHECK_JOBS is best used only in combination with
+4 12 NO_HUP, else such jobs will be killed automatically.
+4 12 The check is omitted if the commands run from the previous command
+4 12 line included a ‘jobs' command, since it is assumed the user is
+4 12 aware that there are background or suspended jobs.  A ‘jobs'
+4 12 command run from one of the hook functions defined in the section
+4 12 SPECIAL FUNCTIONS in zshmisc(1) is not counted for this purpose.
+3 5 CHECK_RUNNING_JOBS <Z>
+4 12 Check for both running and suspended jobs when CHECK_JOBS is
+4 12 enabled.  When this option is disabled, zsh checks only for
+4 12 suspended jobs, which matches the default behavior of bash.
+4 12 This option has no effect unless CHECK_JOBS is set.
+3 5 HUP <Z>
+4 12 Send the HUP signal to running jobs when the shell exits.
+3 5 LONG_LIST_JOBS (-R)
+4 12 Print job notifications in the long format by default.
+3 5 MONITOR (-m, ksh: -m)
+4 12 Allow job control.  Set by default in interactive shells.
+3 5 NOTIFY (-5, ksh: -b) <Z>
+4 12 Report the status of background jobs immediately, rather than
+4 12 waiting until just before printing a prompt.
+3 5 POSIX_JOBS <K> <S>
+4 12 This option makes job control more compliant with the POSIX
+4 12 standard.
+4 12 When the option is not set, the MONITOR option is unset on entry to
+4 12 subshells, so that job control is no longer active.  When the
+4 12 option is set, the MONITOR option and job control remain active in
+4 12 the subshell, but note that the subshell has no access to jobs in
+4 12 the parent shell.
+4 12 When the option is not set, jobs put in the background or
+4 12 foreground with bg or fg are displayed with the same information
+4 12 that would be reported by jobs.  When the option is set, only the
+4 12 text is printed.  The output from jobs itself is not affected by
+4 12 the option.
+4 12 When the option is not set, job information from the parent shell
+4 12 is saved for output within a subshell (for example, within a
+4 12 pipeline).  When the option is set, the output of jobs is empty
+4 12 until a job is started within the subshell.
+4 12 In previous versions of the shell, it was necessary to enable
+4 12 POSIX_JOBS in order for the builtin command wait to return the
+4 12 status of background jobs that had already exited.  This is no
+4 12 longer the case.
+2 3 Prompting
+3 5 PROMPT_BANG <K>
+4 12 If set, ‘!' is treated specially in prompt expansion.  See
+4 12 EXPANSION OF PROMPT SEQUENCES in zshmisc(1).
+3 5 PROMPT_CR (+V) <D>
+4 12 Print a carriage return just before printing a prompt in the line
+4 12 editor.  This is on by default as multi-line editing is only
+4 12 possible if the editor knows where the start of the line appears.
+3 5 PROMPT_SP <D>
+4 12 Attempt to preserve a partial line (i.e. a line that did not end
+4 12 with a newline) that would otherwise be covered up by the command
+4 12 prompt due to the PROMPT_CR option.  This works by outputting some
+4 12 cursor-control characters, including a series of spaces, that
+4 12 should make the terminal wrap to the next line when a partial line
+4 12 is present (note that this is only successful if your terminal has
+4 12 automatic margins, which is typical).
+4 12 When a partial line is preserved, by default you will see an
+4 12 inverse+bold character at the end of the partial line:  a ‘%' for a
+4 12 normal user or a ‘#' for root.  If set, the shell parameter
+4 12 PROMPT_EOL_MARK can be used to customize how the end of partial
+4 12 lines are shown.
+4 12 NOTE: if the PROMPT_CR option is not set, enabling this option will
+4 12 have no effect.  This option is on by default.
+3 5 PROMPT_PERCENT <C> <Z>
+4 12 If set, ‘%' is treated specially in prompt expansion.  See
+4 12 EXPANSION OF PROMPT SEQUENCES in zshmisc(1).
+3 5 PROMPT_SUBST <K> <S>
+4 12 If set, parameter expansion, command substitution and arithmetic
+4 12 expansion are performed in prompts.  Substitutions within prompts
+4 12 do not affect the command status.
+3 5 TRANSIENT_RPROMPT
+4 12 Remove any right prompt from display when accepting a command line.
+4 12 This may be useful with terminals with other cut/paste methods.
+2 3 Scripts and Functions
+3 5 ALIAS_FUNC_DEF <S>
+4 12 By default, zsh does not allow the definition of functions using
+4 12 the ‘name ()' syntax if name was expanded as an alias: this causes
+4 12 an error.  This is usually the desired behaviour, as otherwise the
+4 12 combination of an alias and a function based on the same definition
+4 12 can easily cause problems.
+4 12 When this option is set, aliases can be used for defining
+4 12 functions.
+4 12 For example, consider the following definitions as they might occur
+4 12 in a startup file.
+5 19 alias foo=bar
+5 19 foo() {
+6 21 print This probably does not do what you expect.
+5 19 }
+4 12 Here, foo is expanded as an alias to bar before the () is
+4 12 encountered, so the function defined would be named bar.  By
+4 12 default this is instead an error in native mode.  Note that quoting
+4 12 any part of the function name, or using the keyword function,
+4 12 avoids the problem, so is recommended when the function name can
+4 12 also be an alias.
+3 5 C_BASES
+4 12 Output hexadecimal numbers in the standard C format, for example
+4 12 ‘0xFF' instead of the usual ‘16#FF'.  If the option OCTAL_ZEROES is
+4 12 also set (it is not by default), octal numbers will be treated
+4 12 similarly and hence appear as ‘077' instead of ‘8#77'.  This option
+4 12 has no effect on the choice of the output base, nor on the output
+4 12 of bases other than hexadecimal and octal.  Note that these formats
+4 12 will be understood on input irrespective of the setting of C_BASES.
+3 5 C_PRECEDENCES
+4 12 This alters the precedence of arithmetic operators to be more like
+4 12 C and other programming languages; the section ARITHMETIC
+4 12 EVALUATION in zshmisc(1) has an explicit list.
+3 5 DEBUG_BEFORE_CMD <D>
+4 12 Run the DEBUG trap before each command; otherwise it is run after
+4 12 each command.  Setting this option mimics the behaviour of ksh 93;
+4 12 with the option unset the behaviour is that of ksh 88.
+3 5 ERR_EXIT (-e, ksh: -e)
+4 12 If a command has a non-zero exit status, execute the ZERR trap, if
+4 12 set, and exit.  This is disabled while running initialization
+4 12 scripts.
+4 12 The behaviour is also disabled inside DEBUG traps.  In this case
+4 12 the option is handled specially: it is unset on entry to the trap.
+4 12 If the option DEBUG_BEFORE_CMD is set, as it is by default, and the
+4 12 option ERR_EXIT is found to have been set on exit, then the command
+4 12 for which the DEBUG trap is being executed is skipped.  The option
+4 12 is restored after the trap exits.
+4 12 Non-zero status in a command list containing && or || is ignored
+4 12 for commands not at the end of the list.  Hence
+5 19 false && true
+4 12 does not trigger exit.
+4 12 Exiting due to ERR_EXIT has certain interactions with asynchronous
+4 12 jobs noted in the section JOBS in zshmisc(1).
+3 5 ERR_RETURN
+4 12 If a command has a non-zero exit status, return immediately from
+4 12 the enclosing function.  The logic is similar to that for ERR_EXIT,
+4 12 except that an implicit return statement is executed instead of an
+4 12 exit.  This will trigger an exit at the outermost level of a
+4 12 non-interactive script.
+4 12 Normally this option inherits the behaviour of ERR_EXIT that code
+4 12 followed by ‘&&' ‘||' does not trigger a return.  Hence in the
+4 12 following:
+5 19 summit || true
+4 12 no return is forced as the combined effect always has a zero return
+4 12 status.
+4 12 Note. however, that if summit in the above example is itself a
+4 12 function, code inside it is considered separately: it may force a
+4 12 return from summit (assuming the option remains set within summit),
+4 12 but not from the enclosing context.  This behaviour is different
+4 12 from ERR_EXIT which is unaffected by function scope.
+3 5 EVAL_LINENO <Z>
+4 12 If set, line numbers of expressions evaluated using the builtin
+4 12 eval are tracked separately of the enclosing environment.  This
+4 12 applies both to the parameter LINENO and the line number output by
+4 12 the prompt escape %i.  If the option is set, the prompt escape %N
+4 12 will output the string ‘(eval)' instead of the script or function
+4 12 name as an indication.   (The two prompt escapes are typically used
+4 12 in the parameter PS4 to be output when the option XTRACE is set.)
+4 12 If EVAL_LINENO is unset, the line number of the surrounding script
+4 12 or function is retained during the evaluation.
+3 5 EXEC (+n, ksh: +n) <D>
+4 12 Do execute commands.  Without this option, commands are read and
+4 12 checked for syntax errors, but not executed.  This option cannot be
+4 12 turned off in an interactive shell, except when ‘-n' is supplied to
+4 12 the shell at startup.
+3 5 FUNCTION_ARGZERO <C> <Z>
+4 12 When executing a shell function or sourcing a script, set $0
+4 12 temporarily to the name of the function/script.  Note that toggling
+4 12 FUNCTION_ARGZERO from on to off (or off to on) does not change the
+4 12 current value of $0.  Only the state upon entry to the function or
+4 12 script has an effect.  Compare POSIX_ARGZERO.
+3 5 LOCAL_LOOPS
+4 12 When this option is not set, the effect of break and continue
+4 12 commands may propagate outside function scope, affecting loops in
+4 12 calling functions.  When the option is set in a calling function, a
+4 12 break or a continue that is not caught within a called function
+4 12 (regardless of the setting of the option within that function)
+4 12 produces a warning and the effect is cancelled.
+3 5 LOCAL_OPTIONS <K>
+4 12 If this option is set at the point of return from a shell function,
+4 12 most options (including this one) which were in force upon entry to
+4 12 the function are restored; options that are not restored are
+4 12 PRIVILEGED and RESTRICTED.  Otherwise, only this option, and the
+4 12 LOCAL_LOOPS, XTRACE and PRINT_EXIT_VALUE options are restored.
+4 12 Hence if this is explicitly unset by a shell function the other
+4 12 options in force at the point of return will remain so.  A shell
+4 12 function can also guarantee itself a known shell configuration with
+4 12 a formulation like ‘emulate -L zsh'; the -L activates
+4 12 LOCAL_OPTIONS.
+3 5 LOCAL_PATTERNS
+4 12 If this option is set at the point of return from a shell function,
+4 12 the state of pattern disables, as set with the builtin command
+4 12 ‘disable -p', is restored to what it was when the function was
+4 12 entered.  The behaviour of this option is similar to the effect of
+4 12 LOCAL_OPTIONS on options; hence ‘emulate -L sh' (or indeed any
+4 12 other emulation with the -L option) activates LOCAL_PATTERNS.
+3 5 LOCAL_TRAPS <K>
+4 12 If this option is set when a signal trap is set inside a function,
+4 12 then the previous status of the trap for that signal will be
+4 12 restored when the function exits.  Note that this option must be
+4 12 set prior to altering the trap behaviour in a function; unlike
+4 12 LOCAL_OPTIONS, the value on exit from the function is irrelevant.
+4 12 However, it does not need to be set before any global trap for that
+4 12 to be correctly restored by a function.  For example,
+5 19 unsetopt localtraps
+5 19 trap - INT
+5 19 fn() { setopt localtraps; trap '' INT; sleep 3; }
+4 12 will restore normal handling of SIGINT after the function exits.
+3 5 MULTI_FUNC_DEF <Z>
+4 12 Allow definitions of multiple functions at once in the form ‘fn1
+4 12 fn2...()'; if the option is not set, this causes a parse error.
+4 12 Definition of multiple functions with the function keyword is
+4 12 always allowed.  Multiple function definitions are not often used
+4 12 and can cause obscure errors.
+3 5 MULTIOS <Z>
+4 12 Perform implicit tees or cats when multiple redirections are
+4 12 attempted (see the section ‘Redirection').
+3 5 OCTAL_ZEROES <S>
+4 12 Interpret any integer constant beginning with a 0 as octal, per
+4 12 IEEE Std 1003.2-1992 (ISO 9945-2:1993).  This is not enabled by
+4 12 default as it causes problems with parsing of, for example, date
+4 12 and time strings with leading zeroes.
+4 12 Sequences of digits indicating a numeric base such as the ‘08'
+4 12 component in ‘08#77' are always interpreted as decimal, regardless
+4 12 of leading zeroes.
+3 5 PIPE_FAIL
+4 12 By default, when a pipeline exits the exit status recorded by the
+4 12 shell and returned by the shell variable $? reflects that of the
+4 12 rightmost element of a pipeline.  If this option is set, the exit
+4 12 status instead reflects the status of the rightmost element of the
+4 12 pipeline that was non-zero, or zero if all elements exited with
+4 12 zero status.
+3 5 SOURCE_TRACE
+4 12 If set, zsh will print an informational message announcing the name
+4 12 of each file it loads.  The format of the output is similar to that
+4 12 for the XTRACE option, with the message <sourcetrace>.  A file may
+4 12 be loaded by the shell itself when it starts up and shuts down
+4 12 (Startup/Shutdown Files) or by the use of the ‘source' and ‘dot'
+4 12 builtin commands.
+3 5 TYPESET_SILENT
+4 12 If this is unset, executing any of the ‘typeset' family of commands
+4 12 with no options and a list of parameters that have no values to be
+4 12 assigned but already exist will display the value of the parameter.
+4 12 If the option is set, they will only be shown when parameters are
+4 12 selected with the ‘-m' option.  The option ‘-p' is available
+4 12 whether or not the option is set.
+3 5 TYPESET_TO_UNSET <K> <S>
+4 12 When declaring a new parameter with any of the ‘typeset' family of
+4 12 related commands, the parameter remains unset unless and until a
+4 12 value is explicitly assigned to it, either in the ‘typeset' command
+4 12 itself or as a later assignment statement.
+3 5 VERBOSE (-v, ksh: -v)
+4 12 Print shell input lines as they are read.
+3 5 XTRACE (-x, ksh: -x)
+4 12 Print commands and their arguments as they are executed.  The
+4 12 output is preceded by the value of $PS4, formatted as described in
+4 12 the section EXPANSION OF PROMPT SEQUENCES in zshmisc(1).
+2 3 Shell Emulation
+3 5 APPEND_CREATE <K> <S>
+4 12 This option only applies when NO_CLOBBER (-C) is in effect.
+4 12 If this option is not set, the shell will report an error when a
+4 12 append redirection (>>) is used on a file that does not already
+4 12 exists (the traditional zsh behaviour of NO_CLOBBER).  If the
+4 12 option is set, no error is reported (POSIX behaviour).
+3 5 BASH_REMATCH
+4 12 When set, matches performed with the =~ operator will set the
+4 12 BASH_REMATCH array variable, instead of the default MATCH and match
+4 12 variables.  The first element of the BASH_REMATCH array will
+4 12 contain the entire matched text and subsequent elements will
+4 12 contain extracted substrings.  This option makes more sense when
+4 12 KSH_ARRAYS is also set, so that the entire matched portion is
+4 12 stored at index 0 and the first substring is at index 1.  Without
+4 12 this option, the MATCH variable contains the entire matched text
+4 12 and the match array variable contains substrings.
+3 5 BSD_ECHO <S>
+4 12 Make the echo builtin compatible with the BSD echo(1) command.
+4 12 This disables backslashed escape sequences in echo strings unless
+4 12 the -e option is specified.
+3 5 CONTINUE_ON_ERROR
+4 12 If a fatal error is encountered (see the section ERRORS in
+4 12 zshmisc(1)), and the code is running in a script, the shell will
+4 12 resume execution at the next statement in the script at the top
+4 12 level, in other words outside all functions or shell constructs
+4 12 such as loops and conditions.  This mimics the behaviour of
+4 12 interactive shells, where the shell returns to the line editor to
+4 12 read a new command; it was the normal behaviour in versions of zsh
+4 12 before 5.0.1.
+3 5 CSH_JUNKIE_HISTORY <C>
+4 12 A history reference without an event specifier will always refer to
+4 12 the previous command.  Without this option, such a history
+4 12 reference refers to the same event as the previous history
+4 12 reference on the current command line, defaulting to the previous
+4 12 command.
+3 5 CSH_JUNKIE_LOOPS <C>
+4 12 Allow loop bodies to take the form ‘list; end' instead of ‘do list;
+4 12 done'.
+3 5 CSH_JUNKIE_QUOTES <C>
+4 12 Changes the rules for single- and double-quoted text to match that
+4 12 of csh.  These require that embedded newlines be preceded by a
+4 12 backslash; unescaped newlines will cause an error message.  In
+4 12 double-quoted strings, it is made impossible to escape ‘$', ‘‘' or
+4 12 ‘"' (and ‘\' itself no longer needs escaping).  Command
+4 12 substitutions are only expanded once, and cannot be nested.
+3 5 CSH_NULLCMD <C>
+4 12 Do not use the values of NULLCMD and READNULLCMD when running
+4 12 redirections with no command.  This make such redirections fail
+4 12 (see the section ‘Redirection').
+3 5 KSH_ARRAYS <K> <S>
+4 12 Emulate ksh array handling as closely as possible.  If this option
+4 12 is set, array elements are numbered from zero, an array parameter
+4 12 without subscript refers to the first element instead of the whole
+4 12 array, and braces are required to delimit a subscript (‘${path[2]}'
+4 12 rather than just ‘$path[2]') or to apply modifiers to any parameter
+4 12 (‘${PWD:h}' rather than ‘$PWD:h').
+3 5 KSH_AUTOLOAD <K> <S>
+4 12 Emulate ksh function autoloading.  This means that when a function
+4 12 is autoloaded, the corresponding file is merely executed, and must
+4 12 define the function itself.  (By default, the function is defined
+4 12 to the contents of the file.  However, the most common ksh-style
+4 12 case - of the file containing only a simple definition of the
+4 12 function - is always handled in the ksh-compatible manner.)
+3 5 KSH_OPTION_PRINT <K>
+4 12 Alters the way options settings are printed: instead of separate
+4 12 lists of set and unset options, all options are shown, marked ‘on'
+4 12 if they are in the non-default state, ‘off' otherwise.
+3 5 KSH_TYPESET
+4 12 This option is now obsolete: a better appropximation to the
+4 12 behaviour of other shells is obtained with the reserved word
+4 12 interface to declare, export, float, integer, local, readonly and
+4 12 typeset.  Note that the option is only applied when the reserved
+4 12 word interface is not in use.
+4 12 Alters the way arguments to the typeset family of commands,
+4 12 including declare, export, float, integer, local and readonly, are
+4 12 processed.  Without this option, zsh will perform normal word
+4 12 splitting after command and parameter expansion in arguments of an
+4 12 assignment; with it, word splitting does not take place in those
+4 12 cases.
+3 5 KSH_ZERO_SUBSCRIPT
+4 12 Treat use of a subscript of value zero in array or string
+4 12 expressions as a reference to the first element, i.e. the element
+4 12 that usually has the subscript 1.  Ignored if KSH_ARRAYS is also
+4 12 set.
+4 12 If neither this option nor KSH_ARRAYS is set, accesses to an
+4 12 element of an array or string with subscript zero return an empty
+4 12 element or string, while attempts to set element zero of an array
+4 12 or string are treated as an error.  However, attempts to set an
+4 12 otherwise valid subscript range that includes zero will succeed.
+4 12 For example, if KSH_ZERO_SUBSCRIPT is not set,
+5 19 array[0]=(element)
+4 12 is an error, while
+5 19 array[0,1]=(element)
+4 12 is not and will replace the first element of the array.
+4 12 This option is for compatibility with older versions of the shell
+4 12 and is not recommended in new code.
+3 5 POSIX_ALIASES <K> <S>
+4 12 When this option is set, reserved words are not candidates for
+4 12 alias expansion:  it is still possible to declare any of them as an
+4 12 alias, but the alias will never be expanded.  Reserved words are
+4 12 described in the section RESERVED WORDS in zshmisc(1).
+4 12 Alias expansion takes place while text is being read; hence when
+4 12 this option is set it does not take effect until the end of any
+4 12 function or other piece of shell code parsed as one unit.  Note
+4 12 this may cause differences from other shells even when the option
+4 12 is in effect.  For example, when running a command with ‘zsh -c',
+4 12 or even ‘zsh -o posixaliases -c', the entire command argument is
+4 12 parsed as one unit, so aliases defined within the argument are not
+4 12 available even in later lines.  If in doubt, avoid use of aliases
+4 12 in non-interactive code.
+3 5 POSIX_ARGZERO
+4 12 This option may be used to temporarily disable FUNCTION_ARGZERO and
+4 12 thereby restore the value of $0 to the name used to invoke the
+4 12 shell (or as set by the -c command line option).  For compatibility
+4 12 with previous versions of the shell, emulations use
+4 12 NO_FUNCTION_ARGZERO instead of POSIX_ARGZERO, which may result in
+4 12 unexpected scoping of $0 if the emulation mode is changed inside a
+4 12 function or script.  To avoid this, explicitly enable POSIX_ARGZERO
+4 12 in the emulate command:
+5 19 emulate sh -o POSIX_ARGZERO
+4 12 Note that NO_POSIX_ARGZERO has no effect unless FUNCTION_ARGZERO
+4 12 was already enabled upon entry to the function or script.
+3 5 POSIX_BUILTINS <K> <S>
+4 12 When this option is set the command builtin can be used to execute
+4 12 shell builtin commands.  Parameter assignments specified before
+4 12 shell functions and special builtins are kept after the command
+4 12 completes unless the special builtin is prefixed with the command
+4 12 builtin.  Special builtins are ., :, break, continue, declare,
+4 12 eval, exit, export, integer, local, readonly, return, set, shift,
+4 12 source, times, trap and unset.
+4 12 In addition, various error conditions associated with the above
+4 12 builtins or exec cause a non-interactive shell to exit and an
+4 12 interactive shell to return to its top-level processing.
+4 12 Furthermore, functions and shell builtins are not executed after an
+4 12 exec prefix; the command to be executed must be an external command
+4 12 found in the path.
+4 12 Furthermore, the getopts builtin behaves in a POSIX-compatible
+4 12 fashion in that the associated variable OPTIND is not made local to
+4 12 functions, and its value is calculated differently to match other
+4 12 shells.
+4 12 Moreover, the warning and special exit code from [[ -o
+4 12 non_existent_option ]] are suppressed.
+3 5 POSIX_IDENTIFIERS <K> <S>
+4 12 When this option is set, only the ASCII characters a to z, A to Z,
+4 12 0 to 9 and _ may be used in identifiers (names of shell parameters
+4 12 and modules).
+4 12 In addition, setting this option limits the effect of parameter
+4 12 substitution with no braces, so that the expression $# is treated
+4 12 as the parameter $# even if followed by a valid parameter name.
+4 12 When it is unset, zsh allows expressions of the form $#name to
+4 12 refer to the length of $name, even for special variables, for
+4 12 example in expressions such as $#- and $#*.
+4 12 Another difference is that with the option set assignment to an
+4 12 unset variable in arithmetic context causes the variable to be
+4 12 created as a scalar rather than a numeric type.  So after ‘unset t;
+4 12 (( t = 3 ))'. without POSIX_IDENTIFIERS set t has integer type,
+4 12 while with it set it has scalar type.
+4 12 When the option is unset and multibyte character support is enabled
+4 12 (i.e. it is compiled in and the option MULTIBYTE is set), then
+4 12 additionally any alphanumeric characters in the local character set
+4 12 may be used in identifiers.  Note that scripts and functions
+4 12 written with this feature are not portable, and also that both
+4 12 options must be set before the script or function is parsed;
+4 12 setting them during execution is not sufficient as the syntax
+4 12 variable=value has already been parsed as a command rather than an
+4 12 assignment.
+4 12 If multibyte character support is not compiled into the shell this
+4 12 option is ignored; all octets with the top bit set may be used in
+4 12 identifiers.  This is non-standard but is the traditional zsh
+4 12 behaviour.
+3 5 POSIX_STRINGS <K> <S>
+4 12 This option affects processing of quoted strings.  Currently it
+4 12 only affects the behaviour of null characters, i.e. character 0 in
+4 12 the portable character set corresponding to US ASCII.
+4 12 When this option is not set, null characters embedded within
+4 12 strings of the form $'...' are treated as ordinary characters. The
+4 12 entire string is maintained within the shell and output to files
+4 12 where necessary, although owing to restrictions of the library
+4 12 interface the string is truncated at the null character in file
+4 12 names, environment variables, or in arguments to external programs.
+4 12 When this option is set, the $'...' expression is truncated at the
+4 12 null character.  Note that remaining parts of the same string
+4 12 beyond the termination of the quotes are not truncated.
+4 12 For example, the command line argument a$'b\0c'd is treated with
+4 12 the option off as the characters a, b, null, c, d, and with the
+4 12 option on as the characters a, b, d.
+3 5 POSIX_TRAPS <K> <S>
+4 12 When this option is set, the usual zsh behaviour of executing traps
+4 12 for EXIT on exit from shell functions is suppressed.  In that case,
+4 12 manipulating EXIT traps always alters the global trap for exiting
+4 12 the shell; the LOCAL_TRAPS option is ignored for the EXIT trap.
+4 12 Also, a return statement executed in a trap with no argument passes
+4 12 back from the function the value from the surrounding context, not
+4 12 from code executed within the trap.
+4 12 Furthermore, if a trap is set to be ignored, this state persists
+4 12 when a subshell is entered.  Without the option, the trap would be
+4 12 reset to its default state at this point.
+3 5 SH_FILE_EXPANSION <K> <S>
+4 12 Perform filename expansion (e.g., ~ expansion) before parameter
+4 12 expansion, command substitution, arithmetic expansion and brace
+4 12 expansion.  If this option is unset, it is performed after brace
+4 12 expansion, so things like ‘~$USERNAME' and ‘~{pfalstad,rc}' will
+4 12 work.
+3 5 SH_NULLCMD <K> <S>
+4 12 Do not use the values of NULLCMD and READNULLCMD when doing
+4 12 redirections, use ‘:' instead (see the section ‘Redirection').
+3 5 SH_OPTION_LETTERS <K> <S>
+4 12 If this option is set the shell tries to interpret single letter
+4 12 options (which are used with set and setopt) like ksh does.  This
+4 12 also affects the value of the - special parameter.
+3 5 SH_WORD_SPLIT (-y) <K> <S>
+4 12 Causes field splitting to be performed on unquoted parameter
+4 12 expansions.  Note that this option has nothing to do with word
+4 12 splitting.  (See zshexpn(1).)
+3 5 TRAPS_ASYNC
+4 12 While waiting for a program to exit, handle signals and run traps
+4 12 immediately.  Otherwise the trap is run after a child process has
+4 12 exited.  Note this does not affect the point at which traps are run
+4 12 for any case other than when the shell is waiting for a child
+4 12 process.
+2 3 Shell State
+3 5 INTERACTIVE (-i, ksh: -i)
+4 12 This is an interactive shell.  This option is set upon
+4 12 initialisation if the standard input is a tty and commands are
+4 12 being read from standard input.  (See the discussion of
+4 12 SHIN_STDIN.)  This heuristic may be overridden by specifying a
+4 12 state for this option on the command line.  The value of this
+4 12 option can only be changed via flags supplied at invocation of the
+4 12 shell.  It cannot be changed once zsh is running.
+3 5 LOGIN (-l, ksh: -l)
+4 12 This is a login shell.  If this option is not explicitly set, the
+4 12 shell becomes a login shell if the first character of the argv[0]
+4 12 passed to the shell is a ‘-'.
+3 5 PRIVILEGED (-p, ksh: -p)
+4 12 Turn on privileged mode. Typically this is used when script is to
+4 12 be run with elevated privileges. This should be done as follows
+4 12 directly with the -p option to zsh so that it takes effect during
+4 12 startup.
+5 19 #!/bin/zsh -p
+4 12 The option is enabled automatically on startup if the effective
+4 12 user (group) ID is not equal to the real user (group) ID. In this
+4 12 case, turning the option off causes the effective user and group
+4 12 IDs to be set to the real user and group IDs. Be aware that if that
+4 12 fails the shell may be running with different IDs than was intended
+4 12 so a script should check for failure and act accordingly, for
+4 12 example:
+5 19 unsetopt privileged || exit
+4 12 The PRIVILEGED option disables sourcing user startup files.  If zsh
+4 12 is invoked as ‘sh' or ‘ksh' with this option set, /etc/suid_profile
+4 12 is sourced (after /etc/profile on interactive shells). Sourcing
+4 12 ~/.profile is disabled and the contents of the ENV variable is
+4 12 ignored. This option cannot be changed using the -m option of
+4 12 setopt and unsetopt, and changing it inside a function always
+4 12 changes it globally regardless of the LOCAL_OPTIONS option.
+3 5 RESTRICTED (-r)
+4 12 Enables restricted mode.  This option cannot be changed using
+4 12 unsetopt, and setting it inside a function always changes it
+4 12 globally regardless of the LOCAL_OPTIONS option.  See the section
+4 12 ‘Restricted Shell'.
+3 5 SHIN_STDIN (-s, ksh: -s)
+4 12 Commands are being read from the standard input.  Commands are read
+4 12 from standard input if no command is specified with -c and no file
+4 12 of commands is specified.  If SHIN_STDIN is set explicitly on the
+4 12 command line, any argument that would otherwise have been taken as
+4 12 a file to run will instead be treated as a normal positional
+4 12 parameter.  Note that setting or unsetting this option on the
+4 12 command line does not necessarily affect the state the option will
+4 12 have while the shell is running - that is purely an indicator of
+4 12 whether or not commands are actually being read from standard
+4 12 input.  The value of this option can only be changed via flags
+4 12 supplied at invocation of the shell.  It cannot be changed once zsh
+4 12 is running.
+3 5 SINGLE_COMMAND (-t, ksh: -t)
+4 12 If the shell is reading from standard input, it exits after a
+4 12 single command has been executed.  This also makes the shell
+4 12 non-interactive, unless the INTERACTIVE option is explicitly set on
+4 12 the command line.  The value of this option can only be changed via
+4 12 flags supplied at invocation of the shell.  It cannot be changed
+4 12 once zsh is running.
+2 3 Zle
+3 5 BEEP (+B) <D>
+4 12 Beep on error in ZLE.
+3 5 COMBINING_CHARS
+4 12 Assume that the terminal displays combining characters correctly.
+4 12 Specifically, if a base alphanumeric character is followed by one
+4 12 or more zero-width punctuation characters, assume that the
+4 12 zero-width characters will be displayed as modifications to the
+4 12 base character within the same width.  Not all terminals handle
+4 12 this.  If this option is not set, zero-width characters are
+4 12 displayed separately with special mark-up.
+4 12 If this option is set, the pattern test [[:WORD:]] matches a
+4 12 zero-width punctuation character on the assumption that it will be
+4 12 used as part of a word in combination with a word character.
+4 12 Otherwise the base shell does not handle combining characters
+4 12 specially.
+3 5 EMACS  If ZLE is loaded, turning on this option has the equivalent effect
+4 12 of ‘bindkey -e'.  In addition, the VI option is unset.  Turning it
+4 12 off has no effect.  The option setting is not guaranteed to reflect
+4 12 the current keymap.  This option is provided for compatibility;
+4 12 bindkey is the recommended interface.
+3 5 OVERSTRIKE
+4 12 Start up the line editor in overstrike mode.
+3 5 SINGLE_LINE_ZLE (-M) <K>
+4 12 Use single-line command line editing instead of multi-line.
+4 12 Note that although this is on by default in ksh emulation it only
+4 12 provides superficial compatibility with the ksh line editor and
+4 12 reduces the effectiveness of the zsh line editor.  As it has no
+4 12 effect on shell syntax, many users may wish to disable this option
+4 12 when using ksh emulation interactively.
+3 5 VI     If ZLE is loaded, turning on this option has the equivalent effect
+4 12 of ‘bindkey -v'.  In addition, the EMACS option is unset.  Turning
+4 12 it off has no effect.  The option setting is not guaranteed to
+4 12 reflect the current keymap.  This option is provided for
+4 12 compatibility; bindkey is the recommended interface.
+3 5 ZLE (-Z)
+4 12 Use the zsh line editor.  Set by default in interactive shells
+4 12 connected to a terminal.
+1 0 OPTION ALIASES
+3 5 Some options have alternative names.  These aliases are never used for
+3 5 output, but can be used just like normal option names when specifying
+3 5 options to the shell.
+3 5 BRACE_EXPAND
+4 12 NO_IGNORE_BRACES (ksh and bash compatibility)
+3 5 DOT_GLOB
+4 12 GLOB_DOTS (bash compatibility)
+3 5 HASH_ALL
+4 12 HASH_CMDS (bash compatibility)
+3 5 HIST_APPEND
+4 12 APPEND_HISTORY (bash compatibility)
+3 5 HIST_EXPAND
+4 12 BANG_HIST (bash compatibility)
+3 5 LOG    NO_HIST_NO_FUNCTIONS (ksh compatibility)
+3 5 MAIL_WARN
+4 12 MAIL_WARNING (bash compatibility)
+3 5 ONE_CMD
+4 12 SINGLE_COMMAND (bash compatibility)
+3 5 PHYSICAL
+4 12 CHASE_LINKS (ksh and bash compatibility)
+3 5 PROMPT_VARS
+4 12 PROMPT_SUBST (bash compatibility)
+3 5 STDIN  SHIN_STDIN (ksh compatibility)
+3 5 TRACK_ALL
+4 12 HASH_CMDS (ksh compatibility)
+1 0 SINGLE LETTER OPTIONS
+2 3 Default set
+3 5 -0     CORRECT
+3 5 -1     PRINT_EXIT_VALUE
+3 5 -2     NO_BAD_PATTERN
+3 5 -3     NO_NOMATCH
+3 5 -4     GLOB_DOTS
+3 5 -5     NOTIFY
+3 5 -6     BG_NICE
+3 5 -7     IGNORE_EOF
+3 5 -8     MARK_DIRS
+3 5 -9     AUTO_LIST
+3 5 -B     NO_BEEP
+3 5 -C     NO_CLOBBER
+3 5 -D     PUSHD_TO_HOME
+3 5 -E     PUSHD_SILENT
+3 5 -F     NO_GLOB
+3 5 -G     NULL_GLOB
+3 5 -H     RM_STAR_SILENT
+3 5 -I     IGNORE_BRACES
+3 5 -J     AUTO_CD
+3 5 -K     NO_BANG_HIST
+3 5 -L     SUN_KEYBOARD_HACK
+3 5 -M     SINGLE_LINE_ZLE
+3 5 -N     AUTO_PUSHD
+3 5 -O     CORRECT_ALL
+3 5 -P     RC_EXPAND_PARAM
+3 5 -Q     PATH_DIRS
+3 5 -R     LONG_LIST_JOBS
+3 5 -S     REC_EXACT
+3 5 -T     CDABLE_VARS
+3 5 -U     MAIL_WARNING
+3 5 -V     NO_PROMPT_CR
+3 5 -W     AUTO_RESUME
+3 5 -X     LIST_TYPES
+3 5 -Y     MENU_COMPLETE
+3 5 -Z     ZLE
+3 5 -a     ALL_EXPORT
+3 5 -e     ERR_EXIT
+3 5 -f     NO_RCS
+3 5 -g     HIST_IGNORE_SPACE
+3 5 -h     HIST_IGNORE_DUPS
+3 5 -i     INTERACTIVE
+3 5 -k     INTERACTIVE_COMMENTS
+3 5 -l     LOGIN
+3 5 -m     MONITOR
+3 5 -n     NO_EXEC
+3 5 -p     PRIVILEGED
+3 5 -r     RESTRICTED
+3 5 -s     SHIN_STDIN
+3 5 -t     SINGLE_COMMAND
+3 5 -u     NO_UNSET
+3 5 -v     VERBOSE
+3 5 -w     CHASE_LINKS
+3 5 -x     XTRACE
+3 5 -y     SH_WORD_SPLIT
+2 3 sh/ksh emulation set
+3 5 -C     NO_CLOBBER
+3 5 -T     TRAPS_ASYNC
+3 5 -X     MARK_DIRS
+3 5 -a     ALL_EXPORT
+3 5 -b     NOTIFY
+3 5 -e     ERR_EXIT
+3 5 -f     NO_GLOB
+3 5 -i     INTERACTIVE
+3 5 -l     LOGIN
+3 5 -m     MONITOR
+3 5 -n     NO_EXEC
+3 5 -p     PRIVILEGED
+3 5 -r     RESTRICTED
+3 5 -s     SHIN_STDIN
+3 5 -t     SINGLE_COMMAND
+3 5 -u     NO_UNSET
+3 5 -v     VERBOSE
+3 5 -x     XTRACE
+2 3 Also note
+3 5 -A     Used by set for setting arrays
+3 5 -b     Used on the command line to specify end of option processing
+3 5 -c     Used on the command line to specify a single command
+3 5 -m     Used by setopt for pattern-matching option setting
+3 5 -o     Used in all places to allow use of long option names
+3 5 -s     Used by set to sort positional parameters
+1 0 zsh 5.9.1                         May 31, 2026                    ZSHOPTIONS(1)
