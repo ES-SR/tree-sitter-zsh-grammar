@@ -1,0 +1,265 @@
+section_file	term	status
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	typeset	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	GLOB_SUBST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	MULTIBYTE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	PROMPT_PERCENT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	PROMPT_SUBST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	PROMPT_BANG	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	SH_WORD_SPLIT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	INTERACTIVE_COMMENTS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	HISTCHARS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	subscripts	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	pattern-matching	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	field-splitting	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	associative-array	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	nested-expansion	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt	double-quotes	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	nested-substitution	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	parameter-subscripting	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	typeset	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	IFS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	modifiers	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	double-quoted-joining	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	SH_WORD_SPLIT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	command-substitution	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	arithmetic-expansion	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	filename-expansion	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	RC_EXPAND_PARAM	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	character-evaluation	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt	semantic-joining	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	BARE_GLOB_QUAL	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	EXTENDED_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	MARK_DIRS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	LIST_TYPES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	NULL_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	GLOB_DOTS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	NUMERIC_GLOB_SORT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	glob-qualifiers	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	filename-generation	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	pattern-matching	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	symbolic-links	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	subscripts	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	modifiers	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	shell-code	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	zsh_eval_context	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt	sort-operators	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	EXTENDED_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	backreference	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	KSH_ARRAYS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	parameter-substitution	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	MULTIBYTE_SUPPORT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	match-data	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	parenthesised-groups	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	glob-qualifier	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	approximate-matching	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt	#b	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	EXTENDED_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	KSH_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	[:alnum:]	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	[:IFSSPACE:]	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	[:INCOMPLETE:]	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	[:INVALID:]	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	[:WORD:]	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	WORDCHARS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt	precedence	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	#anum	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	approximate-matching	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	transposition	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	non-literal-parts	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	GLOB_DOTS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	error-count	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt	path-segments	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--precedence.txt	precedence	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--precedence.txt	directory-separator	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--precedence.txt	parentheses	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--precedence.txt	filename-generation	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--ksh-like-glob-operators.txt	KSH_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--ksh-like-glob-operators.txt	recursive-directory-searching	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--recursive-globbing.txt	pathname-component	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--recursive-globbing.txt	recursive-directory-search	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--recursive-globbing.txt	GLOB_STAR_SHORT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--recursive-globbing.txt	symbolic-links	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--recursive-globbing.txt	path-segment	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	filename-extension	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	realpath	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	CHASE_DOTS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	CHASE_LINKS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	PATH-variable	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	history-expansion	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	parameter-substitution	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	glob-qualifier	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	HIST_SUBST_PATTERN	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt	backreference	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	arithmetic expansion	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	KSH_ARRAYS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	KSH_ZERO_SUBSCRIPT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	associative arrays	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	subscript	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	range	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	negative number	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	pattern matching	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt	substring	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	pattern	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	word separator	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	reverse subscripting	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	associative array	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	index	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	escape sequences	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	print builtin	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	Parameter Expansion Flags	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt	zshexpn	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	associative array	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	reverse subscripting	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	double quotes	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	zshmisc	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	GLOB_SUBST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	positional parameters	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	arithmetic expression	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt	brackets	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt	parenthesized list	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt	typeset	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt	unset	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt	filename generation	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt	noglob	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt	associative array	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	history expansion	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	histchars parameter	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	command-line	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	event designator	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	word designators	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	modifier	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt	history reference	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt	word designator	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt	event specification	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt	command line	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt	argument	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt	range of words	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt	history reference	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	zsh_directory_name	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	dynamic directory naming	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	NOMATCH	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	status zero	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	dynamic name	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	directory stack	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	prompts	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	completion system	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt	zshcompsys	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	EXTENDED_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	BARE_GLOB_QUAL	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	CASE_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	CASE_MATCH	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	CASE_PATHS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	CSH_NULL_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	EQUALS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	GLOB_ASSIGN	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	GLOB_DOTS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	GLOB_STAR_SHORT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	GLOB_SUBST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	HIST_SUBST_PATTERN	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	IGNORE_BRACES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	IGNORE_CLOSE_BRACES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	KSH_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	MAGIC_EQUAL_SUBST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	MARK_DIRS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	MULTIBYTE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	NOMATCH	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	NULL_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	NUMERIC_GLOB_SORT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	RC_EXPAND_PARAM	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	REMATCH_PCRE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	SH_GLOB	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	UNSET	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	WARN_CREATE_GLOBAL	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	WARN_NESTED_VAR	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	zshexpn	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	Filename Generation	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt	Brace Expansion	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	APPEND_HISTORY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	BANG_HIST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	EXTENDED_HISTORY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_ALLOW_CLOBBER	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_BEEP	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_EXPIRE_DUPS_FIRST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_FCNTL_LOCK	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_FIND_NO_DUPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_IGNORE_ALL_DUPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_IGNORE_DUPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_IGNORE_SPACE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_LEX_WORDS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_NO_FUNCTIONS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_NO_STORE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_REDUCE_BLANKS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_SAVE_BY_COPY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_SAVE_NO_DUPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HIST_VERIFY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	INC_APPEND_HISTORY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	INC_APPEND_HISTORY_TIME	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	SHARE_HISTORY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HISTSIZE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	SAVEHIST	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	HISTFILE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	ZLE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	fc	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt	set-local-history	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	ALIAS_FUNC_DEF	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	C_BASES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	C_PRECEDENCES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	DEBUG_BEFORE_CMD	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	ERR_EXIT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	ERR_RETURN	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	EVAL_LINENO	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	EXEC	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	FUNCTION_ARGZERO	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	LOCAL_LOOPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	LOCAL_OPTIONS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	LOCAL_PATTERNS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	LOCAL_TRAPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	MULTI_FUNC_DEF	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	MULTIOS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	OCTAL_ZEROES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	PIPE_FAIL	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	SOURCE_TRACE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	TYPESET_SILENT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	TYPESET_TO_UNSET	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	VERBOSE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	XTRACE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	ARITHMETIC EVALUATION	REFORMATTED
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	zshmisc	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	PS4	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	ZERR	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt	DEBUG	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	APPEND_CREATE	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	BASH_REMATCH	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	BSD_ECHO	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	CONTINUE_ON_ERROR	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	CSH_JUNKIE_HISTORY	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	CSH_JUNKIE_LOOPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	CSH_JUNKIE_QUOTES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	CSH_NULLCMD	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	KSH_ARRAYS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	KSH_AUTOLOAD	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	KSH_OPTION_PRINT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	KSH_TYPESET	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	KSH_ZERO_SUBSCRIPT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	POSIX_ALIASES	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	POSIX_ARGZERO	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	POSIX_BUILTINS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	POSIX_IDENTIFIERS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	POSIX_STRINGS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	POSIX_TRAPS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	SH_FILE_EXPANSION	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	SH_NULLCMD	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	SH_OPTION_LETTERS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	SH_WORD_SPLIT	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	TRAPS_ASYNC	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	MATCH	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	match	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	NULLCMD	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	READNULLCMD	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	NO_CLOBBER	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	FUNCTION_ARGZERO	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	KSH_ARRAYS	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	zshexpn	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	zshmisc	PRESENT
+/home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt	RESERVED WORDS	PRESENT

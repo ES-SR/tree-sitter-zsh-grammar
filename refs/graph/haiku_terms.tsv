@@ -1,0 +1,578 @@
+section_file	term	status
+refs/sections/zshexpn__filename-generation.txt	GLOB	PRESENT
+refs/sections/zshexpn__filename-generation.txt	EXTENDED_GLOB	PRESENT
+refs/sections/zshexpn__filename-generation.txt	NULL_GLOB	PRESENT
+refs/sections/zshexpn__filename-generation.txt	NOMATCH	PRESENT
+refs/sections/zshexpn__filename-generation.txt	GLOB_DOTS	PRESENT
+refs/sections/zshexpn__filename-generation.txt	KSH_GLOB	PRESENT
+refs/sections/zshexpn__filename-generation.txt	SH_GLOB	PRESENT
+refs/sections/zshexpn__filename-generation.txt	POSIX_IDENTIFIERS	PRESENT
+refs/sections/zshexpn__filename-generation.txt	IFS	PRESENT
+refs/sections/zshexpn__filename-generation.txt	WORDCHARS	PRESENT
+refs/sections/zshexpn__filename-generation.txt	match	PRESENT
+refs/sections/zshexpn__filename-generation.txt	mbegin	PRESENT
+refs/sections/zshexpn__filename-generation.txt	mend	PRESENT
+refs/sections/zshexpn__filename-generation.txt	KSH_ARRAYS	PRESENT
+refs/sections/zshexpn__filename-generation.txt	MULTIBYTE_SUPPORT	PRESENT
+refs/sections/zshexpn__filename-generation.txt	MULTIBYTE	PRESENT
+refs/sections/zshexpn__filename-generation.txt	backreferences	PRESENT
+refs/sections/zshexpn__filename-generation.txt	GLOB_STAR_SHORT	PRESENT
+refs/sections/zshexpn__filename-generation.txt	BARE_GLOB_QUAL	PRESENT
+refs/sections/zshexpn__filename-generation.txt	zsh_eval_context	PRESENT
+refs/sections/zshexpn__filename-generation.txt	REPLY	PRESENT
+refs/sections/zshexpn__filename-generation.txt	reply	PRESENT
+refs/sections/zshexpn__filename-generation.txt	ksh	PRESENT
+refs/sections/zshexpn__filename-generation.txt	nt	PRESENT
+refs/sections/zshexpn__filename-generation.txt	NTREF	PRESENT
+refs/sections/zshexpn__filename-generation.txt	NUMERIC_GLOB_SORT	PRESENT
+refs/sections/zshexpn__filename-generation.txt	LIST_TYPES	PRESENT
+refs/sections/zshexpn__filename-generation.txt	MARK_DIRS	PRESENT
+refs/sections/zshexpn__filename-generation.txt	zshparam	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	CORRECT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	PRINT_EXIT_VALUE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_BAD_PATTERN	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_NOMATCH	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	GLOB_DOTS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NOTIFY	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	BG_NICE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	IGNORE_EOF	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	MARK_DIRS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	AUTO_LIST	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_BEEP	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_CLOBBER	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	PUSHD_TO_HOME	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	PUSHD_SILENT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_GLOB	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NULL_GLOB	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	RM_STAR_SILENT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	IGNORE_BRACES	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	AUTO_CD	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_BANG_HIST	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	SUN_KEYBOARD_HACK	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	SINGLE_LINE_ZLE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	AUTO_PUSHD	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	CORRECT_ALL	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	RC_EXPAND_PARAM	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	PATH_DIRS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	LONG_LIST_JOBS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	REC_EXACT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	CDABLE_VARS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	MAIL_WARNING	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_PROMPT_CR	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	AUTO_RESUME	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	LIST_TYPES	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	MENU_COMPLETE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	ZLE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	ALL_EXPORT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	ERR_EXIT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_RCS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	HIST_IGNORE_SPACE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	HIST_IGNORE_DUPS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	INTERACTIVE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	INTERACTIVE_COMMENTS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	LOGIN	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	MONITOR	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_EXEC	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	PRIVILEGED	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	RESTRICTED	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	SHIN_STDIN	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	SINGLE_COMMAND	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	NO_UNSET	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	VERBOSE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	CHASE_LINKS	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	XTRACE	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	SH_WORD_SPLIT	PRESENT
+refs/sections/zshoptions__single-letter-options.txt	TRAPS_ASYNC	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	EXTENDED_GLOB	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	typeset -T	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zshexpn	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	CORRECT_ALL	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	CORRECT_IGNORE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	CORRECT_IGNORE_FILE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	AUTO_PUSHD	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	DIRSTACKSIZE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	HIST_EXPIRE_DUPS_FIRST	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	HISTSIZE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	HIST_NO_STORE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zshaddhistory	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	MULTIBYTE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	SINGLE_LINE_ZLE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zshzle	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	PROMPT_CR	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	PROMPT_SP	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	PROMPT_PERCENT	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zshmisc	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	REPORTMEMORY	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	REPORTTIME	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	KEYBOARD_HACK	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	SUNKEYBOARDHACK	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zshmodules	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	bindkey	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zsh/zle	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	NOBEEP	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	LC_CTYPE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	LC_NUMERIC	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	LC_COLLATE	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	LC_TIME	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	LC_MESSAGES	PRESENT
+refs/sections/zshparam__parameters-used-by-the-shell.txt	zshcompsys	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	let	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	((...))	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	arithmetic expansion	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	C_BASES	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	OCTAL_ZEROES	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	base#n	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	[#base]	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	C_PRECEDENCES	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	zsh/mathfunc	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	zmodload	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	float	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	integer	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	typeset	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	MULTIBYTE	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	FORCE_FLOAT	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	** exponentiation	REFORMATTED
+refs/sections/zshmisc__arithmetic-evaluation.txt	bitwise AND	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	bitwise OR	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	bitwise XOR	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	short-circuiting	PRESENT
+refs/sections/zshmisc__arithmetic-evaluation.txt	ternary operator	PRESENT
+refs/sections/zshmisc__quoting.txt	print builtin	PRESENT
+refs/sections/zshmisc__quoting.txt	RC_QUOTES	PRESENT
+refs/sections/zshmisc__quoting.txt	single quotes	PRESENT
+refs/sections/zshmisc__quoting.txt	double quotes	PRESENT
+refs/sections/zshmisc__quoting.txt	command substitution	PRESENT
+refs/sections/zshmisc__quoting.txt	histchars	PRESENT
+refs/sections/zshmisc__quoting.txt	$histchars	PRESENT
+refs/sections/zshparam__array-parameters.txt	KSH_ARRAYS	PRESENT
+refs/sections/zshparam__array-parameters.txt	KSH_ZERO_SUBSCRIPT	PRESENT
+refs/sections/zshparam__array-parameters.txt	arithmetic expansion	PRESENT
+refs/sections/zshparam__array-parameters.txt	subscript	PRESENT
+refs/sections/zshparam__array-parameters.txt	associative array	PRESENT
+refs/sections/zshparam__array-parameters.txt	Array Subscripts	PRESENT
+refs/sections/zshparam__array-parameters.txt	zshexpn	PRESENT
+refs/sections/zshparam__array-parameters.txt	GLOB_SUBST	PRESENT
+refs/sections/zshparam__array-parameters.txt	parameter expansion	PRESENT
+refs/sections/zshparam__array-parameters.txt	Array Element Assignment	PRESENT
+refs/sections/zshexpn__history-expansion.txt	histchars	PRESENT
+refs/sections/zshexpn__history-expansion.txt	HISTSIZE	PRESENT
+refs/sections/zshexpn__history-expansion.txt	CSH_JUNKIE_HISTORY	PRESENT
+refs/sections/zshexpn__history-expansion.txt	Event Designators	PRESENT
+refs/sections/zshexpn__history-expansion.txt	Word Designators	PRESENT
+refs/sections/zshexpn__history-expansion.txt	Modifiers	PRESENT
+refs/sections/zshexpn__history-expansion.txt	HIST_SUBST_PATTERN	PRESENT
+refs/sections/zshexpn__history-expansion.txt	EXTENDED_GLOB	PRESENT
+refs/sections/zshexpn__history-expansion.txt	FILENAME GENERATION	PRESENT
+refs/sections/zshexpn__history-expansion.txt	history expansion	PRESENT
+refs/sections/zshmisc__functions.txt	function	PRESENT
+refs/sections/zshmisc__functions.txt	reserved word	PRESENT
+refs/sections/zshmisc__functions.txt	functions builtin	PRESENT
+refs/sections/zshmisc__functions.txt	unfunction builtin	PRESENT
+refs/sections/zshmisc__functions.txt	Command Execution	PRESENT
+refs/sections/zshmisc__functions.txt	trap	PRESENT
+refs/sections/zshmisc__functions.txt	EXIT	PRESENT
+refs/sections/zshmisc__functions.txt	positional parameters	PRESENT
+refs/sections/zshmisc__functions.txt	return builtin	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	ARGC	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	HISTCMD	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	LINENO	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	PPID	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	typeset	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	zsh_eval_context	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	ZSH_EVAL_CONTEXT	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	ZSH_SUBSHELL	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	pipestatus	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	FUNCTION_ARGZERO	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	POSIX_ARGZERO	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	TRY_BLOCK_ERROR	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	TRY_BLOCK_INTERRUPT	PRESENT
+refs/sections/zshparam__parameters-set-by-the-shell.txt	KSH_AUTOLOAD	PRESENT
+refs/sections/zshmisc__complex-commands.txt	if	PRESENT
+refs/sections/zshmisc__complex-commands.txt	elif	PRESENT
+refs/sections/zshmisc__complex-commands.txt	for	PRESENT
+refs/sections/zshmisc__complex-commands.txt	while	PRESENT
+refs/sections/zshmisc__complex-commands.txt	until	PRESENT
+refs/sections/zshmisc__complex-commands.txt	repeat	PRESENT
+refs/sections/zshmisc__complex-commands.txt	case	PRESENT
+refs/sections/zshmisc__complex-commands.txt	select	PRESENT
+refs/sections/zshmisc__complex-commands.txt	function	PRESENT
+refs/sections/zshmisc__complex-commands.txt	trap	PRESENT
+refs/sections/zshmisc__complex-commands.txt	time	PRESENT
+refs/sections/zshmisc__complex-commands.txt	[[ exp ]]	PRESENT
+refs/sections/zshmisc__complex-commands.txt	TIMEFMT	PRESENT
+refs/sections/zshmisc__complex-commands.txt	POSIXTRAPS	PRESENT
+refs/sections/zshmisc__complex-commands.txt	SH_GLOB	PRESENT
+refs/sections/zshmisc__complex-commands.txt	TRY_BLOCK_ERROR	PRESENT
+refs/sections/zshmisc__complex-commands.txt	pipeline	PRESENT
+refs/sections/zshmisc__complex-commands.txt	subshell	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-a	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-f	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-d	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-e	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-v	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-n	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-z	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	-o	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	EXTENDED_GLOB	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	RE_MATCH_PCRE	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	BASH_REMATCH	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	MATCH	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	MBEGIN	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	MEND	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	KSH_ARRAYS	PRESENT
+refs/sections/zshmisc__conditional-expressions.txt	zshexpn	PRESENT
+refs/sections/zshmisc__aliasing.txt	alias	PRESENT
+refs/sections/zshmisc__aliasing.txt	unalias	PRESENT
+refs/sections/zshmisc__aliasing.txt	ALIAS_FUNC_DEF	PRESENT
+refs/sections/zshmisc__aliasing.txt	POSIX_ALIASES	PRESENT
+refs/sections/zshmisc__aliasing.txt	word	PRESENT
+refs/sections/zshmisc__aliasing.txt	command position	PRESENT
+refs/sections/zshmisc__aliasing.txt	global aliasing	PRESENT
+refs/sections/zshmisc__aliasing.txt	history expansion	PRESENT
+refs/sections/zshmisc__aliasing.txt	reserved word	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	PS2	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	PS4	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	XTRACE	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	HOME	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	tty	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	USERNAME	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	SHLVL	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	POSIX.1e	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	zshexpn	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	zshzle	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	fg	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	zle_highlight	PRESENT
+refs/sections/zshmisc__simple-prompt-escapes.txt	strftime	PRESENT
+refs/sections/zshmisc__special-functions.txt	chpwd_functions	PRESENT
+refs/sections/zshmisc__special-functions.txt	periodic_functions	PRESENT
+refs/sections/zshmisc__special-functions.txt	PERIOD	PRESENT
+refs/sections/zshmisc__special-functions.txt	HISTFILE	PRESENT
+refs/sections/zshmisc__special-functions.txt	INC_APPEND_HISTORY	PRESENT
+refs/sections/zshmisc__special-functions.txt	SHARE_HISTORY	PRESENT
+refs/sections/zshmisc__special-functions.txt	fc	PRESENT
+refs/sections/zshmisc__special-functions.txt	DEBUG_BEFORE_CMD	PRESENT
+refs/sections/zshmisc__special-functions.txt	SIGERR	PRESENT
+refs/sections/zshmisc__special-functions.txt	TRAPEXIT	PRESENT
+refs/sections/zshmisc__special-functions.txt	TRAPZERR	PRESENT
+refs/sections/zshmisc__special-functions.txt	TRAPERR	PRESENT
+refs/sections/zshmisc__special-functions.txt	TRAPINT	PRESENT
+refs/sections/zshmisc__special-functions.txt	TRAPDEBUG	PRESENT
+refs/sections/zshmisc__special-functions.txt	zshexit	PRESENT
+refs/sections/zshmisc__special-functions.txt	preexec	PRESENT
+refs/sections/zshmisc__special-functions.txt	precmd	PRESENT
+refs/sections/zshmisc__special-functions.txt	zshaddhistory	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	HOME	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	PUSHD_MINUS	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	zsh_directory_name	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	zsh_directory_name_functions	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	NOMATCH	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	EQUALS	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	MAGIC_EQUAL_SUBST	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	reply	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	extendedglob	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	match	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	mbegin	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	mend	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	zshcompsys	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	typeset	PRESENT
+refs/sections/zshexpn__filename-expansion.txt	emulate	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	psvar	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	SHLVL	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	RPROMPT	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	SECONDS	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	truncation	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	ternary	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	exit status	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	shell constructs	PRESENT
+refs/sections/zshmisc__conditional-substrings-in-prompts.txt	margin	PRESENT
+refs/sections/zshexpn__process-substitution.txt	MULTIOS	PRESENT
+refs/sections/zshexpn__process-substitution.txt	/dev/fd	PRESENT
+refs/sections/zshexpn__process-substitution.txt	FIFOs	PRESENT
+refs/sections/zshexpn__process-substitution.txt	named pipes	PRESENT
+refs/sections/zshexpn__process-substitution.txt	lseek	PRESENT
+refs/sections/zshexpn__process-substitution.txt	here-string	PRESENT
+refs/sections/zshexpn__process-substitution.txt	<<<	PRESENT
+refs/sections/zshexpn__process-substitution.txt	setuid	PRESENT
+refs/sections/zshexpn__process-substitution.txt	here-string redirection	PRESENT
+refs/sections/zshmisc__multios.txt	MULTIOS	PRESENT
+refs/sections/zshmisc__multios.txt	tee	PRESENT
+refs/sections/zshmisc__multios.txt	globbing	PRESENT
+refs/sections/zshmisc__multios.txt	file descriptor	PRESENT
+refs/sections/zshmisc__multios.txt	redirection	PRESENT
+refs/sections/zshmisc__multios.txt	filename generation	PRESENT
+refs/sections/zshmisc__multios.txt	redirection operator	PRESENT
+refs/sections/zshmisc__multios.txt	>&1	PRESENT
+refs/sections/zshmisc__multios.txt	>&$myfd	PRESENT
+refs/sections/zshmisc__comments.txt	INTERACTIVE_COMMENTS	PRESENT
+refs/sections/zshmisc__comments.txt	histchars	PRESENT
+refs/sections/zshmisc__comments.txt	non-interactive shells	PRESENT
+refs/sections/zshmisc__redirection.txt	file descriptor	PRESENT
+refs/sections/zshmisc__redirection.txt	standard input	PRESENT
+refs/sections/zshmisc__redirection.txt	standard output	PRESENT
+refs/sections/zshmisc__redirection.txt	expansion	PRESENT
+refs/sections/zshmisc__redirection.txt	here-document	PRESENT
+refs/sections/zshmisc__redirection.txt	here-string	PRESENT
+refs/sections/zshmisc__redirection.txt	coprocess	PRESENT
+refs/sections/zshmisc__redirection.txt	multios	PRESENT
+refs/sections/zshmisc__redirection.txt	process substitution	PRESENT
+refs/sections/zshmisc__redirection.txt	CLOBBER	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	autoload	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	fpath	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	zcompile	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	function	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	KSH_AUTOLOAD	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	.zwc	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	undefined	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	precompiled	PRESENT
+refs/sections/zshmisc__autoloading-functions.txt	autoload -X	PRESENT
+refs/sections/zshmisc__jobs.txt	MONITOR	PRESENT
+refs/sections/zshmisc__jobs.txt	job	PRESENT
+refs/sections/zshmisc__jobs.txt	pipeline	PRESENT
+refs/sections/zshmisc__jobs.txt	job control	PRESENT
+refs/sections/zshmisc__jobs.txt	TSTP signal	PRESENT
+refs/sections/zshmisc__jobs.txt	suspend	PRESENT
+refs/sections/zshmisc__jobs.txt	foreground	PRESENT
+refs/sections/zshmisc__jobs.txt	background	PRESENT
+refs/sections/zshmisc__jobs.txt	disown	PRESENT
+refs/sections/zshmisc__jobs.txt	NOTIFY	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	parameter assignments	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	redirection	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	simple command	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	pipeline	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	coproc	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	coprocess	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	sublist	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	exit status	PRESENT
+refs/sections/zshmisc__simple-commands-pipelines.txt	zshparam	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	brace expansion	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	BRACE_CCL	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	filename generation	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	globbing	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	Parameter Expansion	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	array expansion	PRESENT
+refs/sections/zshexpn__brace-expansion.txt	${^spec}	PRESENT
+refs/sections/zshparam__description.txt	parameter	PRESENT
+refs/sections/zshparam__description.txt	variable	PRESENT
+refs/sections/zshparam__description.txt	attribute	PRESENT
+refs/sections/zshparam__description.txt	scalar	PRESENT
+refs/sections/zshparam__description.txt	array	PRESENT
+refs/sections/zshparam__description.txt	associative array	PRESENT
+refs/sections/zshparam__description.txt	exported	PRESENT
+refs/sections/zshparam__description.txt	environment variables	PRESENT
+refs/sections/zshparam__description.txt	typeset	PRESENT
+refs/sections/zshparam__description.txt	arithmetic evaluation	PRESENT
+refs/sections/zshparam__description.txt	GLOB_ASSIGN	PRESENT
+refs/sections/zshparam__description.txt	zshexpn	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	file descriptor	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	IGNORE_BRACES	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	redirection	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	parameter	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	readonly	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	CLOBBER	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	exec	PRESENT
+refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt	subshells	PRESENT
+refs/sections/zshmisc__alternate-forms-for-complex-commands.txt	sublist	PRESENT
+refs/sections/zshmisc__alternate-forms-for-complex-commands.txt	SHORT_LOOPS	PRESENT
+refs/sections/zshmisc__alternate-forms-for-complex-commands.txt	SHORT_REPEAT	PRESENT
+refs/sections/zshmisc__alternate-forms-for-complex-commands.txt	complex commands	PRESENT
+refs/sections/zshmisc__alternate-forms-for-complex-commands.txt	for command	PRESENT
+refs/sections/zshmisc__alternate-forms-for-complex-commands.txt	function	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	precommand modifier	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	argv[0]	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	builtin	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	command	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	exec	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	POSIX_BUILTINS	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	noglob	PRESENT
+refs/sections/zshmisc__precommand-modifiers.txt	filename generation	PRESENT
+refs/sections/zshmisc__errors.txt	CONTINUE_ON_ERROR	PRESENT
+refs/sections/zshmisc__errors.txt	RESTRICTED	PRESENT
+refs/sections/zshmisc__errors.txt	BAD_PATTERN	PRESENT
+refs/sections/zshmisc__errors.txt	NOMATCH	PRESENT
+refs/sections/zshmisc__errors.txt	POSIX_BUILTINS	PRESENT
+refs/sections/zshmisc__errors.txt	typeset	PRESENT
+refs/sections/zshmisc__errors.txt	parse	PRESENT
+refs/sections/zshmisc__errors.txt	local	PRESENT
+refs/sections/zshmisc__errors.txt	declare	PRESENT
+refs/sections/zshmisc__errors.txt	export	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	function	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	anonymous	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	local	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	scope	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	redirections	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	arguments	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	$0	PRESENT
+refs/sections/zshmisc__anonymous-functions.txt	enclosing	PRESENT
+refs/sections/zshoptions__specifying-options.txt	SH_OPTION_LETTERS	PRESENT
+refs/sections/zshoptions__specifying-options.txt	LOCAL_OPTIONS	PRESENT
+refs/sections/zshoptions__specifying-options.txt	setopt	PRESENT
+refs/sections/zshoptions__specifying-options.txt	unsetopt	PRESENT
+refs/sections/zshoptions__specifying-options.txt	set	PRESENT
+refs/sections/zshoptions__specifying-options.txt	case insensitive	REFORMATTED
+refs/sections/zshoptions__specifying-options.txt	single letter options	PRESENT
+refs/sections/zshmisc__command-execution.txt	Functions	PRESENT
+refs/sections/zshmisc__command-execution.txt	$path	PRESENT
+refs/sections/zshmisc__command-execution.txt	builtin	PRESENT
+refs/sections/zshmisc__command-execution.txt	command_not_found_handler	PRESENT
+refs/sections/zshmisc__command-execution.txt	subshell	PRESENT
+refs/sections/zshmisc__command-execution.txt	execve	PRESENT
+refs/sections/zshmisc__command-execution.txt	shell function	PRESENT
+refs/sections/zshparam__local-parameters.txt	typeset	PRESENT
+refs/sections/zshparam__local-parameters.txt	declare	PRESENT
+refs/sections/zshparam__local-parameters.txt	integer	PRESENT
+refs/sections/zshparam__local-parameters.txt	local	PRESENT
+refs/sections/zshparam__local-parameters.txt	readonly	PRESENT
+refs/sections/zshparam__local-parameters.txt	export	PRESENT
+refs/sections/zshparam__local-parameters.txt	scope	PRESENT
+refs/sections/zshparam__local-parameters.txt	special parameters	PRESENT
+refs/sections/zshparam__positional-parameters.txt	positional parameters	PRESENT
+refs/sections/zshparam__positional-parameters.txt	argv	PRESENT
+refs/sections/zshparam__positional-parameters.txt	$0	PRESENT
+refs/sections/zshparam__positional-parameters.txt	KSH_ARRAYS	PRESENT
+refs/sections/zshparam__positional-parameters.txt	KSH_ZERO_SUBSCRIPT	PRESENT
+refs/sections/zshparam__positional-parameters.txt	set builtin	PRESENT
+refs/sections/zshparam__positional-parameters.txt	Invocation	PRESENT
+refs/sections/zshparam__positional-parameters.txt	Functions	PRESENT
+refs/sections/zshexpn__description.txt	History Expansion	PRESENT
+refs/sections/zshexpn__description.txt	Alias Expansion	PRESENT
+refs/sections/zshexpn__description.txt	Process Substitution	PRESENT
+refs/sections/zshexpn__description.txt	Parameter Expansion	PRESENT
+refs/sections/zshexpn__description.txt	Command Substitution	PRESENT
+refs/sections/zshexpn__description.txt	Arithmetic Expansion	PRESENT
+refs/sections/zshexpn__description.txt	Brace Expansion	PRESENT
+refs/sections/zshexpn__description.txt	Filename Expansion	PRESENT
+refs/sections/zshexpn__description.txt	Filename Generation	PRESENT
+refs/sections/zshexpn__description.txt	SH_FILE_EXPANSION	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	NULLCMD	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	CSH_NULLCMD	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	SH_NULLCMD	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	READNULLCMD	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	redirections	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	parameter assignments	PRESENT
+refs/sections/zshmisc__redirections-with-no-command.txt	emulating	PRESENT
+refs/sections/zshmisc__signals.txt	INT	PRESENT
+refs/sections/zshmisc__signals.txt	QUIT	PRESENT
+refs/sections/zshmisc__signals.txt	MONITOR	PRESENT
+refs/sections/zshmisc__signals.txt	TRAPNAL	PRESENT
+refs/sections/zshmisc__signals.txt	PROCESS SUBSTITUTION	PRESENT
+refs/sections/zshmisc__signals.txt	MULTIOS	PRESENT
+refs/sections/zshmisc__signals.txt	zshexpn	PRESENT
+refs/sections/zshmisc__signals.txt	zshmisc	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	PROMPT_SUBST	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	PROMPT_BANG	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	PROMPT_PERCENT	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	zshexpn	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	parameter expansion	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	command substitution	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	arithmetic expansion	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	escape sequences	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	history event number	PRESENT
+refs/sections/zshmisc__expansion-of-prompt-sequences.txt	print builtin	PRESENT
+refs/sections/zshexpn__command-substitution.txt	command substitution	PRESENT
+refs/sections/zshexpn__command-substitution.txt	$(...)	PRESENT
+refs/sections/zshexpn__command-substitution.txt	grave accents	PRESENT
+refs/sections/zshexpn__command-substitution.txt	IFS parameter	PRESENT
+refs/sections/zshexpn__command-substitution.txt	GLOB_SUBST	PRESENT
+refs/sections/zshexpn__command-substitution.txt	filename generation	PRESENT
+refs/sections/zshexpn__command-substitution.txt	parameter expansion	PRESENT
+refs/sections/zshexpn__command-substitution.txt	arithmetic expansion	PRESENT
+refs/sections/zshexpn__command-substitution.txt	single word shell expansions	PRESENT
+refs/sections/zshexpn__command-substitution.txt	standard output	PRESENT
+refs/sections/zshoptions__option-aliases.txt	BRACE_EXPAND	PRESENT
+refs/sections/zshoptions__option-aliases.txt	NO_IGNORE_BRACES	PRESENT
+refs/sections/zshoptions__option-aliases.txt	DOT_GLOB	PRESENT
+refs/sections/zshoptions__option-aliases.txt	GLOB_DOTS	PRESENT
+refs/sections/zshoptions__option-aliases.txt	HASH_ALL	PRESENT
+refs/sections/zshoptions__option-aliases.txt	HIST_APPEND	PRESENT
+refs/sections/zshoptions__option-aliases.txt	HIST_EXPAND	PRESENT
+refs/sections/zshoptions__option-aliases.txt	BANG_HIST	PRESENT
+refs/sections/zshoptions__option-aliases.txt	PROMPT_VARS	PRESENT
+refs/sections/zshoptions__option-aliases.txt	PROMPT_SUBST	PRESENT
+refs/sections/zshmisc__reserved-words.txt	reserved words	PRESENT
+refs/sections/zshmisc__reserved-words.txt	disable -r	PRESENT
+refs/sections/zshmisc__reserved-words.txt	IGNORE_BRACES	PRESENT
+refs/sections/zshmisc__reserved-words.txt	IGNORE_CLOSE_BRACES	PRESENT
+refs/sections/zshmisc__reserved-words.txt	do	PRESENT
+refs/sections/zshmisc__reserved-words.txt	done	PRESENT
+refs/sections/zshmisc__reserved-words.txt	for	PRESENT
+refs/sections/zshmisc__reserved-words.txt	case	PRESENT
+refs/sections/zshmisc__reserved-words.txt	if	PRESENT
+refs/sections/zshmisc__reserved-words.txt	while	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	arithmetic expansion	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	$[exp]	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	$((exp))	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	arithmetic expression	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	parameter expansion	REFORMATTED
+refs/sections/zshexpn__arithmetic-expansion.txt	command substitution	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	Arithmetic Evaluation	PRESENT
+refs/sections/zshexpn__arithmetic-expansion.txt	substitution	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	zshmisc	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	zshexpn	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	zshzle	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	zshmodules	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	zshparam	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	zshoptions	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	EXTENDED_GLOB	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	KSH_GLOB	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	CHASE_LINKS	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	POSIX_CD	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	CDABLE_VARS	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	PUSHD_MINUS	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	AUTO_CONTINUE	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	BSD_ECHO	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	PUSHD_SILENT	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	PATH_DIRS	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	KSH_AUTOLOAD	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	TYPESET_SILENT	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	TYPESET_TO_UNSET	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	coprocess	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	completion	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	alias	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	suffix alias	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	glob qualifiers	PRESENT
+refs/sections/zshbuiltins__shell-builtin-commands.txt	fpath	PRESENT
+refs/sections/zshoptions__description-of-options.txt	EXTENDED_GLOB	PRESENT
+refs/sections/zshoptions__description-of-options.txt	CDPATH	PRESENT
+refs/sections/zshoptions__description-of-options.txt	GLOB_COMPLETE	PRESENT
+refs/sections/zshoptions__description-of-options.txt	MENU_COMPLETE	PRESENT
+refs/sections/zshoptions__description-of-options.txt	BASH_REMATCH	PRESENT
+refs/sections/zshoptions__description-of-options.txt	KSH_ARRAYS	PRESENT
+refs/sections/zshoptions__description-of-options.txt	zshexpn	PRESENT
+refs/sections/zshoptions__description-of-options.txt	zshmisc	PRESENT
+refs/sections/zshoptions__description-of-options.txt	zshbuiltins	PRESENT
+refs/sections/zshoptions__description-of-options.txt	MATCH	PRESENT
+refs/sections/zshoptions__description-of-options.txt	HIST_SUBST_PATTERN	PRESENT
+refs/sections/zshoptions__description-of-options.txt	FUNCTION_ARGZERO	PRESENT
+refs/sections/zshoptions__description-of-options.txt	MULTIBYTE	PRESENT
+refs/sections/zshoptions__description-of-options.txt	CHAR	PRESENT
+refs/sections/zshoptions__description-of-options.txt	ZERR	PRESENT
+refs/sections/zshoptions__description-of-options.txt	ZLE	PRESENT
+refs/sections/zshoptions__description-of-options.txt	bindkey	PRESENT
+refs/sections/zshoptions__description-of-options.txt	emulate	PRESENT
+refs/sections/zshoptions__description-of-options.txt	Filename Expansion	PRESENT
+refs/sections/zshoptions__description-of-options.txt	Filename Generation	PRESENT
+refs/sections/zshoptions__description-of-options.txt	POSIX	PRESENT
+refs/sections/zshoptions__description-of-options.txt	RC_EXPAND_PARAM	PRESENT
+refs/sections/zshoptions__description-of-options.txt	GLOB_SUBST	PRESENT
+refs/sections/zshoptions__description-of-options.txt	REMATCH_PCRE	PRESENT
+refs/sections/zshoptions__description-of-options.txt	PCRE	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	zshparam	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	GLOB_SUBST	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	SH_WORD_SPLIT	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	KSH_ARRAYS	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	Filename Generation	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	Modifiers	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	History Expansion	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	RC_EXPAND_PARAM	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	POSIX_IDENTIFIERS	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	MULTIBYTE	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	IFS	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	command substitution	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	arithmetic expansion	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	Brace Expansion	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	associative arrays	REFORMATTED
+refs/sections/zshexpn__parameter-expansion.txt	subscript	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	typeset	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	PROMPT_PERCENT	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	PROMPT_SUBST	PRESENT
+refs/sections/zshexpn__parameter-expansion.txt	Filename Expansion	PRESENT

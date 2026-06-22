@@ -1,0 +1,642 @@
+=== refs/sections/zshexpn__filename-generation.txt ===
+GLOB
+EXTENDED_GLOB
+NULL_GLOB
+NOMATCH
+GLOB_DOTS
+KSH_GLOB
+SH_GLOB
+POSIX_IDENTIFIERS
+IFS
+WORDCHARS
+match
+mbegin
+mend
+KSH_ARRAYS
+MULTIBYTE_SUPPORT
+MULTIBYTE
+backreferences
+GLOB_STAR_SHORT
+BARE_GLOB_QUAL
+zsh_eval_context
+REPLY
+reply
+ksh
+nt
+NTREF
+NUMERIC_GLOB_SORT
+LIST_TYPES
+MARK_DIRS
+zshparam
+=== refs/sections/zshoptions__single-letter-options.txt ===
+CORRECT
+PRINT_EXIT_VALUE
+NO_BAD_PATTERN
+NO_NOMATCH
+GLOB_DOTS
+NOTIFY
+BG_NICE
+IGNORE_EOF
+MARK_DIRS
+AUTO_LIST
+NO_BEEP
+NO_CLOBBER
+PUSHD_TO_HOME
+PUSHD_SILENT
+NO_GLOB
+NULL_GLOB
+RM_STAR_SILENT
+IGNORE_BRACES
+AUTO_CD
+NO_BANG_HIST
+SUN_KEYBOARD_HACK
+SINGLE_LINE_ZLE
+AUTO_PUSHD
+CORRECT_ALL
+RC_EXPAND_PARAM
+PATH_DIRS
+LONG_LIST_JOBS
+REC_EXACT
+CDABLE_VARS
+MAIL_WARNING
+NO_PROMPT_CR
+AUTO_RESUME
+LIST_TYPES
+MENU_COMPLETE
+ZLE
+ALL_EXPORT
+ERR_EXIT
+NO_RCS
+HIST_IGNORE_SPACE
+HIST_IGNORE_DUPS
+INTERACTIVE
+INTERACTIVE_COMMENTS
+LOGIN
+MONITOR
+NO_EXEC
+PRIVILEGED
+RESTRICTED
+SHIN_STDIN
+SINGLE_COMMAND
+NO_UNSET
+VERBOSE
+CHASE_LINKS
+XTRACE
+SH_WORD_SPLIT
+TRAPS_ASYNC
+=== refs/sections/zshparam__parameters-used-by-the-shell.txt ===
+EXTENDED_GLOB
+typeset -T
+zshexpn
+CORRECT_ALL
+CORRECT_IGNORE
+CORRECT_IGNORE_FILE
+AUTO_PUSHD
+DIRSTACKSIZE
+HIST_EXPIRE_DUPS_FIRST
+HISTSIZE
+HIST_NO_STORE
+zshaddhistory
+MULTIBYTE
+SINGLE_LINE_ZLE
+zshzle
+PROMPT_CR
+PROMPT_SP
+PROMPT_PERCENT
+zshmisc
+REPORTMEMORY
+REPORTTIME
+KEYBOARD_HACK
+SUNKEYBOARDHACK
+zshmodules
+bindkey
+zsh/zle
+NOBEEP
+LC_CTYPE
+LC_NUMERIC
+LC_COLLATE
+LC_TIME
+LC_MESSAGES
+zshcompsys
+=== refs/sections/zshmisc__arithmetic-evaluation.txt ===
+let
+((...))
+arithmetic expansion
+C_BASES
+OCTAL_ZEROES
+base#n
+[#base]
+C_PRECEDENCES
+zsh/mathfunc
+zmodload
+float
+integer
+typeset
+MULTIBYTE
+FORCE_FLOAT
+** exponentiation
+bitwise AND
+bitwise OR
+bitwise XOR
+short-circuiting
+ternary operator
+=== refs/sections/zshmisc__quoting.txt ===
+$'...'
+print builtin
+RC_QUOTES
+single quotes
+double quotes
+parameter substitution
+command substitution
+histchars
+$histchars
+=== refs/sections/zshparam__array-parameters.txt ===
+KSH_ARRAYS
+KSH_ZERO_SUBSCRIPT
+arithmetic expansion
+subscript
+associative array
+Array Subscripts
+zshexpn
+GLOB_SUBST
+parameter expansion
+Array Element Assignment
+=== refs/sections/zshexpn__history-expansion.txt ===
+histchars
+HISTSIZE
+CSH_JUNKIE_HISTORY
+Event Designators
+Word Designators
+Modifiers
+HIST_SUBST_PATTERN
+EXTENDED_GLOB
+FILENAME GENERATION
+history expansion
+=== refs/sections/zshmisc__functions.txt ===
+function
+reserved word
+functions builtin
+unfunction builtin
+Command Execution
+trap
+EXIT
+positional parameters
+return builtin
+=== refs/sections/zshparam__parameters-set-by-the-shell.txt ===
+ARGC
+HISTCMD
+LINENO
+PPID
+typeset
+zsh_eval_context
+ZSH_EVAL_CONTEXT
+ZSH_SUBSHELL
+pipestatus
+FUNCTION_ARGZERO
+POSIX_ARGZERO
+TRY_BLOCK_ERROR
+TRY_BLOCK_INTERRUPT
+KSH_AUTOLOAD
+=== refs/sections/zshmisc__complex-commands.txt ===
+if
+elif
+for
+while
+until
+repeat
+case
+select
+function
+trap
+time
+[[ exp ]]
+TIMEFMT
+POSIXTRAPS
+SH_GLOB
+TRY_BLOCK_ERROR
+pipeline
+subshell
+=== refs/sections/zshmisc__conditional-expressions.txt ===
+[[ ]]
+-a
+-f
+-d
+-e
+-v
+-n
+-z
+-o
+EXTENDED_GLOB
+RE_MATCH_PCRE
+BASH_REMATCH
+MATCH
+MBEGIN
+MEND
+KSH_ARRAYS
+zshexpn
+=== refs/sections/zshmisc__aliasing.txt ===
+alias
+unalias
+ALIAS_FUNC_DEF
+POSIX_ALIASES
+word
+command position
+global aliasing
+history expansion
+parameter references
+reserved word
+=== refs/sections/zshmisc__simple-prompt-escapes.txt ===
+PS2
+PS4
+XTRACE
+HOME
+tty
+USERNAME
+SHLVL
+POSIX.1e
+PERIOD
+precmd
+preexec
+zshexpn
+zshzle
+fg
+zle_highlight
+strftime
+HISTFILE
+zshbuiltins
+=== refs/sections/zshmisc__special-functions.txt ===
+chpwd_functions
+periodic_functions
+PERIOD
+HISTFILE
+INC_APPEND_HISTORY
+SHARE_HISTORY
+fc
+DEBUG_BEFORE_CMD
+SIGERR
+TRAPEXIT
+TRAPZERR
+TRAPERR
+TRAPINT
+TRAPDEBUG
+zshexit
+preexec
+precmd
+zshaddhistory
+=== refs/sections/zshexpn__filename-expansion.txt ===
+HOME
+PUSHD_MINUS
+zsh_directory_name
+zsh_directory_name_functions
+NOMATCH
+EQUALS
+MAGIC_EQUAL_SUBST
+reply
+extendedglob
+match
+mbegin
+mend
+zshcompsys
+typeset
+emulate
+=== refs/sections/zshmisc__conditional-substrings-in-prompts.txt ===
+psvar
+SHLVL
+RPROMPT
+SECONDS
+truncation
+ternary
+exit status
+shell constructs
+margin
+=== refs/sections/zshexpn__process-substitution.txt ===
+MULTIOS
+/dev/fd
+FIFOs
+named pipes
+lseek
+here-string
+<<<
+setuid
+here-string redirection
+=== refs/sections/zshmisc__multios.txt ===
+MULTIOS
+tee
+globbing
+file descriptor
+redirection
+filename generation
+redirection operator
+>&1
+>&$myfd
+=== refs/sections/zshmisc__comments.txt ===
+INTERACTIVE_COMMENTS
+histchars
+non-interactive shells
+=== refs/sections/zshmisc__redirection.txt ===
+file descriptor
+standard input
+standard output
+expansion
+here-document
+here-string
+coprocess
+multios
+process substitution
+CLOBBER
+=== refs/sections/zshmisc__autoloading-functions.txt ===
+autoload
+fpath
+zcompile
+function
+KSH_AUTOLOAD
+.zwc
+undefined
+fpath elements
+precompiled
+autoload -X
+=== refs/sections/zshmisc__jobs.txt ===
+MONITOR
+job
+pipeline
+job control
+TSTP signal
+suspend
+foreground
+background
+disown
+NOTIFY
+=== refs/sections/zshmisc__simple-commands-pipelines.txt ===
+parameter assignments
+redirection
+simple command
+pipeline
+coproc
+coprocess
+sublist
+exit status
+GLOB_ASSIGN
+zshparam
+=== refs/sections/zshexpn__brace-expansion.txt ===
+brace expansion
+BRACE_CCL
+filename generation
+globbing
+Parameter Expansion
+array expansion
+${^spec}
+=== refs/sections/zshparam__description.txt ===
+parameter
+variable
+attribute
+scalar
+array
+associative array
+exported
+environment variables
+typeset
+arithmetic evaluation
+GLOB_ASSIGN
+zshexpn
+=== refs/sections/zshmisc__opening-file-descriptors-using-parameters.txt ===
+file descriptor
+IGNORE_BRACES
+redirection
+parameter
+readonly
+CLOBBER
+exec
+subshells
+=== refs/sections/zshmisc__alternate-forms-for-complex-commands.txt ===
+sublist
+SHORT_LOOPS
+SHORT_REPEAT
+complex commands
+if command
+while command
+for command
+case command
+function
+=== refs/sections/zshmisc__precommand-modifiers.txt ===
+precommand modifier
+argv[0]
+builtin
+command
+exec
+POSIX_BUILTINS
+noglob
+filename generation
+=== refs/sections/zshmisc__errors.txt ===
+CONTINUE_ON_ERROR
+RESTRICTED
+BAD_PATTERN
+NOMATCH
+POSIX_BUILTINS
+typeset
+parse
+local
+declare
+export
+=== refs/sections/zshmisc__anonymous-functions.txt ===
+function
+anonymous
+local
+scope
+redirections
+arguments
+$0
+enclosing
+=== refs/sections/zshoptions__specifying-options.txt ===
+SH_OPTION_LETTERS
+LOCAL_OPTIONS
+setopt
+unsetopt
+set
+case insensitive
+no prefix
+single letter options
+=== refs/sections/zshmisc__command-execution.txt ===
+Functions
+$path
+builtin
+command_not_found_handler
+subshell
+execve
+shell function
+=== refs/sections/zshparam__local-parameters.txt ===
+typeset
+declare
+integer
+local
+readonly
+export
+scope
+dynamic scoping
+special parameters
+=== refs/sections/zshparam__positional-parameters.txt ===
+positional parameters
+argv
+$0
+KSH_ARRAYS
+KSH_ZERO_SUBSCRIPT
+set builtin
+Invocation
+Functions
+=== refs/sections/zshexpn__description.txt ===
+History Expansion
+Alias Expansion
+Process Substitution
+Parameter Expansion
+Command Substitution
+Arithmetic Expansion
+Brace Expansion
+Filename Expansion
+Filename Generation
+SH_FILE_EXPANSION
+=== refs/sections/zshmisc__redirections-with-no-command.txt ===
+NULLCMD
+CSH_NULLCMD
+SH_NULLCMD
+READNULLCMD
+redirections
+parameter assignments
+emulating
+=== refs/sections/zshmisc__signals.txt ===
+INT
+QUIT
+MONITOR
+TRAPNAL
+PROCESS SUBSTITUTION
+MULTIOS
+zshexpn
+zshmisc
+=== refs/sections/zshmisc__expansion-of-prompt-sequences.txt ===
+PROMPT_SUBST
+PROMPT_BANG
+PROMPT_PERCENT
+zshexpn
+parameter expansion
+command substitution
+arithmetic expansion
+escape sequences
+history event number
+print builtin
+=== refs/sections/zshexpn__command-substitution.txt ===
+command substitution
+$(...)
+'...'
+grave accents
+IFS parameter
+GLOB_SUBST
+filename generation
+parameter expansion
+arithmetic expansion
+single word shell expansions
+standard output
+=== refs/sections/zshoptions__option-aliases.txt ===
+BRACE_EXPAND
+NO_IGNORE_BRACES
+DOT_GLOB
+GLOB_DOTS
+HASH_ALL
+HIST_APPEND
+HIST_EXPAND
+BANG_HIST
+PROMPT_VARS
+PROMPT_SUBST
+=== refs/sections/zshmisc__reserved-words.txt ===
+reserved words
+disable -r
+IGNORE_BRACES
+IGNORE_CLOSE_BRACES
+do
+done
+for
+case
+if
+while
+=== refs/sections/zshexpn__arithmetic-expansion.txt ===
+arithmetic expansion
+$[exp]
+$((exp))
+arithmetic expression
+parameter expansion
+command substitution
+Arithmetic Evaluation
+substitution
+=== refs/sections/zshbuiltins__shell-builtin-commands.txt ===
+zshmisc
+zshexpn
+zshzle
+zshmodules
+zshparam
+zshoptions
+zshparameters
+EXTENDED_GLOB
+KSH_GLOB
+CHASE_LINKS
+POSIX_CD
+CDABLE_VARS
+PUSHD_MINUS
+AUTO_CONTINUE
+BSD_ECHO
+PUSH_TO_HOME
+PUSHD_SILENT
+PATH_DIRS
+KSH_AUTOLOAD
+TYPESET_SILENT
+TYPESET_TO_UNSET
+coprocess
+completion
+alias
+suffix alias
+glob qualifiers
+function tracing
+fpath
+=== refs/sections/zshoptions__description-of-options.txt ===
+EXTENDED_GLOB
+CDPATH
+GLOB_COMPLETE
+MENU_COMPLETE
+BASH_REMATCH
+KSH_ARRAYS
+zshexpn
+zshmisc
+zshbuiltins
+MATCH
+HIST_SUBST_PATTERN
+FUNCTION_ARGZERO
+MULTIBYTE
+CHAR
+ZERR
+ZLE
+bindkey
+emulate
+Filename Expansion
+Filename Generation
+POSIX
+RC_EXPAND_PARAM
+GLOB_SUBST
+REMATCH_PCRE
+PCRE
+=== refs/sections/zshexpn__parameter-expansion.txt ===
+zshparam
+GLOB_SUBST
+SH_WORD_SPLIT
+KSH_ARRAYS
+Filename Generation
+Modifiers
+History Expansion
+RC_EXPAND_PARAM
+POSIX_IDENTIFIERS
+MULTIBYTE
+IFS
+command substitution
+arithmetic expansion
+Brace Expansion
+associative arrays
+subscript
+typeset
+PROMPT_PERCENT
+PROMPT_SUBST
+Filename Expansion

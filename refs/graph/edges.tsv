@@ -1,0 +1,639 @@
+type	weight	section_a	section_b	shared_pointers
+xref	14	zshbuiltins:SHELL BUILTIN COMMANDS	zshmisc:*	zshmisc
+xref	8	zshoptions:DESCRIPTION OF OPTIONS	zshmisc:*	zshmisc
+xref	4	zshparam:ARRAY PARAMETERS	zshexpn:*	zshexpn
+xref	4	zshbuiltins:SHELL BUILTIN COMMANDS	zshoptions:*	zshoptions
+xref	3	zshoptions:DESCRIPTION OF OPTIONS	zshmisc:EXPANSION OF PROMPT SEQUENCES	“EXPANSION OF PROMPT SEQUENCES”
+xref	3	zshbuiltins:SHELL BUILTIN COMMANDS	zshparam:*	zshparam
+xref	2	zshexpn:HISTORY EXPANSION	zshmisc:*	zshmisc
+xref	2	zshexpn:PARAMETER EXPANSION	zshparam:*	zshparam
+xref	2	zshparam:ARRAY PARAMETERS	zshexpn:PARAMETER EXPANSION	“Parameter Expansion Flags”
+xref	2	zshparam:PARAMETERS USED BY THE SHELL	zshexpn:*	zshexpn
+xref	2	zshoptions:DESCRIPTION OF OPTIONS	zshexpn:*	zshexpn
+xref	2	zshbuiltins:SHELL BUILTIN COMMANDS	zshexpn:*	zshexpn
+xref	2	zshbuiltins:SHELL BUILTIN COMMANDS	zshmisc:EXPANSION OF PROMPT SEQUENCES	“EXPANSION OF PROMPT SEQUENCES”
+xref	1	zshmisc:SIMPLE COMMANDS & PIPELINES	zshparam:*	zshparam
+xref	1	zshmisc:COMPLEX COMMANDS	zshbuiltins:*	zshbuiltins
+xref	1	zshmisc:REDIRECTION	zshexpn:*	zshexpn
+xref	1	zshmisc:SPECIAL FUNCTIONS	zshbuiltins:*	zshbuiltins
+xref	1	zshmisc:SIGNALS	zshexpn:*	zshexpn
+xref	1	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:*	zshexpn
+xref	1	zshmisc:CONDITIONAL EXPRESSIONS	zshmisc:ARITHMETIC EVALUATION	“ARITHMETIC EVALUATION”
+xref	1	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:*	zshexpn
+xref	1	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:*	zshexpn
+xref	1	zshexpn:DESCRIPTION	zshmisc:*	zshmisc
+xref	1	zshexpn:HISTORY EXPANSION	zshmisc:EXPANSION OF PROMPT SEQUENCES	“EXPANSION OF PROMPT SEQUENCES”
+xref	1	zshexpn:HISTORY EXPANSION	zshexpn:FILENAME GENERATION	“FILENAME GENERATION”
+xref	1	zshexpn:HISTORY EXPANSION	zshoptions:SINGLE LETTER OPTIONS	“Also note”
+xref	1	zshexpn:PROCESS SUBSTITUTION	zshmisc:*	zshmisc
+xref	1	zshexpn:PROCESS SUBSTITUTION	zshoptions:SINGLE LETTER OPTIONS	“Also note”
+xref	1	zshexpn:PARAMETER EXPANSION	zshmisc:*	zshmisc
+xref	1	zshexpn:PARAMETER EXPANSION	zshmisc:EXPANSION OF PROMPT SEQUENCES	“EXPANSION OF PROMPT SEQUENCES”
+xref	1	zshexpn:PARAMETER EXPANSION	zshexpn:FILENAME EXPANSION	“FILENAME EXPANSION”
+xref	1	zshexpn:FILENAME GENERATION	zshparam:*	zshparam
+xref	1	zshparam:DESCRIPTION	zshmisc:*	zshmisc
+xref	1	zshparam:DESCRIPTION	zshexpn:*	zshexpn
+xref	1	zshparam:ARRAY PARAMETERS	zshoptions:*	zshoptions
+xref	1	zshparam:ARRAY PARAMETERS	zshmisc:*	zshmisc
+xref	1	zshparam:PARAMETERS SET BY THE SHELL	zshbuiltins:*	zshbuiltins
+xref	1	zshparam:PARAMETERS SET BY THE SHELL	zshmisc:*	zshmisc
+xref	1	zshparam:PARAMETERS USED BY THE SHELL	zshmisc:*	zshmisc
+xref	1	zshparam:PARAMETERS USED BY THE SHELL	zshmisc:EXPANSION OF PROMPT SEQUENCES	“EXPANSION OF PROMPT SEQUENCES”
+xref	1	zshparam:PARAMETERS USED BY THE SHELL	zshoptions:SINGLE LETTER OPTIONS	“Also note”
+xref	1	zshoptions:DESCRIPTION OF OPTIONS	zshbuiltins:*	zshbuiltins
+xref	1	zshoptions:DESCRIPTION OF OPTIONS	zshmisc:RESERVED WORDS	“RESERVED WORDS”
+xref	1	zshoptions:DESCRIPTION OF OPTIONS	zshmisc:SPECIAL FUNCTIONS	“SPECIAL FUNCTIONS”
+xref	1	zshbuiltins:SHELL BUILTIN COMMANDS	zshexpn:FILENAME EXPANSION	“Static named directories”
+entity	72	zshoptions:DESCRIPTION OF OPTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	POSIX EXIT DEBUG SAVEHIST CHASE_LINKS DEBUG_BEFORE_CMD KSH_GLOB ERR_EXIT
+entity	47	zshoptions:DESCRIPTION OF OPTIONS	zshoptions:SINGLE LETTER OPTIONS	SHIN_STDIN XTRACE PRIVILEGED ERR_EXIT RESTRICTED MONITOR INTERACTIVE CHASE_LINKS
+entity	34	zshparam:PARAMETERS USED BY THE SHELL	zshoptions:DESCRIPTION OF OPTIONS	PROMPT CORRECT_ALL ASCII MULTIBYTE SAVEHIST EXTENDED_GLOB PROMPT_CR HISTSIZE
+entity	22	zshparam:PARAMETERS USED BY THE SHELL	zshbuiltins:SHELL BUILTIN COMMANDS	PATH SAVEHIST PROMPT HOME MULTIBYTE HISTFILE EDITOR FCEDIT
+entity	21	zshexpn:FILENAME GENERATION	zshoptions:DESCRIPTION OF OPTIONS	MATCH KSH_GLOB MULTIBYTE GLOB_DOTS MULTIBYTE_SUPPORT NOMATCH EXTENDED_GLOB BARE_GLOB_QUAL
+entity	19	zshexpn:PARAMETER EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	KSH_ARRAYS EXPANSION MULTIBYTE POSIX_IDENTIFIERS PROMPT_BANG EXTENDED_GLOB PROMPT PROMPT_PERCENT
+entity	16	zshexpn:FILENAME GENERATION	zshbuiltins:SHELL BUILTIN COMMANDS	EXTENDED_GLOB KSH_GLOB MULTIBYTE KSH_ARRAYS REPLY
+entity	15	zshmisc:CONDITIONAL EXPRESSIONS	zshoptions:DESCRIPTION OF OPTIONS	BASH_REMATCH MATCH KSH_ARRAYS ASCII PCRE EXTENDED_GLOB EVALUATION POSIX_BUILTINS
+entity	12	zshexpn:FILENAME GENERATION	zshparam:PARAMETERS USED BY THE SHELL	REPLY MULTIBYTE MBEGIN MATCH MEND EXTENDED_GLOB WORDCHARS ASCII
+entity	11	zshexpn:PARAMETER EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	MULTIBYTE EXPANSION KSH_ARRAYS PATH PROMPT EXTENDED_GLOB SEQUENCES
+entity	11	zshoptions:SINGLE LETTER OPTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	ERR_EXIT CHASE_LINKS PUSHD_TO_HOME CDABLE_VARS PUSHD_SILENT PATH_DIRS SHIN_STDIN INTERACTIVE
+entity	10	zshexpn:PARAMETER EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	MULTIBYTE PATH PROMPT EXTENDED_GLOB EXPANSION PROMPT_PERCENT SEQUENCES ASCII
+entity	10	zshoptions:DESCRIPTION OF OPTIONS	zshoptions:OPTION ALIASES	HASH_CMDS CHASE_LINKS GLOB_DOTS APPEND_HISTORY SHIN_STDIN BANG_HIST SINGLE_COMMAND MAIL_WARNING
+entity	9	zshexpn:HISTORY EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	CHASE_LINKS CSH_JUNKIE_HISTORY HIST_SUBST_PATTERN EXPANSION PROMPT EXTENDED_GLOB SEQUENCES CHASE_DOTS
+entity	9	zshparam:PARAMETERS SET BY THE SHELL	zshoptions:DESCRIPTION OF OPTIONS	EXIT KSH_AUTOLOAD USERNAME FUNCTION_ARGZERO OPTIND POSIX SIGINT POSIX_ARGZERO
+entity	9	zshparam:PARAMETERS SET BY THE SHELL	zshbuiltins:SHELL BUILTIN COMMANDS	LINENO EXIT KSH_AUTOLOAD FUNCTION_ARGZERO STTY OPTIND POSIX OPTARG
+entity	8	zshmisc:SPECIAL FUNCTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	TRAPNAL HISTFILE DEBUG_BEFORE_CMD SIGERR SHARE_HISTORY POSIX TRAPDEBUG
+entity	8	zshexpn:PARAMETER EXPANSION	zshparam:ARRAY PARAMETERS	KSH_ARRAYS GLOB_SUBST
+entity	7	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:FILENAME GENERATION	MATCH MBEGIN MEND EXTENDED_GLOB KSH_ARRAYS ASCII
+entity	7	zshexpn:HISTORY EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	CHASE_LINKS PATH EXPANSION PROMPT EXTENDED_GLOB SEQUENCES HISTSIZE
+entity	7	zshparam:ARRAY PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	KSH_ARRAYS KSH_ZERO_SUBSCRIPT GLOB_SUBST
+entity	6	zshmisc:ERRORS	zshoptions:DESCRIPTION OF OPTIONS	CONTINUE_ON_ERROR NOMATCH POSIX_BUILTINS POSIX BAD_PATTERN RESTRICTED
+entity	6	zshmisc:SPECIAL FUNCTIONS	zshoptions:DESCRIPTION OF OPTIONS	HISTFILE DEBUG_BEFORE_CMD SHARE_HISTORY INC_APPEND_HISTORY SIGINT POSIX
+entity	6	zshmisc:CONDITIONAL EXPRESSIONS	zshparam:PARAMETERS USED BY THE SHELL	ASCII MBEGIN MATCH MEND EXTENDED_GLOB
+entity	6	zshexpn:HISTORY EXPANSION	zshexpn:PARAMETER EXPANSION	PATH EXPANSION EXTENDED_GLOB PROMPT FILENAME SEQUENCES
+entity	6	zshexpn:HISTORY EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	PATH EXPANSION EXTENDED_GLOB PROMPT SEQUENCES HISTSIZE
+entity	6	zshexpn:PARAMETER EXPANSION	zshexpn:FILENAME GENERATION	MULTIBYTE EXTENDED_GLOB KSH_ARRAYS ASCII POSIX_IDENTIFIERS
+entity	5	zshmisc:REDIRECTION	zshoptions:DESCRIPTION OF OPTIONS	CLOBBER APPEND_CREATE
+entity	5	zshmisc:REDIRECTIONS WITH NO COMMAND	zshoptions:DESCRIPTION OF OPTIONS	NULLCMD READNULLCMD CSH_NULLCMD
+entity	5	zshmisc:CONDITIONAL EXPRESSIONS	zshbuiltins:SHELL BUILTIN COMMANDS	KSH_ARRAYS POSIX_BUILTINS EXTENDED_GLOB POSIX
+entity	5	zshmisc:SIMPLE PROMPT ESCAPES	zshoptions:DESCRIPTION OF OPTIONS	POSIX HOME USERNAME XTRACE
+entity	5	zshexpn:FILENAME EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	NOMATCH HOME EQUALS MAGIC_EQUAL_SUBST PUSHD_MINUS
+entity	5	zshoptions:OPTION ALIASES	zshoptions:SINGLE LETTER OPTIONS	CHASE_LINKS GLOB_DOTS SHIN_STDIN SINGLE_COMMAND MAIL_WARNING
+entity	4	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:PARAMETER EXPANSION	KSH_ARRAYS ASCII EXTENDED_GLOB
+entity	4	zshexpn:FILENAME GENERATION	zshoptions:SINGLE LETTER OPTIONS	MARK_DIRS LIST_TYPES GLOB_DOTS NULL_GLOB
+entity	3	zshmisc:COMPLEX COMMANDS	zshparam:PARAMETERS SET BY THE SHELL	TRY_BLOCK_ERROR EXIT
+entity	3	zshmisc:COMPLEX COMMANDS	zshparam:PARAMETERS USED BY THE SHELL	TIMEFMT REPLY PROMPT3
+entity	3	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshoptions:DESCRIPTION OF OPTIONS	SHORT_LOOPS SHORT_REPEAT
+entity	3	zshmisc:ERRORS	zshbuiltins:SHELL BUILTIN COMMANDS	POSIX_BUILTINS POSIX RESTRICTED
+entity	3	zshmisc:JOBS	zshoptions:DESCRIPTION OF OPTIONS	CONT NOTIFY MONITOR
+entity	3	zshmisc:SIGNALS	zshoptions:DESCRIPTION OF OPTIONS	MONITOR MULTIOS ERR_EXIT
+entity	3	zshmisc:ARITHMETIC EVALUATION	zshoptions:DESCRIPTION OF OPTIONS	MULTIBYTE FORCE_FLOAT OCTAL_ZEROES
+entity	3	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:PARAMETER EXPANSION	PROMPT_BANG PROMPT_PERCENT PROMPT_SUBST
+entity	3	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshoptions:DESCRIPTION OF OPTIONS	PROMPT_BANG PROMPT_PERCENT PROMPT_SUBST
+entity	3	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:PARAMETERS SET BY THE SHELL	USERNAME SHLVL POSIX
+entity	3	zshmisc:SIMPLE PROMPT ESCAPES	zshbuiltins:SHELL BUILTIN COMMANDS	POSIX HOME
+entity	3	zshexpn:BRACE EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	ASCII BRACE_CCL
+entity	3	zshexpn:FILENAME EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	HOME PATH PUSHD_MINUS
+entity	3	zshparam:PARAMETERS USED BY THE SHELL	zshoptions:SINGLE LETTER OPTIONS	AUTO_PUSHD SINGLE_LINE_ZLE CORRECT_ALL
+entity	2	zshmisc:COMPLEX COMMANDS	zshbuiltins:SHELL BUILTIN COMMANDS	EXIT REPLY
+entity	2	zshmisc:RESERVED WORDS	zshoptions:DESCRIPTION OF OPTIONS	IGNORE_CLOSE_BRACES IGNORE_BRACES
+entity	2	zshmisc:ERRORS	zshmisc:CONDITIONAL EXPRESSIONS	POSIX_BUILTINS POSIX
+entity	2	zshmisc:ALIASING	zshoptions:DESCRIPTION OF OPTIONS	POSIX_ALIASES ALIAS_FUNC_DEF
+entity	2	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	IGNORE_BRACES CLOBBER
+entity	2	zshmisc:REDIRECTIONS WITH NO COMMAND	zshparam:PARAMETERS USED BY THE SHELL	NULLCMD READNULLCMD
+entity	2	zshmisc:SPECIAL FUNCTIONS	zshparam:PARAMETERS SET BY THE SHELL	SIGINT POSIX
+entity	2	zshmisc:JOBS	zshoptions:SINGLE LETTER OPTIONS	NOTIFY MONITOR
+entity	2	zshmisc:JOBS	zshbuiltins:SHELL BUILTIN COMMANDS	CONT SIGHUP
+entity	2	zshmisc:SIGNALS	zshoptions:SINGLE LETTER OPTIONS	MONITOR ERR_EXIT
+entity	2	zshmisc:SIGNALS	zshbuiltins:SHELL BUILTIN COMMANDS	TRAPNAL ERR_EXIT
+entity	2	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:PARAMETERS USED BY THE SHELL	RPS2 HOME
+entity	2	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshparam:PARAMETERS SET BY THE SHELL	SECONDS SHLVL
+entity	2	zshexpn:FILENAME EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	HOME PATH
+entity	2	zshparam:ARRAY PARAMETERS	zshparam:POSITIONAL PARAMETERS	KSH_ZERO_SUBSCRIPT KSH_ARRAYS
+entity	2	zshparam:POSITIONAL PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	KSH_ZERO_SUBSCRIPT KSH_ARRAYS
+entity	2	zshparam:PARAMETERS SET BY THE SHELL	zshparam:PARAMETERS USED BY THE SHELL	STTY ZSH_VERSION
+entity	2	zshoptions:OPTION ALIASES	zshbuiltins:SHELL BUILTIN COMMANDS	CHASE_LINKS SHIN_STDIN
+vocab	0.512	zshexpn:PARAMETER EXPANSION	zshparam:ARRAY PARAMETERS	array subscript flag flags foo associative
+vocab	0.501	zshoptions:DESCRIPTION OF OPTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	history function file options exit path
+vocab	0.457	zshparam:PARAMETERS USED BY THE SHELL	zshoptions:DESCRIPTION OF OPTIONS	history editor completion this prompt character
+vocab	0.376	zshmisc:REDIRECTION	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	descriptor file open clobber redirection error
+vocab	0.361	zshexpn:PARAMETER EXPANSION	zshexpn:FILENAME GENERATION	pattern match foo array flags flag
+vocab	0.36	zshexpn:PARAMETER EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	flag flags name array value given
+vocab	0.352	zshparam:PARAMETERS USED BY THE SHELL	zshbuiltins:SHELL BUILTIN COMMANDS	value printed array if history file
+vocab	0.351	zshmisc:SPECIAL FUNCTIONS	zshoptions:DESCRIPTION OF OPTIONS	history trap function functions executed status
+vocab	0.347	zshexpn:HISTORY EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	history path expansion character filename event
+vocab	0.347	zshexpn:FILENAME GENERATION	zshoptions:DESCRIPTION OF OPTIONS	pattern match files character matches file
+vocab	0.344	zshmisc:CONDITIONAL EXPRESSIONS	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	true string equal if length false
+vocab	0.344	zshexpn:PARAMETER EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	array foo pattern this name character
+vocab	0.327	zshmisc:COMPLEX COMMANDS	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	list term word repeat expr2 expr1
+vocab	0.32	zshexpn:HISTORY EXPANSION	zshexpn:PARAMETER EXPANSION	str foo word substituted substitution words
+vocab	0.29	zshmisc:SPECIAL FUNCTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	functions function history status signal executed
+vocab	0.287	zshparam:PARAMETERS SET BY THE SHELL	zshoptions:DESCRIPTION OF OPTIONS	you history script this file user
+vocab	0.284	zshmisc:MULTIOS	zshexpn:PROCESS SUBSTITUTION	file file2 multios file1 pipe process
+vocab	0.278	zshmisc:COMPLEX COMMANDS	zshoptions:DESCRIPTION OF OPTIONS	list try always exit function executed
+vocab	0.272	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	sublist list commands yes newline word
+vocab	0.271	zshparam:PARAMETERS SET BY THE SHELL	zshbuiltins:SHELL BUILTIN COMMANDS	module value array name function file
+vocab	0.269	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshmisc:MULTIOS	descriptor file myfd opened redirection opens
+vocab	0.268	zshexpn:HISTORY EXPANSION	zshexpn:FILENAME GENERATION	character qualifiers match glob foo qualifier
+vocab	0.268	zshexpn:FILENAME GENERATION	zshbuiltins:SHELL BUILTIN COMMANDS	flag pattern flags character files given
+vocab	0.259	zshexpn:PARAMETER EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	array value character ifs pattern flags
+vocab	0.259	zshexpn:FILENAME GENERATION	zshparam:PARAMETERS USED BY THE SHELL	character files pattern matches characters array
+vocab	0.254	zshexpn:PARAMETER EXPANSION	zshparam:DESCRIPTION	array scalar name value parameter parameters
+vocab	0.251	zshmisc:JOBS	zshoptions:DESCRIPTION OF OPTIONS	job jobs you running when suspended
+vocab	0.25	zshmisc:REDIRECTION	zshmisc:MULTIOS	file descriptor output redirection multios standard
+vocab	0.249	zshparam:ARRAY PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	subscript array pattern key this match
+vocab	0.245	zshmisc:AUTOLOADING FUNCTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	autoload function functions file definition fpath
+vocab	0.243	zshmisc:COMPLEX COMMANDS	zshmisc:SPECIAL FUNCTIONS	executed list status function traps trap
+vocab	0.243	zshmisc:FUNCTIONS	zshmisc:SPECIAL FUNCTIONS	functions function executed trap return defined
+vocab	0.24	zshparam:ARRAY PARAMETERS	zshbuiltins:SHELL BUILTIN COMMANDS	flag array name flags value associative
+vocab	0.238	zshmisc:COMPLEX COMMANDS	zshbuiltins:SHELL BUILTIN COMMANDS	list executed status function name exit
+vocab	0.237	zshexpn:FILENAME GENERATION	zshparam:ARRAY PARAMETERS	match pattern array foo matching flag
+vocab	0.235	zshexpn:FILENAME EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	directory stack path completion function return
+vocab	0.234	zshparam:DESCRIPTION	zshbuiltins:SHELL BUILTIN COMMANDS	name value attribute scalar array parameters
+vocab	0.23	zshexpn:FILENAME EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	directory name stack status function names
+vocab	0.228	zshmisc:SIMPLE PROMPT ESCAPES	zshoptions:DESCRIPTION OF OPTIONS	format file directory path line character
+vocab	0.224	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:COMPLEX COMMANDS	list executed pipeline status terminated returns
+vocab	0.223	zshparam:PARAMETERS SET BY THE SHELL	zshparam:PARAMETERS USED BY THE SHELL	value you array stty seconds history
+vocab	0.222	zshexpn:HISTORY EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	history path name character event directory
+vocab	0.22	zshmisc:ALIASING	zshoptions:DESCRIPTION OF OPTIONS	alias aliases completion foo word expansion
+vocab	0.218	zshmisc:SPECIAL FUNCTIONS	zshparam:PARAMETERS SET BY THE SHELL	executed history signal function trap traps
+vocab	0.214	zshmisc:ALIASING	zshbuiltins:SHELL BUILTIN COMMANDS	alias aliases defined module table hash
+vocab	0.214	zshexpn:HISTORY EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	history character path expansion prompt you
+vocab	0.211	zshmisc:REDIRECTION	zshoptions:DESCRIPTION OF OPTIONS	file word output standard input clobber
+vocab	0.21	zshparam:DESCRIPTION	zshparam:ARRAY PARAMETERS	array value associative scalar name assignment
+vocab	0.207	zshmisc:JOBS	zshbuiltins:SHELL BUILTIN COMMANDS	job jobs table state features was
+vocab	0.207	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:FILENAME GENERATION	file match pattern test string matched
+vocab	0.206	zshmisc:SIMPLE PROMPT ESCAPES	zshbuiltins:SHELL BUILTIN COMMANDS	format file directory given current number
+vocab	0.204	zshmisc:ALIASING	zshexpn:DESCRIPTION	alias expansion aliases aliasing commonly expanded
+vocab	0.203	zshmisc:PRECOMMAND MODIFIERS	zshbuiltins:SHELL BUILTIN COMMANDS	flag name whence path precommand options
+vocab	0.203	zshexpn:PARAMETER EXPANSION	zshexpn:COMMAND SUBSTITUTION	foo substitution ifs quotes words expansions
+vocab	0.196	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshparam:PARAMETERS USED BY THE SHELL	prompt sequences character escape history expansion
+vocab	0.195	zshmisc:REDIRECTION	zshexpn:PROCESS SUBSTITUTION	file descriptor input output list word
+vocab	0.195	zshmisc:FUNCTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	functions function alias read listed exit
+vocab	0.195	zshparam:DESCRIPTION	zshparam:LOCAL PARAMETERS	parameters attribute parameter attributes exported value
+vocab	0.194	zshmisc:ARITHMETIC EVALUATION	zshoptions:DESCRIPTION OF OPTIONS	base output character point this it
+vocab	0.193	zshmisc:COMMAND EXECUTION	zshoptions:DESCRIPTION OF OPTIONS	file function directory script format path
+vocab	0.193	zshmisc:AUTOLOADING FUNCTIONS	zshmisc:ANONYMOUS FUNCTIONS	function definition functions definitions local discarded
+vocab	0.192	zshmisc:COMPLEX COMMANDS	zshparam:PARAMETERS USED BY THE SHELL	list term pattern editor value statistics
+vocab	0.192	zshmisc:SPECIAL FUNCTIONS	zshparam:PARAMETERS USED BY THE SHELL	history trap array prompt hook line
+vocab	0.192	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:PARAMETERS SET BY THE SHELL	number system id code user tty
+vocab	0.191	zshparam:LOCAL PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	local path new directory scope parameter
+vocab	0.188	zshmisc:ARITHMETIC EVALUATION	zshbuiltins:SHELL BUILTIN COMMANDS	zmodload output format name value functions
+vocab	0.186	zshmisc:PRECOMMAND MODIFIERS	zshoptions:DESCRIPTION OF OPTIONS	path effect rather spelling function it
+vocab	0.186	zshmisc:SPECIAL FUNCTIONS	zshexpn:HISTORY EXPANSION	history line immediately modifier function same
+vocab	0.185	zshexpn:PROCESS SUBSTITUTION	zshbuiltins:SHELL BUILTIN COMMANDS	arg file argument list job process
+vocab	0.185	zshexpn:PARAMETER EXPANSION	zshexpn:BRACE EXPANSION	foo character characters array words spec
+vocab	0.185	zshexpn:FILENAME EXPANSION	zshexpn:FILENAME GENERATION	match directory reply directories path matched
+vocab	0.184	zshmisc:REDIRECTION	zshmisc:CONDITIONAL EXPRESSIONS	file exists descriptor word if open
+vocab	0.181	zshparam:DESCRIPTION	zshoptions:DESCRIPTION OF OPTIONS	array value name scalar parameter type
+vocab	0.18	zshmisc:MULTIOS	zshoptions:DESCRIPTION OF OPTIONS	file foo output files unset redirection
+vocab	0.18	zshmisc:ARITHMETIC EVALUATION	zshparam:DESCRIPTION	floating type value integer arithmetic scalar
+vocab	0.179	zshmisc:PRECOMMAND MODIFIERS	zshexpn:PARAMETER EXPANSION	flag word name words string replacement
+vocab	0.179	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:PARAMETERS USED BY THE SHELL	format number character prompt system characters
+vocab	0.179	zshparam:ARRAY PARAMETERS	zshparam:PARAMETERS USED BY THE SHELL	array value pattern character this key
+vocab	0.179	zshparam:LOCAL PARAMETERS	zshbuiltins:SHELL BUILTIN COMMANDS	local parameters typeset path name new
+vocab	0.178	zshmisc:COMMAND EXECUTION	zshbuiltins:SHELL BUILTIN COMMANDS	file format name function status printed
+vocab	0.177	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:SPECIAL FUNCTIONS	executed status sublist signal list terminated
+vocab	0.175	zshmisc:CONDITIONAL EXPRESSIONS	zshoptions:DESCRIPTION OF OPTIONS	file true pattern if match warning
+vocab	0.174	zshexpn:FILENAME EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	directory reply stack array path should
+vocab	0.174	zshparam:DESCRIPTION	zshparam:PARAMETERS SET BY THE SHELL	value type array assigning parameters environment
+vocab	0.173	zshmisc:COMPLEX COMMANDS	zshexpn:FILENAME GENERATION	list pattern parentheses match errors word
+vocab	0.173	zshmisc:REDIRECTION	zshexpn:PARAMETER EXPANSION	word substitution output quotes then file
+vocab	0.173	zshmisc:AUTOLOADING FUNCTIONS	zshoptions:DESCRIPTION OF OPTIONS	function file functions definition directory element
+vocab	0.173	zshmisc:SIMPLE PROMPT ESCAPES	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	truncation day negative specifies current prompt
+vocab	0.173	zshexpn:PARAMETER EXPANSION	zshexpn:FILENAME EXPANSION	name array match word then directory
+vocab	0.172	zshmisc:FUNCTIONS	zshmisc:AUTOLOADING FUNCTIONS	function functions calls undefined executed funcname
+vocab	0.171	zshmisc:COMPLEX COMMANDS	zshexpn:PARAMETER EXPANSION	word words pattern name list then
+vocab	0.171	zshmisc:ANONYMOUS FUNCTIONS	zshoptions:DESCRIPTION OF OPTIONS	function local functions definitions brace this
+vocab	0.171	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshexpn:PARAMETER EXPANSION	array elements string true length character
+vocab	0.171	zshparam:DESCRIPTION	zshparam:PARAMETERS USED BY THE SHELL	value array environment parameter variable type
+vocab	0.17	zshmisc:ANONYMOUS FUNCTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	function arguments functions name local definition
+vocab	0.168	zshexpn:PROCESS SUBSTITUTION	zshoptions:DESCRIPTION OF OPTIONS	file list completion this job cut
+vocab	0.166	zshmisc:COMPLEX COMMANDS	zshmisc:REDIRECTION	word list then error standard input
+vocab	0.166	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:PROCESS SUBSTITUTION	file file2 file1 fd process dev
+vocab	0.166	zshparam:POSITIONAL PARAMETERS	zshparam:PARAMETERS SET BY THE SHELL	argv positional array parameters assigning script
+vocab	0.165	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:HISTORY EXPANSION	expansion history event character prompt complicated
+vocab	0.165	zshparam:ARRAY PARAMETERS	zshparam:POSITIONAL PARAMETERS	array values arrays positional value ksh_arrays
+vocab	0.164	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshoptions:DESCRIPTION OF OPTIONS	prompt true character directory array if
+vocab	0.164	zshexpn:DESCRIPTION	zshoptions:DESCRIPTION OF OPTIONS	expansion history alias filename performed ksh
+vocab	0.163	zshmisc:ERRORS	zshoptions:DESCRIPTION OF OPTIONS	errors interactive file options behaviour script
+vocab	0.163	zshmisc:QUOTING	zshexpn:PARAMETER EXPANSION	quotes character string quoted resulting characters
+vocab	0.163	zshexpn:DESCRIPTION	zshexpn:HISTORY EXPANSION	expansion expansions history filename immediately substitution
+vocab	0.162	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshparam:PARAMETERS USED BY THE SHELL	prompt psvar character array text space
+vocab	0.161	zshparam:POSITIONAL PARAMETERS	zshbuiltins:SHELL BUILTIN COMMANDS	parameters options array positional values section
+vocab	0.16	zshmisc:REDIRECTION	zshexpn:HISTORY EXPANSION	word file input expansion filename substitution
+vocab	0.16	zshmisc:ANONYMOUS FUNCTIONS	zshmisc:SPECIAL FUNCTIONS	function functions executed immediately normal called
+vocab	0.159	zshmisc:SIMPLE COMMANDS & PIPELINES	zshoptions:DESCRIPTION OF OPTIONS	status pipeline commands list foo executed
+vocab	0.159	zshmisc:JOBS	zshparam:PARAMETERS SET BY THE SHELL	you id code process interrupt started
+vocab	0.158	zshmisc:SIMPLE COMMANDS & PIPELINES	zshbuiltins:SHELL BUILTIN COMMANDS	status value list job executed output
+vocab	0.158	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshoptions:DESCRIPTION OF OPTIONS	prompt history expansion sequences character escape
+vocab	0.158	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:HISTORY EXPANSION	components path component extension character history
+vocab	0.158	zshexpn:BRACE EXPANSION	zshexpn:FILENAME GENERATION	character match foo characters bar multibyte
+vocab	0.157	zshmisc:REDIRECTION	zshbuiltins:SHELL BUILTIN COMMANDS	file word output input standard list
+vocab	0.157	zshmisc:AUTOLOADING FUNCTIONS	zshmisc:SPECIAL FUNCTIONS	function functions executed defined file context
+vocab	0.156	zshmisc:COMPLEX COMMANDS	zshexpn:HISTORY EXPANSION	list word words always then treated
+vocab	0.156	zshmisc:QUOTING	zshexpn:COMMAND SUBSTITUTION	enclosed quotes quoted substitution single double
+vocab	0.156	zshparam:DESCRIPTION	zshparam:POSITIONAL PARAMETERS	parameters array value assignment parameter assigning
+vocab	0.155	zshmisc:ANONYMOUS FUNCTIONS	zshparam:LOCAL PARAMETERS	local scope function hidden variable name
+vocab	0.154	zshmisc:FUNCTIONS	zshoptions:DESCRIPTION OF OPTIONS	function functions trap exit alias return
+vocab	0.153	zshmisc:COMMAND EXECUTION	zshmisc:CONDITIONAL EXPRESSIONS	file exists directory executable if fails
+vocab	0.153	zshmisc:SIGNALS	zshoptions:DESCRIPTION OF OPTIONS	jobs exit section waiting functions err_exit
+vocab	0.153	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:FILENAME EXPANSION	directory dynamic path prefix home static
+vocab	0.153	zshexpn:PARAMETER EXPANSION	zshparam:PARAMETERS SET BY THE SHELL	array value name flags substitution parameter
+vocab	0.152	zshmisc:JOBS	zshmisc:SIGNALS	jobs background parent monitor asynchronously process
+vocab	0.151	zshmisc:PRECOMMAND MODIFIERS	zshparam:PARAMETERS USED BY THE SHELL	correction environment spelling argv0 path flag
+vocab	0.151	zshmisc:MULTIOS	zshexpn:FILENAME GENERATION	files foo file bar sort cat
+vocab	0.151	zshexpn:HISTORY EXPANSION	zshexpn:COMMAND SUBSTITUTION	foo substitution filename expansions expansion like
+vocab	0.151	zshexpn:HISTORY EXPANSION	zshparam:ARRAY PARAMETERS	foo quotes backslash match delimiter character
+vocab	0.15	zshmisc:COMPLEX COMMANDS	zshparam:PARAMETERS SET BY THE SHELL	executed code try_block_error list always block
+vocab	0.15	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	prompt escape sequences character string current
+vocab	0.148	zshmisc:ALIASING	zshexpn:PARAMETER EXPANSION	foo word quoting expansion pattern nested
+vocab	0.148	zshmisc:COMMAND EXECUTION	zshmisc:SIMPLE PROMPT ESCAPES	format file system directory specifies function
+vocab	0.147	zshexpn:ARITHMETIC EXPANSION	zshparam:ARRAY PARAMETERS	exp value arithmetic expression expansion string
+vocab	0.146	zshmisc:PRECOMMAND MODIFIERS	zshexpn:HISTORY EXPANSION	modifier path word modifiers replacement words
+vocab	0.146	zshmisc:JOBS	zshparam:PARAMETERS USED BY THE SHELL	you prompt suspended terminal stty job
+vocab	0.146	zshexpn:DESCRIPTION	zshexpn:COMMAND SUBSTITUTION	expansion expansions substitution filename mentioned unquoted
+vocab	0.145	zshmisc:ALIASING	zshmisc:FUNCTIONS	alias defined functions word builtin function
+vocab	0.145	zshmisc:FUNCTIONS	zshmisc:ANONYMOUS FUNCTIONS	function functions arguments stored inside executed
+vocab	0.144	zshexpn:PARAMETER EXPANSION	zshparam:POSITIONAL PARAMETERS	array parameters value arrays parameter positional
+vocab	0.143	zshmisc:ERRORS	zshbuiltins:SHELL BUILTIN COMMANDS	module options autoload file all errors
+vocab	0.143	zshmisc:COMMAND EXECUTION	zshexpn:FILENAME EXPANSION	directory exists name status function directories
+vocab	0.143	zshexpn:FILENAME GENERATION	zshparam:PARAMETERS SET BY THE SHELL	id group code array qualifier file
+vocab	0.143	zshoptions:SPECIFYING OPTIONS	zshoptions:DESCRIPTION OF OPTIONS	options beep unsetopt ksh local_options option
+vocab	0.142	zshexpn:HISTORY EXPANSION	zshparam:PARAMETERS SET BY THE SHELL	history event you reference previous number
+vocab	0.142	zshparam:POSITIONAL PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	array parameters etc values options section
+vocab	0.14	zshmisc:MULTIOS	zshmisc:CONDITIONAL EXPRESSIONS	file file2 file1 descriptor foo bar
+vocab	0.139	zshmisc:ARITHMETIC EVALUATION	zshmisc:SIMPLE PROMPT ESCAPES	format integer leading number character decimal
+vocab	0.139	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:PARAMETER EXPANSION	pattern true string match string1 var
+vocab	0.138	zshmisc:COMMAND EXECUTION	zshmisc:SPECIAL FUNCTIONS	function status executed functions execute file
+vocab	0.138	zshexpn:HISTORY EXPANSION	zshexpn:FILENAME EXPANSION	directory path word expansion previous match
+vocab	0.137	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshmisc:RESERVED WORDS	repeat select recognized foreach elif until
+vocab	0.136	zshmisc:COMMENTS	zshmisc:QUOTING	histchars newline character ignored characters default
+vocab	0.136	zshmisc:MULTIOS	zshexpn:COMMAND SUBSTITUTION	cat foo output generation expansion standard
+vocab	0.136	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:FILENAME GENERATION	character characters file directory number current
+vocab	0.136	zshoptions:DESCRIPTION OF OPTIONS	zshoptions:SINGLE LETTER OPTIONS	privileged err_exit allow restricted ksh interactive
+vocab	0.135	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:JOBS	job pipeline background terminated output parent
+vocab	0.135	zshmisc:PRECOMMAND MODIFIERS	zshmisc:SPECIAL FUNCTIONS	executed precommand trapexit function modifier taken
+vocab	0.134	zshmisc:ARITHMETIC EVALUATION	zshexpn:PARAMETER EXPANSION	value name character scalar output substitution
+vocab	0.134	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshbuiltins:SHELL BUILTIN COMMANDS	true array if argument current elements
+vocab	0.133	zshmisc:COMMENTS	zshmisc:REDIRECTION	word newline causes characters character up
+vocab	0.133	zshmisc:ARITHMETIC EVALUATION	zshexpn:FILENAME GENERATION	character operators base operator precedence expression
+vocab	0.132	zshmisc:ALIASING	zshexpn:HISTORY EXPANSION	word foo expansion history remove reference
+vocab	0.132	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshexpn:PROCESS SUBSTITUTION	file descriptor redirection open close list
+vocab	0.132	zshmisc:CONDITIONAL EXPRESSIONS	zshbuiltins:SHELL BUILTIN COMMANDS	file true if module pattern directory
+vocab	0.131	zshexpn:BRACE EXPANSION	zshoptions:DESCRIPTION OF OPTIONS	character characters brace foo expansion filename
+vocab	0.13	zshmisc:REDIRECTIONS WITH NO COMMAND	zshoptions:DESCRIPTION OF OPTIONS	nullcmd when file default ksh readnullcmd
+vocab	0.13	zshmisc:CONDITIONAL EXPRESSIONS	zshparam:ARRAY PARAMETERS	true exp exp2 exp1 pattern match
+vocab	0.129	zshmisc:COMMAND EXECUTION	zshparam:PARAMETERS SET BY THE SHELL	script operating file system invoked function
+vocab	0.128	zshmisc:PRECOMMAND MODIFIERS	zshparam:POSITIONAL PARAMETERS	argv equivalent options effect function itself
+vocab	0.128	zshmisc:RESERVED WORDS	zshparam:LOCAL PARAMETERS	local export declare readonly typeset while
+vocab	0.128	zshmisc:REDIRECTION	zshparam:PARAMETERS USED BY THE SHELL	file output input list terminal it
+vocab	0.128	zshparam:LOCAL PARAMETERS	zshparam:PARAMETERS SET BY THE SHELL	local parameters parameter assigning made value
+vocab	0.127	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:REDIRECTION	standard output input word pipelines coprocess
+vocab	0.127	zshmisc:COMMENTS	zshoptions:DESCRIPTION OF OPTIONS	interactive shells character word default characters
+vocab	0.127	zshmisc:COMMAND EXECUTION	zshmisc:AUTOLOADING FUNCTIONS	file function directory message element executable
+vocab	0.127	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:PARAMETER EXPANSION	width characters name leading character value
+vocab	0.127	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshexpn:FILENAME GENERATION	character string least array characters at
+vocab	0.126	zshmisc:PRECOMMAND MODIFIERS	zshexpn:FILENAME GENERATION	files flag modifier prepended string path
+vocab	0.126	zshmisc:COMPLEX COMMANDS	zshmisc:RESERVED WORDS	words esac elif repeat word done
+vocab	0.125	zshmisc:SPECIAL FUNCTIONS	zshexpn:FILENAME EXPANSION	status functions function return directory array
+vocab	0.125	zshmisc:ARITHMETIC EVALUATION	zshparam:PARAMETERS USED BY THE SHELL	character output value it floating number
+vocab	0.124	zshmisc:QUOTING	zshexpn:HISTORY EXPANSION	quotes character quoted string histchars resulting
+vocab	0.124	zshmisc:MULTIOS	zshbuiltins:SHELL BUILTIN COMMANDS	file output job specified all exit
+vocab	0.123	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:PARAMETER EXPANSION	foo value words first word second
+vocab	0.123	zshmisc:COMPLEX COMMANDS	zshparam:ARRAY PARAMETERS	list exp pattern expression value evaluates
+vocab	0.123	zshmisc:QUOTING	zshparam:ARRAY PARAMETERS	quotes pair quote double character string
+vocab	0.123	zshmisc:MULTIOS	zshexpn:PARAMETER EXPANSION	foo cat bar sort output baz
+vocab	0.123	zshoptions:SPECIFYING OPTIONS	zshbuiltins:SHELL BUILTIN COMMANDS	options name names letter emulate builtins
+vocab	0.122	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshmisc:CONDITIONAL EXPRESSIONS	file descriptor open parenthesised syntax expression
+vocab	0.122	zshmisc:MULTIOS	zshmisc:REDIRECTIONS WITH NO COMMAND	cat redirection file redirections output thus
+vocab	0.121	zshmisc:SPECIAL FUNCTIONS	zshexpn:PARAMETER EXPANSION	array value name history is first
+vocab	0.121	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:PARAMETER EXPANSION	expansion sequences character substitution string prompt
+vocab	0.121	zshexpn:PROCESS SUBSTITUTION	zshparam:PARAMETERS USED BY THE SHELL	file list temporary paste this process
+vocab	0.12	zshmisc:COMPLEX COMMANDS	zshexpn:PROCESS SUBSTITUTION	list subshell then block file code
+vocab	0.119	zshmisc:COMPLEX COMMANDS	zshmisc:ANONYMOUS FUNCTIONS	function list outside executed treated name
+vocab	0.119	zshmisc:ERRORS	zshexpn:FILENAME GENERATION	errors qualifiers pattern glob parse matching
+vocab	0.119	zshparam:LOCAL PARAMETERS	zshparam:PARAMETERS USED BY THE SHELL	local parameter new path value parameters
+vocab	0.118	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshparam:ARRAY PARAMETERS	array true elements element string character
+vocab	0.118	zshexpn:DESCRIPTION	zshexpn:PARAMETER EXPANSION	expansion expansions substitution performed filename characters
+vocab	0.118	zshexpn:HISTORY EXPANSION	zshexpn:BRACE EXPANSION	character foo bar expansion filename words
+vocab	0.117	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshoptions:DESCRIPTION OF OPTIONS	file this it new unset brace
+vocab	0.117	zshmisc:JOBS	zshexpn:PROCESS SUBSTITUTION	job process parent disowned running then
+vocab	0.117	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:DESCRIPTION	expansion history substitution these expanded arithmetic
+vocab	0.117	zshparam:ARRAY PARAMETERS	zshparam:PARAMETERS SET BY THE SHELL	array value index name typeset this
+vocab	0.116	zshmisc:COMMAND EXECUTION	zshparam:PARAMETERS USED BY THE SHELL	file system message format directory printed
+vocab	0.116	zshexpn:FILENAME EXPANSION	zshparam:ARRAY PARAMETERS	array name match value element elements
+vocab	0.115	zshmisc:SPECIAL FUNCTIONS	zshmisc:SIMPLE PROMPT ESCAPES	executed function status line history handled
+vocab	0.114	zshmisc:REDIRECTION	zshexpn:FILENAME GENERATION	file word character except matches digit
+vocab	0.114	zshmisc:MULTIOS	zshmisc:SIGNALS	multios exit process parent wait run
+vocab	0.113	zshmisc:PRECOMMAND MODIFIERS	zshparam:PARAMETERS SET BY THE SHELL	argv executed process invoke environment builtin
+vocab	0.113	zshmisc:COMPLEX COMMANDS	zshmisc:FUNCTIONS	executed function execute execution functions exit
+vocab	0.113	zshmisc:ALIASING	zshexpn:FILENAME GENERATION	foo pattern glob bar word string
+vocab	0.113	zshmisc:REDIRECTION	zshexpn:COMMAND SUBSTITUTION	output word standard substitution quotes filename
+vocab	0.113	zshmisc:REDIRECTIONS WITH NO COMMAND	zshparam:PARAMETERS USED BY THE SHELL	terminal default nullcmd value csh readnullcmd
+vocab	0.113	zshmisc:FUNCTIONS	zshexpn:FILENAME EXPANSION	directory functions function return calls names
+vocab	0.112	zshmisc:COMPLEX COMMANDS	zshmisc:JOBS	try list then pipeline function do
+vocab	0.112	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshoptions:DESCRIPTION OF OPTIONS	list commands word form short pattern
+vocab	0.112	zshmisc:ALIASING	zshmisc:REDIRECTION	word input expansion it quote redirection
+vocab	0.112	zshexpn:COMMAND SUBSTITUTION	zshexpn:FILENAME GENERATION	foo parentheses filename like generation ifs
+vocab	0.111	zshmisc:SIMPLE COMMANDS & PIPELINES	zshparam:PARAMETERS SET BY THE SHELL	executed value status pipeline last signal
+vocab	0.111	zshmisc:AUTOLOADING FUNCTIONS	zshexpn:FILENAME EXPANSION	directory function functions calls element named
+vocab	0.111	zshexpn:FILENAME EXPANSION	zshparam:PARAMETERS SET BY THE SHELL	directory sufficient array name stack function
+vocab	0.11	zshmisc:PRECOMMAND MODIFIERS	zshmisc:RESERVED WORDS	nocorrect words done reserved nor word
+vocab	0.11	zshmisc:COMMENTS	zshparam:PARAMETERS USED BY THE SHELL	histchars character interactive default characters causes
+vocab	0.11	zshmisc:AUTOLOADING FUNCTIONS	zshparam:PARAMETERS USED BY THE SHELL	fpath file suffix functions element files
+vocab	0.109	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:FILENAME GENERATION	foo list sublist last operators pipeline
+vocab	0.109	zshmisc:FUNCTIONS	zshparam:POSITIONAL PARAMETERS	positional functions parameters function section builtin
+vocab	0.109	zshmisc:SIGNALS	zshbuiltins:SHELL BUILTIN COMMANDS	exit jobs functions section signal see
+vocab	0.108	zshmisc:SIMPLE COMMANDS & PIPELINES	zshparam:PARAMETERS USED BY THE SHELL	separated value list commands output it
+vocab	0.108	zshmisc:COMMENTS	zshexpn:PARAMETER EXPANSION	word shells character characters third parameter
+vocab	0.108	zshmisc:QUOTING	zshmisc:EXPANSION OF PROMPT SEQUENCES	escape character literal string single between
+vocab	0.107	zshmisc:REDIRECTION	zshmisc:COMMAND EXECUTION	file exists error it execution becomes
+vocab	0.106	zshmisc:COMPLEX COMMANDS	zshmisc:COMMAND EXECUTION	execute execution status function error executed
+vocab	0.106	zshmisc:RESERVED WORDS	zshoptions:DESCRIPTION OF OPTIONS	local words disable function ignore_close_braces ignore_braces
+vocab	0.106	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshbuiltins:SHELL BUILTIN COMMANDS	sequences escape available prompt character argument
+vocab	0.106	zshexpn:PROCESS SUBSTITUTION	zshexpn:FILENAME GENERATION	file list files file1 form must
+vocab	0.106	zshexpn:COMMAND SUBSTITUTION	zshoptions:DESCRIPTION OF OPTIONS	foo filename expansion generation output like
+vocab	0.106	zshexpn:FILENAME EXPANSION	zshparam:LOCAL PARAMETERS	directory local path name typeset function
+vocab	0.105	zshmisc:MULTIOS	zshparam:PARAMETERS USED BY THE SHELL	file output files redirection cat it
+vocab	0.105	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshmisc:SIMPLE PROMPT ESCAPES	sequences prompt integer character escape current
+vocab	0.104	zshmisc:PRECOMMAND MODIFIERS	zshmisc:COMMENTS	shells interactive word causes non default
+vocab	0.104	zshmisc:COMPLEX COMMANDS	zshexpn:FILENAME EXPANSION	status word then list name function
+vocab	0.104	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshexpn:FILENAME GENERATION	test list pattern form sublist word
+vocab	0.104	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshparam:PARAMETERS USED BY THE SHELL	term list select form commands pattern
+vocab	0.104	zshmisc:COMMAND EXECUTION	zshexpn:PROCESS SUBSTITUTION	file subshell operating system program name
+vocab	0.104	zshmisc:ARITHMETIC EVALUATION	zshparam:PARAMETERS SET BY THE SHELL	floating value assigning integer point implicitly
+vocab	0.103	zshmisc:PRECOMMAND MODIFIERS	zshparam:ARRAY PARAMETERS	flag interpreted name parsing rather string
+vocab	0.103	zshmisc:QUOTING	zshoptions:DESCRIPTION OF OPTIONS	character characters single quoted default it
+vocab	0.103	zshmisc:COMMAND EXECUTION	zshexpn:FILENAME GENERATION	file executable cmd directory execute directories
+vocab	0.103	zshmisc:AUTOLOADING FUNCTIONS	zshparam:PARAMETERS SET BY THE SHELL	function file executed autoloaded functions definition
+vocab	0.103	zshmisc:SPECIAL FUNCTIONS	zshmisc:JOBS	job signal function trap you whenever
+vocab	0.103	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshexpn:HISTORY EXPANSION	character text string absolute path prompt
+vocab	0.103	zshexpn:PROCESS SUBSTITUTION	zshparam:PARAMETERS SET BY THE SHELL	file process code system parent subshell
+vocab	0.102	zshmisc:COMPLEX COMMANDS	zshexpn:ARITHMETIC EXPANSION	exp arithmetic evaluated expression section value
+vocab	0.101	zshmisc:PRECOMMAND MODIFIERS	zshmisc:COMPLEX COMMANDS	executed word words done name function
+vocab	0.101	zshmisc:REDIRECTION	zshmisc:REDIRECTIONS WITH NO COMMAND	file redirection output input standard redirections
+vocab	0.101	zshexpn:COMMAND SUBSTITUTION	zshparam:ARRAY PARAMETERS	foo double quotes like parentheses glob_subst
+vocab	0.1	zshmisc:COMPLEX COMMANDS	zshmisc:ERRORS	errors execution cause break continue abort
+vocab	0.1	zshmisc:ALIASING	zshexpn:COMMAND SUBSTITUTION	foo eligible word expansion unquoted quoted
+vocab	0.1	zshmisc:SPECIAL FUNCTIONS	zshmisc:SIGNALS	functions signal exit trapnal handler signals
+vocab	0.1	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:HISTORY EXPANSION	file var string qualifier exists match
+vocab	0.1	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:ARITHMETIC EXPANSION	exp expression expansion string arithmetic evaluated
+vocab	0.1	zshexpn:PROCESS SUBSTITUTION	zshexpn:PARAMETER EXPANSION	substitution name form substitutions file then
+vocab	0.099	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshbuiltins:SHELL BUILTIN COMMANDS	list form name word if function
+vocab	0.099	zshmisc:QUOTING	zshexpn:FILENAME GENERATION	character string characters enclosed single considered
+vocab	0.099	zshmisc:MULTIOS	zshmisc:JOBS	job output you parent process tries
+vocab	0.099	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:BRACE EXPANSION	characters character width negative numbers number
+vocab	0.098	zshmisc:CONDITIONAL EXPRESSIONS	zshexpn:FILENAME EXPANSION	exists directory match if file string
+vocab	0.098	zshmisc:CONDITIONAL EXPRESSIONS	zshparam:PARAMETERS USED BY THE SHELL	file if pattern mbegin mend string
+vocab	0.098	zshparam:POSITIONAL PARAMETERS	zshparam:PARAMETERS USED BY THE SHELL	array value parameters values argv number
+vocab	0.097	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:MULTIOS	foo output pipe sort redirection finish
+vocab	0.097	zshmisc:FUNCTIONS	zshparam:PARAMETERS SET BY THE SHELL	executed function functions read positional builtin
+vocab	0.097	zshmisc:ARITHMETIC EVALUATION	zshparam:ARRAY PARAMETERS	expression value arithmetic assignment an character
+vocab	0.097	zshparam:POSITIONAL PARAMETERS	zshparam:LOCAL PARAMETERS	parameters new parameter assigning assignment value
+vocab	0.096	zshmisc:MULTIOS	zshexpn:HISTORY EXPANSION	foo bar file previous immediately expansion
+vocab	0.096	zshmisc:COMMAND EXECUTION	zshmisc:FUNCTIONS	function execute functions execution directory executed
+vocab	0.096	zshexpn:DESCRIPTION	zshbuiltins:SHELL BUILTIN COMMANDS	alias aliases expansion all these argument
+vocab	0.096	zshexpn:BRACE EXPANSION	zshparam:ARRAY PARAMETERS	foo expression array character characters match
+vocab	0.095	zshmisc:COMPLEX COMMANDS	zshmisc:ARITHMETIC EVALUATION	arithmetic expression always list term zero
+vocab	0.095	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshmisc:REDIRECTION	word list standard form newline above
+vocab	0.095	zshmisc:ANONYMOUS FUNCTIONS	zshexpn:PARAMETER EXPANSION	name treated applied words variable arguments
+vocab	0.095	zshexpn:PARAMETER EXPANSION	zshparam:LOCAL PARAMETERS	parameter parameters name value local outermost
+vocab	0.095	zshexpn:FILENAME EXPANSION	zshparam:DESCRIPTION	name array value then assignment named
+vocab	0.094	zshmisc:REDIRECTIONS WITH NO COMMAND	zshbuiltins:SHELL BUILTIN COMMANDS	given file functions value when name
+vocab	0.094	zshexpn:HISTORY EXPANSION	zshexpn:PROCESS SUBSTITUTION	file substitution substitutions list immediately previous
+vocab	0.093	zshmisc:SPECIAL FUNCTIONS	zshexpn:FILENAME GENERATION	list array executed file any same
+vocab	0.092	zshmisc:QUOTING	zshparam:PARAMETERS USED BY THE SHELL	character pair histchars characters default single
+vocab	0.091	zshmisc:SIMPLE COMMANDS & PIPELINES	zshparam:ARRAY PARAMETERS	associative value foo second assignments last
+vocab	0.091	zshmisc:SIMPLE PROMPT ESCAPES	zshexpn:PROCESS SUBSTITUTION	file dev supports system argument time
+vocab	0.091	zshexpn:BRACE EXPANSION	zshparam:PARAMETERS USED BY THE SHELL	character characters output number array expanded
+vocab	0.091	zshexpn:FILENAME GENERATION	zshparam:DESCRIPTION	array pattern string characters value name
+vocab	0.09	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshbuiltins:SHELL BUILTIN COMMANDS	file descriptor new arguments it param
+vocab	0.09	zshmisc:ARITHMETIC EVALUATION	zshexpn:HISTORY EXPANSION	character expression logical decimal leading substitution
+vocab	0.089	zshmisc:COMMENTS	zshexpn:HISTORY EXPANSION	word histchars character newline up all
+vocab	0.089	zshmisc:ALIASING	zshmisc:SPECIAL FUNCTIONS	defined executed functions history aliases function
+vocab	0.089	zshmisc:ALIASING	zshparam:ARRAY PARAMETERS	foo quoting pattern quote an word
+vocab	0.089	zshmisc:AUTOLOADING FUNCTIONS	zshexpn:FILENAME GENERATION	files file directory which must other
+vocab	0.089	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:ARITHMETIC EXPANSION	expansion subjected arithmetic string substitution see
+vocab	0.089	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshparam:DESCRIPTION	type expansion integer arithmetic zshexpn string
+vocab	0.089	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshexpn:FILENAME EXPANSION	directory home length array string elements
+vocab	0.088	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:HISTORY EXPANSION	foo last input word first list
+vocab	0.088	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshexpn:PARAMETER EXPANSION	word form name pattern list rules
+vocab	0.088	zshmisc:ALIASING	zshparam:PARAMETERS USED BY THE SHELL	space completion it expansion history pattern
+vocab	0.088	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshparam:PARAMETERS SET BY THE SHELL	array privileges current effective gid uid
+vocab	0.087	zshmisc:COMPLEX COMMANDS	zshmisc:ALIASING	word executed code always pattern encountered
+vocab	0.087	zshmisc:QUOTING	zshbuiltins:SHELL BUILTIN COMMANDS	character quoted arguments print single string
+vocab	0.087	zshmisc:ANONYMOUS FUNCTIONS	zshmisc:SIMPLE PROMPT ESCAPES	am function handled outputs definition name
+vocab	0.086	zshmisc:ANONYMOUS FUNCTIONS	zshparam:PARAMETERS USED BY THE SHELL	variable local this function functions definitions
+vocab	0.086	zshexpn:BRACE EXPANSION	zshbuiltins:SHELL BUILTIN COMMANDS	character output is numbers expanded characters
+vocab	0.085	zshmisc:ANONYMOUS FUNCTIONS	zshexpn:FILENAME EXPANSION	function name functions local fi arguments
+vocab	0.085	zshmisc:SIGNALS	zshexpn:PROCESS SUBSTITUTION	multios process parent wait substitution processes
+vocab	0.085	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:DESCRIPTION	integer value attribute number name characters
+vocab	0.084	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:ARITHMETIC EVALUATION	output operators logical value status zero
+vocab	0.084	zshmisc:RESERVED WORDS	zshbuiltins:SHELL BUILTIN COMMANDS	disable typeset local readonly function disabled
+vocab	0.084	zshmisc:ALIASING	zshmisc:AUTOLOADING FUNCTIONS	alias definition defined function functions element
+vocab	0.084	zshmisc:REDIRECTION	zshmisc:ARITHMETIC EVALUATION	output standard input digit it truncated
+vocab	0.084	zshmisc:AUTOLOADING FUNCTIONS	zshexpn:PARAMETER EXPANSION	element flag which elements first then
+vocab	0.084	zshexpn:HISTORY EXPANSION	zshparam:DESCRIPTION	reference expansion parameter value name filename
+vocab	0.084	zshparam:ARRAY PARAMETERS	zshparam:LOCAL PARAMETERS	existing parameter value innermost typeset parameters
+vocab	0.083	zshmisc:SIGNALS	zshparam:PARAMETERS SET BY THE SHELL	signals process exit signal invoked shell
+vocab	0.083	zshmisc:ARITHMETIC EVALUATION	zshexpn:BRACE EXPANSION	numbers character expression output integers decreasing
+vocab	0.083	zshexpn:DESCRIPTION	zshparam:PARAMETERS USED BY THE SHELL	expansion history completed filename removed ksh
+vocab	0.082	zshmisc:PRECOMMAND MODIFIERS	zshparam:DESCRIPTION	environment name value properties together variable
+vocab	0.082	zshmisc:SPECIAL FUNCTIONS	zshparam:ARRAY PARAMETERS	array value element it name that
+vocab	0.081	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:PROCESS SUBSTITUTION	list finish pipe job input parent
+vocab	0.081	zshmisc:COMPLEX COMMANDS	zshmisc:AUTOLOADING FUNCTIONS	function executed body func functions then
+vocab	0.081	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshexpn:HISTORY EXPANSION	word list short form work previous
+vocab	0.081	zshmisc:REDIRECTION	zshmisc:AUTOLOADING FUNCTIONS	file created then manner reading perform
+vocab	0.081	zshmisc:REDIRECTION	zshmisc:SIMPLE PROMPT ESCAPES	file output dev number leading characters
+vocab	0.081	zshmisc:COMMAND EXECUTION	zshmisc:ANONYMOUS FUNCTIONS	function name script main functions arguments
+vocab	0.081	zshmisc:AUTOLOADING FUNCTIONS	zshmisc:CONDITIONAL EXPRESSIONS	file true directory newer if its
+vocab	0.081	zshmisc:JOBS	zshmisc:SIMPLE PROMPT ESCAPES	jobs tty started running state foreground
+vocab	0.08	zshmisc:COMPLEX COMMANDS	zshmisc:CONDITIONAL EXPRESSIONS	true pattern exp condition expression if
+vocab	0.08	zshmisc:REDIRECTION	zshexpn:FILENAME EXPANSION	word then file exists it expanding
+vocab	0.08	zshmisc:MULTIOS	zshmisc:SIMPLE PROMPT ESCAPES	date file output user current means
+vocab	0.08	zshmisc:AUTOLOADING FUNCTIONS	zshmisc:SIMPLE PROMPT ESCAPES	file function definition directory executed extension
+vocab	0.08	zshmisc:ARITHMETIC EVALUATION	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	ternary truncated integer character least numeric
+vocab	0.08	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:FILENAME GENERATION	character string available recognised start should
+vocab	0.08	zshexpn:COMMAND SUBSTITUTION	zshparam:PARAMETERS USED BY THE SHELL	ifs undergoes output filename expansion parameter
+vocab	0.079	zshmisc:ALIASING	zshexpn:FILENAME EXPANSION	word eligible defined quoting checked it
+vocab	0.079	zshmisc:JOBS	zshexpn:HISTORY EXPANSION	you immediately like then refer previous
+vocab	0.079	zshmisc:CONDITIONAL EXPRESSIONS	zshparam:PARAMETERS SET BY THE SHELL	file id process effective if group
+vocab	0.079	zshexpn:DESCRIPTION	zshexpn:FILENAME GENERATION	five filename performed globbing occurrences characters
+vocab	0.078	zshmisc:COMPLEX COMMANDS	zshmisc:SIMPLE PROMPT ESCAPES	executed status zero function number code
+vocab	0.078	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshmisc:SPECIAL FUNCTIONS	sublist list form function newline until
+vocab	0.078	zshmisc:ERRORS	zshmisc:COMMENTS	interactive shells non all characters with
+vocab	0.078	zshmisc:ALIASING	zshmisc:QUOTING	quote quotes quoted string single nothing
+vocab	0.078	zshmisc:REDIRECTION	zshmisc:JOBS	job output standard input then associates
+vocab	0.078	zshmisc:MULTIOS	zshparam:PARAMETERS SET BY THE SHELL	file user process you output parent
+vocab	0.078	zshmisc:ANONYMOUS FUNCTIONS	zshexpn:HISTORY EXPANSION	immediately function definition treated name words
+vocab	0.078	zshmisc:ANONYMOUS FUNCTIONS	zshparam:PARAMETERS SET BY THE SHELL	function local script name functions variable
+vocab	0.078	zshmisc:SPECIAL FUNCTIONS	zshexpn:PROCESS SUBSTITUTION	file list function argument run passed
+vocab	0.077	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:FILENAME EXPANSION	status zero value two separated it
+vocab	0.076	zshmisc:PRECOMMAND MODIFIERS	zshmisc:REDIRECTION	word does effect environment it process
+vocab	0.076	zshmisc:QUOTING	zshmisc:REDIRECTION	quotes quote newline character quoted double
+vocab	0.076	zshmisc:REDIRECTION	zshparam:PARAMETERS SET BY THE SHELL	file output associated number it process
+vocab	0.076	zshmisc:ANONYMOUS FUNCTIONS	zshexpn:PROCESS SUBSTITUTION	anonymous function particularly name scope list
+vocab	0.076	zshmisc:ANONYMOUS FUNCTIONS	zshexpn:FILENAME GENERATION	files treated other name local that
+vocab	0.076	zshmisc:SPECIAL FUNCTIONS	zshparam:DESCRIPTION	array value type name referred called
+vocab	0.075	zshmisc:REDIRECTION	zshparam:ARRAY PARAMETERS	word quotes double evaluates then expansion
+vocab	0.074	zshmisc:PRECOMMAND MODIFIERS	zshmisc:FUNCTIONS	executed environment function builtin reserved process
+vocab	0.074	zshmisc:COMPLEX COMMANDS	zshmisc:COMMENTS	word shells newline ignored interactive causes
+vocab	0.074	zshmisc:ERRORS	zshparam:PARAMETERS USED BY THE SHELL	variable interactive file memory cause variables
+vocab	0.074	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshmisc:COMMAND EXECUTION	file error message forked external it
+vocab	0.074	zshmisc:SPECIAL FUNCTIONS	zshparam:POSITIONAL PARAMETERS	functions function array values line changed
+vocab	0.074	zshmisc:ARITHMETIC EVALUATION	zshparam:LOCAL PARAMETERS	point integers integer parameter scope assigning
+vocab	0.074	zshexpn:PARAMETER EXPANSION	zshoptions:SPECIFYING OPTIONS	name options single string refers letter
+vocab	0.073	zshmisc:COMPLEX COMMANDS	zshparam:DESCRIPTION	name value parameters arithmetic then parameter
+vocab	0.073	zshmisc:CONDITIONAL EXPRESSIONS	zshmisc:SIMPLE PROMPT ESCAPES	file dev if current directory string
+vocab	0.073	zshexpn:DESCRIPTION	zshexpn:ARITHMETIC EXPANSION	expansion arithmetic substitution before parameter is
+vocab	0.073	zshexpn:HISTORY EXPANSION	zshparam:LOCAL PARAMETERS	path parameter directory restriction existent parameters
+vocab	0.073	zshexpn:ARITHMETIC EXPANSION	zshparam:DESCRIPTION	arithmetic evaluation value expansion parameter section
+vocab	0.072	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:REDIRECTIONS WITH NO COMMAND	simple assignments value more redirections operators
+vocab	0.072	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshexpn:PROCESS SUBSTITUTION	list form name work above word
+vocab	0.072	zshmisc:AUTOLOADING FUNCTIONS	zshexpn:PROCESS SUBSTITUTION	file function will named then second
+vocab	0.072	zshmisc:ARITHMETIC EVALUATION	zshexpn:FILENAME EXPANSION	named name it prefix zero functions
+vocab	0.071	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:PRECOMMAND MODIFIERS	executed simple command environment seen commands
+vocab	0.071	zshmisc:ALIASING	zshparam:PARAMETERS SET BY THE SHELL	code executed defined it subshells module
+vocab	0.071	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshparam:PARAMETERS USED BY THE SHELL	file new it this parameter character
+vocab	0.071	zshmisc:FUNCTIONS	zshmisc:SIGNALS	functions exit section process see shell
+vocab	0.071	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:ARRAY PARAMETERS	value characters character name braces that
+vocab	0.071	zshexpn:COMMAND SUBSTITUTION	zshexpn:FILENAME EXPANSION	replaced unquoted eligible expansion word substitution
+vocab	0.07	zshmisc:RESERVED WORDS	zshexpn:PARAMETER EXPANSION	words word quoted then neither first
+vocab	0.07	zshmisc:MULTIOS	zshmisc:COMMAND EXECUTION	file program forked spawned external directory
+vocab	0.07	zshmisc:SPECIAL FUNCTIONS	zshmisc:ARITHMETIC EVALUATION	functions status defined it point value
+vocab	0.07	zshmisc:SPECIAL FUNCTIONS	zshmisc:EXPANSION OF PROMPT SEQUENCES	history prompt certain next argument type
+vocab	0.07	zshexpn:PARAMETER EXPANSION	zshexpn:ARITHMETIC EXPANSION	substituted expansion substitution value arithmetic string
+vocab	0.07	zshexpn:COMMAND SUBSTITUTION	zshexpn:BRACE EXPANSION	foo generation output filename expansion words
+vocab	0.07	zshoptions:DESCRIPTION OF OPTIONS	zshoptions:OPTION ALIASES	ksh compatibility bash hash_cmds options aliases
+vocab	0.069	zshmisc:PRECOMMAND MODIFIERS	zshmisc:AUTOLOADING FUNCTIONS	function executed searched flag taken builtin
+vocab	0.069	zshmisc:COMMENTS	zshoptions:SINGLE LETTER OPTIONS	interactive interactive_comments default all option by
+vocab	0.069	zshmisc:COMMENTS	zshbuiltins:SHELL BUILTIN COMMANDS	causes interactive all character word shells
+vocab	0.069	zshexpn:DESCRIPTION	zshexpn:BRACE EXPANSION	expansion order brace filename expanded characters
+vocab	0.068	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshmisc:CONDITIONAL EXPRESSIONS	true short test form pattern condition
+vocab	0.068	zshmisc:COMMENTS	zshexpn:FILENAME GENERATION	character characters up word all beginning
+vocab	0.068	zshmisc:ALIASING	zshmisc:MULTIOS	foo bar redirection it problem word
+vocab	0.068	zshmisc:MULTIOS	zshexpn:BRACE EXPANSION	foo bar output order similar above
+vocab	0.068	zshmisc:COMMAND EXECUTION	zshparam:POSITIONAL PARAMETERS	values script parameters function etc section
+vocab	0.068	zshexpn:FILENAME GENERATION	zshparam:POSITIONAL PARAMETERS	array access form all so number
+vocab	0.067	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:COMMAND SUBSTITUTION	foo output preceded standard words just
+vocab	0.067	zshmisc:ERRORS	zshparam:PARAMETERS SET BY THE SHELL	script module shell file read interactive
+vocab	0.067	zshmisc:AUTOLOADING FUNCTIONS	zshexpn:HISTORY EXPANSION	definition extension file directory function first
+vocab	0.066	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:SIMPLE PROMPT ESCAPES	status executed zero sequence value two
+vocab	0.066	zshmisc:PRECOMMAND MODIFIERS	zshmisc:ALIASING	word replacement rather any builtin executed
+vocab	0.066	zshmisc:COMPLEX COMMANDS	zshexpn:BRACE EXPANSION	list words expression expanded treated zero
+vocab	0.066	zshmisc:QUOTING	zshexpn:BRACE EXPANSION	character characters resulting single quoted between
+vocab	0.066	zshmisc:MULTIOS	zshmisc:ARITHMETIC EVALUATION	output point operator it consequences expression
+vocab	0.066	zshmisc:COMMAND EXECUTION	zshexpn:HISTORY EXPANSION	path file directory name execute exists
+vocab	0.066	zshmisc:ANONYMOUS FUNCTIONS	zshparam:DESCRIPTION	name variable variables point may difference
+vocab	0.066	zshmisc:SPECIAL FUNCTIONS	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	prompt array status line text current
+vocab	0.066	zshparam:PARAMETERS USED BY THE SHELL	zshoptions:SPECIFYING OPTIONS	names being default name single ignored
+vocab	0.065	zshmisc:SIMPLE COMMANDS & PIPELINES	zshparam:DESCRIPTION	value environment assignment associative sequence parameter
+vocab	0.065	zshmisc:COMPLEX COMMANDS	zshparam:POSITIONAL PARAMETERS	positional parameters section function do values
+vocab	0.065	zshmisc:ERRORS	zshmisc:MULTIOS	multio file pipe create behaviour needed
+vocab	0.065	zshmisc:ERRORS	zshmisc:ARITHMETIC EVALUATION	logical declared mathematical expression integer float
+vocab	0.065	zshmisc:ERRORS	zshexpn:PARAMETER EXPANSION	errors pattern subscripts options substitution matching
+vocab	0.065	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshexpn:FILENAME GENERATION	file character least digit sets error
+vocab	0.065	zshmisc:SPECIAL FUNCTIONS	zshparam:LOCAL PARAMETERS	function allowing called causes it programs
+vocab	0.065	zshmisc:SIGNALS	zshparam:PARAMETERS USED BY THE SHELL	page signals explicitly usually certain run
+vocab	0.065	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:COMMAND SUBSTITUTION	expansion replaced substitution arithmetic using single
+vocab	0.065	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshparam:DESCRIPTION	array string elements value integer may
+vocab	0.065	zshexpn:FILENAME GENERATION	zshparam:LOCAL PARAMETERS	local path directory existing parameter still
+vocab	0.064	zshmisc:PRECOMMAND MODIFIERS	zshmisc:ANONYMOUS FUNCTIONS	function name variable arguments executed immediately
+vocab	0.064	zshmisc:PRECOMMAND MODIFIERS	zshexpn:FILENAME EXPANSION	path name replaced word function it
+vocab	0.064	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshoptions:SPECIFYING OPTIONS	short name another these one many
+vocab	0.064	zshmisc:ERRORS	zshparam:DESCRIPTION	variables type variable control assignment assign
+vocab	0.064	zshmisc:QUOTING	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	string character quoted characters escape appear
+vocab	0.064	zshmisc:COMMAND EXECUTION	zshexpn:PARAMETER EXPANSION	name element if file is parameters
+vocab	0.064	zshmisc:ANONYMOUS FUNCTIONS	zshmisc:ARITHMETIC EVALUATION	point functions variable name outputs scope
+vocab	0.064	zshmisc:JOBS	zshexpn:PARAMETER EXPANSION	then string effect you it output
+vocab	0.064	zshmisc:ARITHMETIC EVALUATION	zshexpn:ARITHMETIC EXPANSION	arithmetic expression evaluation evaluated value form
+vocab	0.064	zshmisc:ARITHMETIC EVALUATION	zshparam:POSITIONAL PARAMETERS	values assignment assigning parameters value form
+vocab	0.064	zshexpn:FILENAME EXPANSION	zshparam:POSITIONAL PARAMETERS	positions array function assignment functions number
+vocab	0.063	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:COMMAND EXECUTION	status fails execute executed executes returned
+vocab	0.063	zshmisc:PRECOMMAND MODIFIERS	zshmisc:SIMPLE PROMPT ESCAPES	path executed current equivalent treat than
+vocab	0.063	zshmisc:RESERVED WORDS	zshexpn:FILENAME EXPANSION	elif fi local then position typeset
+vocab	0.063	zshmisc:ERRORS	zshmisc:CONDITIONAL EXPRESSIONS	file regular expression generation variables pattern
+vocab	0.063	zshmisc:COMMENTS	zshexpn:DESCRIPTION	shells interactive characters all following parameter
+vocab	0.063	zshmisc:QUOTING	zshmisc:ANONYMOUS FUNCTIONS	enclosed nothing arguments newline inside outputs
+vocab	0.063	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshparam:PARAMETERS SET BY THE SHELL	file subshells param new parameter it
+vocab	0.063	zshmisc:AUTOLOADING FUNCTIONS	zshparam:ARRAY PARAMETERS	element flag second elements ordinary which
+vocab	0.063	zshexpn:HISTORY EXPANSION	zshoptions:SPECIFYING OPTIONS	refer trailing refers name so options
+vocab	0.062	zshmisc:COMPLEX COMMANDS	zshmisc:SIGNALS	exit always cause section signals see
+vocab	0.062	zshmisc:COMPLEX COMMANDS	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	true appear prompt if zero encountered
+vocab	0.062	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	true least form test delimited if
+vocab	0.062	zshmisc:ALIASING	zshexpn:BRACE EXPANSION	foo bar expanded expansion characters every
+vocab	0.062	zshmisc:MULTIOS	zshmisc:SPECIAL FUNCTIONS	about file written exit it behaviour
+vocab	0.062	zshmisc:ARITHMETIC EVALUATION	zshmisc:EXPANSION OF PROMPT SEQUENCES	integer arithmetic character type expansion number
+vocab	0.062	zshexpn:DESCRIPTION	zshparam:DESCRIPTION	expansion referred performed parameter arithmetic filename
+vocab	0.062	zshexpn:FILENAME GENERATION	zshoptions:SPECIFYING OPTIONS	letter string sets name names options
+vocab	0.061	zshmisc:PRECOMMAND MODIFIERS	zshmisc:COMMAND EXECUTION	external name path function executed builtin
+vocab	0.061	zshmisc:COMPLEX COMMANDS	zshmisc:MULTIOS	redirection exit about always encountered foo
+vocab	0.061	zshmisc:REDIRECTION	zshmisc:SPECIAL FUNCTIONS	file list it then causes exist
+vocab	0.061	zshmisc:MULTIOS	zshmisc:AUTOLOADING FUNCTIONS	file files thus contents directory without
+vocab	0.061	zshmisc:FUNCTIONS	zshparam:PARAMETERS USED BY THE SHELL	functions environment files read commands trap
+vocab	0.061	zshmisc:CONDITIONAL EXPRESSIONS	zshparam:DESCRIPTION	numerically string scalar attributes value array
+vocab	0.06	zshmisc:RESERVED WORDS	zshexpn:HISTORY EXPANSION	words word neither quoted then repeat
+vocab	0.06	zshmisc:AUTOLOADING FUNCTIONS	zshmisc:ARITHMETIC EVALUATION	functions func args initialization defined contain
+vocab	0.06	zshmisc:ARITHMETIC EVALUATION	zshexpn:PROCESS SUBSTITUTION	output form operators named substitution example
+vocab	0.06	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshparam:ARRAY PARAMETERS	expansion sequences character string appear zshexpn
+vocab	0.06	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshparam:PARAMETERS SET BY THE SHELL	event history type available number current
+vocab	0.06	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	zshexpn:BRACE EXPANSION	character negative characters left range width
+vocab	0.06	zshexpn:PROCESS SUBSTITUTION	zshexpn:FILENAME EXPANSION	named name then file function argument
+vocab	0.059	zshmisc:RESERVED WORDS	zshmisc:ANONYMOUS FUNCTIONS	local function fi words else do
+vocab	0.059	zshmisc:REDIRECTION	zshexpn:BRACE EXPANSION	output word characters character order expansion
+vocab	0.059	zshmisc:REDIRECTIONS WITH NO COMMAND	zshexpn:PARAMETER EXPANSION	value name given parameter inserted then
+vocab	0.059	zshmisc:JOBS	zshexpn:FILENAME GENERATION	you string like they id then
+vocab	0.059	zshexpn:HISTORY EXPANSION	zshparam:POSITIONAL PARAMETERS	section so parameters parameter number see
+vocab	0.058	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:ALIASING	foo input word executed it simple
+vocab	0.058	zshmisc:PRECOMMAND MODIFIERS	zshexpn:DESCRIPTION	performed shells done filename immediately process
+vocab	0.058	zshmisc:PRECOMMAND MODIFIERS	zshexpn:PROCESS SUBSTITUTION	process external name run together command
+vocab	0.058	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshparam:ARRAY PARAMETERS	form list pattern name limitations word
+vocab	0.058	zshmisc:MULTIOS	zshparam:ARRAY PARAMETERS	foo thus that it redirection expression
+vocab	0.058	zshmisc:JOBS	zshparam:ARRAY PARAMETERS	key effect when side it then
+vocab	0.058	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:FILENAME EXPANSION	replaced expansion should then followed certain
+vocab	0.058	zshexpn:PROCESS SUBSTITUTION	zshparam:ARRAY PARAMETERS	name list form reverse this an
+vocab	0.057	zshmisc:ERRORS	zshmisc:COMMAND EXECUTION	file attempts script execution shell conditions
+vocab	0.057	zshmisc:ANONYMOUS FUNCTIONS	zshparam:POSITIONAL PARAMETERS	function provide functions arguments script so
+vocab	0.057	zshmisc:JOBS	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	prompt jobs string running current started
+vocab	0.057	zshexpn:DESCRIPTION	zshparam:ARRAY PARAMETERS	expansion performed expansions filename under substitution
+vocab	0.056	zshmisc:PRECOMMAND MODIFIERS	zshmisc:JOBS	process fork effect it immediately external
+vocab	0.056	zshmisc:ALIASING	zshmisc:ARITHMETIC EVALUATION	defined operator it an arithmetic syntax
+vocab	0.056	zshmisc:QUOTING	zshmisc:SIMPLE PROMPT ESCAPES	character characters outputs single between string
+vocab	0.055	zshmisc:PRECOMMAND MODIFIERS	zshoptions:SPECIFYING OPTIONS	options name exec equivalent builtins done
+vocab	0.055	zshmisc:COMPLEX COMMANDS	zshmisc:REDIRECTIONS WITH NO COMMAND	redirection emulating consists more error then
+vocab	0.055	zshmisc:COMPLEX COMMANDS	zshparam:LOCAL PARAMETERS	parameters scope parameter function name while
+vocab	0.055	zshmisc:ALTERNATE FORMS FOR COMPLEX COMMANDS	zshmisc:ARITHMETIC EVALUATION	form short term arithmetic until list
+vocab	0.055	zshmisc:ERRORS	zshparam:LOCAL PARAMETERS	local export declare older versions typeset
+vocab	0.055	zshmisc:COMMENTS	zshmisc:ALIASING	word interactive characters non character parameter
+vocab	0.055	zshmisc:REDIRECTION	zshexpn:DESCRIPTION	expansion substitution filename performed modified order
+vocab	0.055	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshmisc:REDIRECTIONS WITH NO COMMAND	file redirections redirection shows parameter error
+vocab	0.055	zshmisc:REDIRECTIONS WITH NO COMMAND	zshexpn:PROCESS SUBSTITUTION	file redirection former input cat when
+vocab	0.055	zshmisc:FUNCTIONS	zshexpn:FILENAME GENERATION	files directory like execute read all
+vocab	0.055	zshmisc:ARITHMETIC EVALUATION	zshexpn:COMMAND SUBSTITUTION	output arithmetic substitution double parameter replaced
+vocab	0.055	zshexpn:HISTORY EXPANSION	zshexpn:ARITHMETIC EXPANSION	expansion substituted substitution section string expression
+vocab	0.055	zshexpn:PROCESS SUBSTITUTION	zshparam:DESCRIPTION	name process processes security value assignment
+vocab	0.055	zshparam:DESCRIPTION	zshoptions:SPECIFYING OPTIONS	name referred underscores single startup off
+vocab	0.054	zshmisc:COMPLEX COMMANDS	zshexpn:COMMAND SUBSTITUTION	words parentheses word arithmetic foo generation
+vocab	0.054	zshmisc:COMMAND EXECUTION	zshmisc:SIGNALS	invoked handler section functions shell values
+vocab	0.054	zshexpn:FILENAME EXPANSION	zshoptions:SPECIFYING OPTIONS	name names implement setopt emulate so
+vocab	0.053	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:FUNCTIONS	executed commands read execute environment function
+vocab	0.053	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshmisc:AUTOLOADING FUNCTIONS	file executed using message perform it
+vocab	0.053	zshmisc:AUTOLOADING FUNCTIONS	zshmisc:CONDITIONAL SUBSTRINGS IN PROMPTS	true element directory text undefined fact
+vocab	0.053	zshmisc:SIGNALS	zshparam:POSITIONAL PARAMETERS	section values functions see those itself
+vocab	0.053	zshexpn:DESCRIPTION	zshexpn:FILENAME EXPANSION	expansion unquoted performed after modified parts
+vocab	0.052	zshmisc:SIMPLE COMMANDS & PIPELINES	zshexpn:BRACE EXPANSION	foo two output sequence bar zero
+vocab	0.052	zshmisc:COMPLEX COMMANDS	zshmisc:EXPANSION OF PROMPT SEQUENCES	conditional prompt appear optional then arithmetic
+vocab	0.052	zshmisc:ERRORS	zshparam:ARRAY PARAMETERS	failure subscripts expression matching pattern assignment
+vocab	0.052	zshmisc:ALIASING	zshmisc:SIMPLE PROMPT ESCAPES	defined code part characters space it
+vocab	0.052	zshmisc:QUOTING	zshoptions:SPECIFYING OPTIONS	single ignored string preceding preceded one
+vocab	0.052	zshmisc:AUTOLOADING FUNCTIONS	zshparam:LOCAL PARAMETERS	local function directory created parameters typeset
+vocab	0.052	zshmisc:EXPANSION OF PROMPT SEQUENCES	zshexpn:BRACE EXPANSION	character expansion expanded sequence between number
+vocab	0.052	zshmisc:SIMPLE PROMPT ESCAPES	zshparam:LOCAL PARAMETERS	path directory integer integers attribute function
+vocab	0.052	zshexpn:COMMAND SUBSTITUTION	zshexpn:ARITHMETIC EXPANSION	arithmetic substitution expansion parameter form is
+vocab	0.052	zshexpn:COMMAND SUBSTITUTION	zshbuiltins:SHELL BUILTIN COMMANDS	output foo parameter if quoted like
+vocab	0.051	zshmisc:SIMPLE COMMANDS & PIPELINES	zshmisc:ERRORS	pipeline next modify control pipe logical
+vocab	0.051	zshmisc:ERRORS	zshmisc:AUTOLOADING FUNCTIONS	autoload file functions create script local
+vocab	0.051	zshmisc:COMMAND EXECUTION	zshmisc:ARITHMETIC EVALUATION	format name status remainder it an
+vocab	0.05	zshmisc:OPENING FILE DESCRIPTORS USING PARAMETERS	zshmisc:SIMPLE PROMPT ESCAPES	file integer allowed braces current number
+vocab	0.05	zshmisc:ANONYMOUS FUNCTIONS	zshparam:ARRAY PARAMETERS	name braces inside use this that
+vocab	0.05	zshexpn:DESCRIPTION	zshparam:PARAMETERS SET BY THE SHELL	under types started performed history process
+vocab	0.05	zshoptions:OPTION ALIASES	zshoptions:SINGLE LETTER OPTIONS	single_command shin_stdin ksh mail_warning glob_dots chase_links

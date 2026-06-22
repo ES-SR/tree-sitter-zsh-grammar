@@ -1,0 +1,46 @@
+page	section	words	top_terms	entities
+zshmisc	SIMPLE COMMANDS & PIPELINES	567	sublist pipeline pipelines separated terminated status coprocess simple executed grep returns coproc	
+zshmisc	PRECOMMAND MODIFIERS	312	precommand nocorrect whence modifier argv prepended argv0 flag rather replacement interpreted environment	POSIX_BUILTINS TRAPEXIT ARGV0
+zshmisc	COMPLEX COMMANDS	1426	list try term executed always try_block_error word words execute execution block break	TRY_BLOCK_ERROR PROMPT3 REPLY POSIXTRAPS EXIT TIMEFMT
+zshmisc	ALTERNATE FORMS FOR COMPLEX COMMANDS	335	sublist short list term form limitations repeat suitably alternate short_loops select test	SHORT_LOOPS SHORT_REPEAT
+zshmisc	RESERVED WORDS	66	recognized esac nocorrect foreach ignore_close_braces coproc additionally elif ignore_braces disable fi repeat	IGNORE_BRACES IGNORE_CLOSE_BRACES
+zshmisc	ERRORS	308	errors failure failures fatal parse multio create interactive variables attempts regular invalid	CONTINUE_ON_ERROR RESTRICTED BAD_PATTERN NOMATCH POSIX_BUILTINS POSIX
+zshmisc	COMMENTS	39	shells interactive interactive_comments histchars third word newline ignored beginning causes up character	INTERACTIVE_COMMENTS
+zshmisc	ALIASING	655	alias echobar aliases unalias tokens word defined eligible foo global quoting posix_aliases	POSIX_ALIASES ALIAS_FUNC_DEF THE ZSH PARAMETER MODULE
+zshmisc	QUOTING	139	quotes rc_quotes quote pair stand single quoted enclosed character apart newline entirely	
+zshmisc	REDIRECTION	776	word descriptor file standard document redirects fname output input clobber backquotes open	CLOBBER APPEND_CREATE
+zshmisc	OPENING FILE DESCRIPTORS USING PARAMETERS	386	descriptor myfd file opened varid open param exec identifier close previously redirection	IGNORE_BRACES CLOBBER
+zshmisc	MULTIOS	591	cat multios date file2 file redirection descriptor foo file1 opens opened sort	MULTIOS
+zshmisc	REDIRECTIONS WITH NO COMMAND	163	nullcmd readnullcmd csh_nullcmd csh emulating paging redirections sh_nullcmd redirection several default caused	NULLCMD READNULLCMD CSH_NULLCMD
+zshmisc	COMMAND EXECUTION	253	interpreter executable operating format file exists execute invoked fails message locate unsuccessful	
+zshmisc	FUNCTIONS	113	caller functions function funcname share identifiers unfunction resolved completes undefined calls alias	EXIT
+zshmisc	AUTOLOADING FUNCTIONS	763	myfunc autoload fpath definition function func zwc file element body functions initialization	KSH_AUTOLOAD
+zshmisc	ANONYMOUS FUNCTIONS	273	anonymous am function definitions definition arguments outside variable local functions anon scope	
+zshmisc	SPECIAL FUNCTIONS	1085	history executed traps trap functions signal hook function status period trapzerr context	TRAPEXIT TRAPZERR PERIOD TRAPNAL SIGNAL NAL SIGINT TRAPDEBUG HISTFILE INC_APPEND_HISTORY SHARE_HISTORY TRAPINT
+zshmisc	JOBS	759	job jobs you suspended running try continued background disowned suspending informs state	MONITOR TSTP CONT NOTIFY CHLD SIGHUP HUP
+zshmisc	SIGNALS	134	quit manual jobs page multios exit signals int inherited waiting ignores trapnal	QUIT INT MONITOR TRAPNAL ERR_EXIT PROCESS SUBSTITUTION MULTIOS
+zshmisc	ARITHMETIC EVALUATION	1483	base bitwise floating xor point let logical integer arithmetic output declared exponent	AND XOR NOT OCTAL_ZEROES MULTIBYTE FORCE_FLOAT
+zshmisc	CONDITIONAL EXPRESSIONS	1264	true exp1 exp2 file exists fd file1 file2 string1 string2 mbegin mend	BASH_REMATCH MATCH MBEGIN MEND KSH_ARRAYS ASCII POSIX_BUILTINS FIFO PCRE POSIX ARITHMETIC EVALUATION
+zshmisc	EXPANSION OF PROMPT SEQUENCES	128	sequences prompt escape expansion recognised prompt_bang represented complicated certain prompt_subst prompt_percent conditional	PROMPT_SUBST PROMPT_BANG PROMPT_PERCENT
+zshmisc	SIMPLE PROMPT ESCAPES	1096	hour day format components hostname strftime gnu colour stop integer leading debugging	PS4 GNU POSIX USERNAME PS2 XTRACE RPS2 HOME SHLVL
+zshmisc	CONDITIONAL SUBSTRINGS IN PROMPTS	814	true truncation margin least prompt truncated false text negative psvar string equal	RPROMPT SHLVL SECONDS ZSHMISC
+zshexpn	DESCRIPTION	167	five expansion steps expansions performed alias sections explain types explained sh_file_expansion filename	
+zshexpn	HISTORY EXPANSION	2181	designator history designators event realpath str reference path modifiers modifier previous word	CSH_JUNKIE_HISTORY HIST_SUBST_PATTERN HISTSIZE EXPANSION PROMPT SEQUENCES CHASE_DOTS CHASE_LINKS PATH FILENAME GENERATION EXTENDED_GLOB
+zshexpn	PROCESS SUBSTITUTION	806	cut file arg f1 f3 lseek temporary file1 file2 process1 process2 process	MULTIOS
+zshexpn	PARAMETER EXPANSION	7137	array flag flags foo name splitting offset str nested substitute word substitution	IFS KSH_ARRAYS MULTIBYTE GLOB_SUBST POSIX_IDENTIFIERS EXPANSION PREFIX ASCII PROMPT SEQUENCES PROMPT_PERCENT PROMPT_SUBST
+zshexpn	COMMAND SUBSTITUTION	100	dollar grave accents foo enclosed broken faster undergoes substitution sign glob_subst replaced	IFS GLOB_SUBST
+zshexpn	ARITHMETIC EXPANSION	37	exp arithmetic subjected substituted evaluated expansion evaluation expression section substitution value string	
+zshexpn	BRACE EXPANSION	483	n1 n2 n3 c2 numbers c1 character characters brace order decreasing pad	ASCII BRACE_CCL
+zshexpn	FILENAME EXPANSION	1056	directory dynamic dirs stack reply home perforce pws replaced zsh_directory_name namstr static	EQUALS HOME PUSHD_MINUS NOMATCH PWD OLDPWD PATH MAGIC_EQUAL_SUBST
+zshexpn	FILENAME GENERATION	5362	match files pattern matches character qualifiers a1 glob ls ld test parentheses	EXTENDED_GLOB REPLY KSH_GLOB GLOB_DOTS IFS READ_ME NULL_GLOB INCOMPLETE MATCH MULTIBYTE FOOXX README
+zshparam	DESCRIPTION	411	type scalar attribute value attributes environment indexed array exported glob_assign name parameters	GLOB_ASSIGN
+zshparam	ARRAY PARAMETERS	3199	subscript array key associative subscripting flag exp element value double foo flags	KSH_ARRAYS KSH_ZERO_SUBSCRIPT FOO GLOB_SUBST QQQ
+zshparam	POSITIONAL PARAMETERS	197	positional argv positions parameters values array direct creates shifting accommodate changed ksh_zero_subscript	KSH_ARRAYS KSH_ZERO_SUBSCRIPT
+zshparam	LOCAL PARAMETERS	226	local scope innermost existing parameters new export executions scoped hides disappear parameter	PATH
+zshparam	PARAMETERS SET BY THE SHELL	2143	id random sufficient zsh_subshell you privileges code username initializes interrupt user histcmd	ZSH_SUBSHELL RANDOM HISTCMD SECONDS ARGC LINENO PPID TTYIDLE ZSH_EVAL_CONTEXT EGID EUID GID
+zshparam	PARAMETERS USED BY THE SHELL	3858	editor prompt terminal correction terminfo ps1 zle_remove_suffix_chars ifs character value colon history	IFS TERM PS1 ZLE_REMOVE_SUFFIX_CHARS ENV HISTORY_IGNORE ZLE_SPACE_SUFFIX_CHARS REPLY STTY TMOUT DIR LANG
+zshoptions	SPECIFYING OPTIONS	258	inversion letter options inverted beep unsetopt synonym sense primarily allexport a__llexp_ort nonobeep	LOCAL_OPTIONS
+zshoptions	DESCRIPTION OF OPTIONS	9921	history completion this unset when ksh file jobs option path function exit	ZLE ERR_EXIT LOCAL_OPTIONS INC_APPEND_HISTORY POSIX_ARGZERO SHIN_STDIN POSIX MENU_COMPLETE CASE_PATHS CORRECT XTRACE FUNCTION_ARGZERO
+zshoptions	OPTION ALIASES	79	bash compatibility ksh hash_cmds brace_expand no_ignore_braces dot_glob hash_all hist_append hist_expand no_hist_no_functions mail_warn	HASH_CMDS BRACE_EXPAND DOT_GLOB GLOB_DOTS HASH_ALL HIST_APPEND APPEND_HISTORY HIST_EXPAND BANG_HIST LOG MAIL_WARN MAIL_WARNING
+zshoptions	SINGLE LETTER OPTIONS	135	no_glob no_exec no_unset no_clobber all_export mark_dirs privileged single_command verbose notify err_exit monitor	NOTIFY MARK_DIRS ALL_EXPORT ERR_EXIT INTERACTIVE LOGIN MONITOR PRIVILEGED RESTRICTED SHIN_STDIN SINGLE_COMMAND VERBOSE
+zshbuiltins	SHELL BUILTIN COMMANDS	19024	module zmodload arg flag loaded name given printed table options resource features	PATH KSH_GLOB HISTFILE EXTENDED_GLOB SAVEHIST POSIX_BUILTINS KSH_AUTOLOAD HISTSIZE POSIX OPTIND OPTARG ZERR

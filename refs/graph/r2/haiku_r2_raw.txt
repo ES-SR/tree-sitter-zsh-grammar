@@ -1,0 +1,299 @@
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--parameter-expansion-flags.txt ===
+typeset
+GLOB_SUBST
+MULTIBYTE
+PROMPT_PERCENT
+PROMPT_SUBST
+PROMPT_BANG
+RC_EXPAND_PARAM
+SH_WORD_SPLIT
+INTERACTIVE_COMMENTS
+HISTCHARS
+subscripts
+pattern-matching
+field-splitting
+associative-array
+modifiers
+nested-expansion
+double-quotes
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__parameter-expansion--rules.txt ===
+nested-substitution
+parameter-subscripting
+typeset
+IFS
+modifiers
+double-quoted-joining
+SH_WORD_SPLIT
+command-substitution
+arithmetic-expansion
+filename-expansion
+RC_EXPAND_PARAM
+character-evaluation
+semantic-joining
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-qualifiers.txt ===
+BARE_GLOB_QUAL
+EXTENDED_GLOB
+MARK_DIRS
+LIST_TYPES
+NULL_GLOB
+GLOB_DOTS
+NUMERIC_GLOB_SORT
+glob-qualifiers
+filename-generation
+pattern-matching
+symbolic-links
+subscripts
+modifiers
+shell-code
+zsh_eval_context
+sort-operators
+HISTCHARS
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--globbing-flags.txt ===
+EXTENDED_GLOB
+backreference
+KSH_ARRAYS
+parameter-substitution
+MULTIBYTE_SUPPORT
+match-data
+parenthesised-groups
+glob-qualifier
+approximate-matching
+#b
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--glob-operators.txt ===
+EXTENDED_GLOB
+KSH_GLOB
+character-class
+[:alnum:]
+[:IFSSPACE:]
+[:INCOMPLETE:]
+[:INVALID:]
+[:WORD:]
+WORDCHARS
+precedence
+directory-separator
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--approximate-matching.txt ===
+#anum
+approximate-matching
+transposition
+non-literal-parts
+GLOB_DOTS
+error-count
+exclusion-operator
+path-segments
+filesystem-characters
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--precedence.txt ===
+precedence
+EXTENDED_GLOB
+directory-separator
+parentheses
+filename-generation
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--ksh-like-glob-operators.txt ===
+KSH_GLOB
+recursive-directory-searching
+directory-matching
+path-consistency
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-generation--recursive-globbing.txt ===
+pathname-component
+recursive-directory-search
+GLOB_STAR_SHORT
+symbolic-links
+path-segment
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--modifiers.txt ===
+filename-extension
+realpath
+CHASE_DOTS
+CHASE_LINKS
+PATH-variable
+history-expansion
+parameter-substitution
+glob-qualifier
+HIST_SUBST_PATTERN
+backreference
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-subscripts.txt ===
+arithmetic expansion
+KSH_ARRAYS
+KSH_ZERO_SUBSCRIPT
+associative arrays
+subscript
+range
+negative number
+pattern matching
+substring
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-flags.txt ===
+subscript flags
+pattern
+word separator
+reverse subscripting
+associative array
+index
+escape sequences
+print builtin
+Parameter Expansion Flags
+zshexpn
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--subscript-parsing.txt ===
+associative array
+reverse subscripting
+double quotes
+zshmisc
+GLOB_SUBST
+positional parameters
+arithmetic expression
+backslash escaping
+brackets
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshparam__array-parameters--array-element-assignment.txt ===
+subscript assignment
+parenthesized list
+typeset
+unset
+filename generation
+noglob
+associative array
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--event-designators.txt ===
+history expansion
+histchars parameter
+command-line
+event designator
+word designators
+modifier
+history reference
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__history-expansion--word-designators.txt ===
+word designator
+event specification
+command line
+argument
+range of words
+history reference
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshexpn__filename-expansion--dynamic-named-directories.txt ===
+zsh_directory_name
+dynamic directory naming
+reply array
+NOMATCH
+status zero
+dynamic name
+directory stack
+prompts
+completion system
+zshcompsys
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--expansion-and-globbing.txt ===
+EXTENDED_GLOB
+BARE_GLOB_QUAL
+CASE_GLOB
+CASE_MATCH
+CASE_PATHS
+CSH_NULL_GLOB
+EQUALS
+GLOB
+GLOB_ASSIGN
+GLOB_DOTS
+GLOB_STAR_SHORT
+GLOB_SUBST
+HIST_SUBST_PATTERN
+IGNORE_BRACES
+IGNORE_CLOSE_BRACES
+KSH_GLOB
+MAGIC_EQUAL_SUBST
+MARK_DIRS
+MULTIBYTE
+NOMATCH
+NULL_GLOB
+NUMERIC_GLOB_SORT
+RC_EXPAND_PARAM
+REMATCH_PCRE
+SH_GLOB
+UNSET
+WARN_CREATE_GLOBAL
+WARN_NESTED_VAR
+zshexpn
+Filename Generation
+Brace Expansion
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--history.txt ===
+APPEND_HISTORY
+BANG_HIST
+EXTENDED_HISTORY
+HIST_ALLOW_CLOBBER
+HIST_BEEP
+HIST_EXPIRE_DUPS_FIRST
+HIST_FCNTL_LOCK
+HIST_FIND_NO_DUPS
+HIST_IGNORE_ALL_DUPS
+HIST_IGNORE_DUPS
+HIST_IGNORE_SPACE
+HIST_LEX_WORDS
+HIST_NO_FUNCTIONS
+HIST_NO_STORE
+HIST_REDUCE_BLANKS
+HIST_SAVE_BY_COPY
+HIST_SAVE_NO_DUPS
+HIST_VERIFY
+INC_APPEND_HISTORY
+INC_APPEND_HISTORY_TIME
+SHARE_HISTORY
+HISTSIZE
+SAVEHIST
+HISTFILE
+ZLE
+fc
+set-local-history
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--scripts-and-functions.txt ===
+ALIAS_FUNC_DEF
+C_BASES
+C_PRECEDENCES
+DEBUG_BEFORE_CMD
+ERR_EXIT
+ERR_RETURN
+EVAL_LINENO
+EXEC
+FUNCTION_ARGZERO
+LOCAL_LOOPS
+LOCAL_OPTIONS
+LOCAL_PATTERNS
+LOCAL_TRAPS
+MULTI_FUNC_DEF
+MULTIOS
+OCTAL_ZEROES
+PIPE_FAIL
+SOURCE_TRACE
+TYPESET_SILENT
+TYPESET_TO_UNSET
+VERBOSE
+XTRACE
+ARITHMETIC EVALUATION
+zshmisc
+PS4
+ZERR
+DEBUG
+=== /home/mike/Projects/tree-sitter/zsh-grammar/refs/sections_r2/zshoptions__description-of-options--shell-emulation.txt ===
+APPEND_CREATE
+BASH_REMATCH
+BSD_ECHO
+CONTINUE_ON_ERROR
+CSH_JUNKIE_HISTORY
+CSH_JUNKIE_LOOPS
+CSH_JUNKIE_QUOTES
+CSH_NULLCMD
+KSH_ARRAYS
+KSH_AUTOLOAD
+KSH_OPTION_PRINT
+KSH_TYPESET
+KSH_ZERO_SUBSCRIPT
+POSIX_ALIASES
+POSIX_ARGZERO
+POSIX_BUILTINS
+POSIX_IDENTIFIERS
+POSIX_STRINGS
+POSIX_TRAPS
+SH_FILE_EXPANSION
+SH_NULLCMD
+SH_OPTION_LETTERS
+SH_WORD_SPLIT
+TRAPS_ASYNC
+MATCH
+match
+NULLCMD
+READNULLCMD
+NO_CLOBBER
+FUNCTION_ARGZERO
+KSH_ARRAYS
+zshexpn
+zshmisc
+RESERVED WORDS
