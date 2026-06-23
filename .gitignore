@@ -1,0 +1,13 @@
+# Personal test corpus — real shell history, keep local (not for publication)
+corpus.hist
+
+# Claude Code tooling — local only
+CLAUDE.md
+.claude/
+
+# Editor backups
+*~
+
+# Python bytecode cache
+__pycache__/
+*.pyc
